@@ -1,0 +1,31 @@
+{
+  "name": "mesa-dms",
+  "version": "1.0.0",
+  "description": "A full-stack document management system",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/andela-pessien/mesa-dms.git"
+  },
+  "keywords": [
+    "document",
+    "management",
+    "system"
+  ],
+  "author": "Princess-Jewel Essien",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/andela-pessien/mesa-dms/issues"
+  },
+  "homepage": "https://github.com/andela-pessien/mesa-dms#readme",
+  "devDependencies": {
+    "eslint": "3.19.0",
+    "eslint-config-airbnb": "14.1.0",
+    "eslint-plugin-import": "2.2.0",
+    "eslint-plugin-jsx-a11y": "4.0.0",
+    "eslint-plugin-react": "6.10.3"
+  }
+}
