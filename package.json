@@ -1,5 +1,5 @@
 {
-  "name": "mesa-dms",
+  "name": "libre-dms",
   "version": "1.0.0",
   "description": "A full-stack document management system",
   "main": "server.js",
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/andela-pessien/mesa-dms.git"
+    "url": "git+https://github.com/andela-pessien/libre-dms.git"
   },
   "keywords": [
     "document",
@@ -18,9 +18,9 @@
   "author": "Princess-Jewel Essien",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/andela-pessien/mesa-dms/issues"
+    "url": "https://github.com/andela-pessien/libre-dms/issues"
   },
-  "homepage": "https://github.com/andela-pessien/mesa-dms#readme",
+  "homepage": "https://github.com/andela-pessien/libre-dms#readme",
   "devDependencies": {
     "eslint": "3.19.0",
     "eslint-config-airbnb": "14.1.0",
