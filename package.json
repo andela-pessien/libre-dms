@@ -2,9 +2,17 @@
   "name": "libre-dms",
   "version": "1.0.0",
   "description": "A full-stack document management system",
-  "main": "server.js",
+  "main": "server/server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "api-serve": "node dist/server.js",
+    "api-serve-dev": "cross-env NODE_ENV=development nodemon --exec 'node -r dotenv/config -r babel-register' server/server.js",
+    "build": "npm-run-all build-client build-server",
+    "build-client": "echo \"Not yet implemented\" && exit 0",
+    "build-server": "babel server -d dist",
+    "start-dev": "npm-run-all --parallel api-serve-dev web-serve-dev",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "web-serve": "echo \"Not yet implemented\" && exit 0",
+    "web-serve-dev": "echo \"Not yet implemented\" && exit 0"
   },
   "repository": {
     "type": "git",
@@ -21,11 +29,24 @@
     "url": "https://github.com/andela-pessien/libre-dms/issues"
   },
   "homepage": "https://github.com/andela-pessien/libre-dms#readme",
+  "dependencies": {
+    "acho": "3.2.1",
+    "babel-cli": "6.24.1",
+    "babel-polyfill": "6.23.0",
+    "babel-preset-es2015": "6.24.1",
+    "babel-preset-stage-2": "6.24.1",
+    "babel-register": "6.24.1",
+    "express": "4.15.2",
+    "npm-run-all": "4.0.2"
+  },
   "devDependencies": {
+    "cross-env": "4.0.0",
+    "dotenv": "4.0.0",
     "eslint": "3.19.0",
     "eslint-config-airbnb": "14.1.0",
     "eslint-plugin-import": "2.2.0",
     "eslint-plugin-jsx-a11y": "4.0.0",
-    "eslint-plugin-react": "6.10.3"
+    "eslint-plugin-react": "6.10.3",
+    "nodemon": "1.11.0"
   }
 }
