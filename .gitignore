@@ -41,3 +41,6 @@ dist
 
 # Environment variables
 .env
+
+# MacOS file system essentials
+.DS_Store
