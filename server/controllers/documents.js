@@ -1,4 +1,4 @@
-import { dbErrorHandler } from '../helpers';
+import { isSuperAdmin, isOwner, dbErrorHandler } from '../helpers';
 import model from '../models';
 
 const { Document } = model;
@@ -38,5 +38,31 @@ export default {
    */
   retrieve(req, res) {
     res.status(200).json(req.retrievedRecord);
+  },
+
+  /**
+   * Method that updates a specific document
+   * @param {Object} req The request from the client
+   * @param {Object} res The response from the server
+   * @returns {void}
+   */
+  update(req, res) {
+    if (!(isSuperAdmin(req) || (isOwner(req, req.retrievedRecord)))) {
+      if (req.retrievedRecord.accesslevel !== 'edit') {
+        return res.status(403).json({
+          message: "You're not permitted to edit this document"
+        });
+      }
+    }
+    req.retrievedRecord.update(req.body)
+    .then((document) => {
+      if (!document) {
+        return res.status(500).json({
+          message: 'Oops! Something went wrong on our end'
+        });
+      }
+      res.status(200).json(document);
+    })
+    .catch(err => (dbErrorHandler(err, res)));
   },
 };

@@ -1,5 +1,11 @@
 import jwt from 'jsonwebtoken';
-import { isSuperAdmin, isOwner, getModel, dbErrorHandler } from '../helpers';
+import {
+  isSuperAdmin,
+  isOwner,
+  hasDocAccess,
+  getModel,
+  dbErrorHandler
+} from '../helpers';
 
 export default {
   /**
@@ -47,7 +53,10 @@ export default {
     Model.findOne({ where: { id: req.params.id } })
     .then((record) => {
       if (record) {
-        if (isSuperAdmin(req) || isOwner(req, record)) {
+        if (
+        isSuperAdmin(req) ||
+        isOwner(req, record) ||
+        hasDocAccess(req, record)) {
           req.retrievedRecord = record;
           next();
         } else {

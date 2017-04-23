@@ -68,3 +68,7 @@ export const isSuperAdmin = req => (req.decoded.roleId === 1);
 
 export const isOwner = (req, record) =>
   (req.decoded.id === record.userId || req.decoded.id === record.id);
+
+export const hasDocAccess = (req, document) =>
+  (document.access === 'public' ||
+    (document.access === 'role' && req.decoded.roleId <= document.userRole));

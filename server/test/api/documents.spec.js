@@ -43,7 +43,8 @@ describe('Documents API', () => {
         }
         if (
         res.body.userId !== docOwner.id ||
-        res.body.userName !== docOwner.name) {
+        res.body.userName !== docOwner.name ||
+        res.body.userRole !== docOwner.roleId) {
           throw new Error('Document not assigned to the right owner');
         }
         testDocument = res.body;
@@ -70,6 +71,33 @@ describe('Documents API', () => {
         ) {
           throw new Error('Did not retrieve the right document');
         }
+        done();
+      });
+  });
+
+  it('should update a document if the requester has proper access', (done) => {
+    const updatedDocData = getValidDoc();
+    app
+      .put(`/api/documents/${testDocument.id}`)
+      .set('x-access-token', docOwnerToken)
+      .send({
+        title: updatedDocData.title,
+        content: updatedDocData.content
+      })
+      .expect('Content-Type', /json/)
+      .expect(200)
+      .end((err, res) => {
+        if (err) throw err;
+        if (!res.body) {
+          throw new Error('Expected updated document to be returned');
+        }
+        if (
+          res.body.title !== updatedDocData.title ||
+          res.body.content !== updatedDocData.content
+        ) {
+          throw new Error('Document not updated properly');
+        }
+        testDocument = res.body;
         done();
       });
   });

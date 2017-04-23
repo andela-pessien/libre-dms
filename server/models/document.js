@@ -25,7 +25,8 @@ export default (sequelize, DataTypes) => {
       defaultValue: 'view',
       type: DataTypes.ENUM('view', 'comment', 'edit')
     },
-    userName: DataTypes.STRING
+    userName: DataTypes.STRING,
+    userRole: DataTypes.INTEGER
   }, {
     classMethods: {
       associate: (models) => {
@@ -54,6 +55,7 @@ export default (sequelize, DataTypes) => {
         User.find({ where: { id: document.userId } })
         .then((user) => {
           document.userName = user.name;
+          document.userRole = user.roleId;
           return next(null, options);
         })
         .catch(err => (next(err)));

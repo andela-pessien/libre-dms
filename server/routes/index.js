@@ -45,7 +45,8 @@ const routes = (app) => {
     .post(auth.checkToken, documentController.create);
   app
     .route('/api/documents/:id')
-    .get(auth.checkToken, auth.hasAccess, documentController.retrieve);
+    .get(auth.checkToken, auth.hasAccess, documentController.retrieve)
+    .put(auth.checkToken, auth.hasAccess, documentController.update);
 };
 
 export default routes;
