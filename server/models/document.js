@@ -24,7 +24,8 @@ export default (sequelize, DataTypes) => {
     accesslevel: {
       defaultValue: 'view',
       type: DataTypes.ENUM('view', 'comment', 'edit')
-    }
+    },
+    userName: DataTypes.STRING
   }, {
     classMethods: {
       associate: (models) => {
@@ -46,6 +47,16 @@ export default (sequelize, DataTypes) => {
           onDelete: 'CASCADE',
           hooks: true
         });
+      }
+    },
+    hooks: {
+      afterValidate: function afterValidate(document, options, next) {
+        User.find({ where: { id: document.userId } })
+        .then((user) => {
+          document.userName = user.name;
+          return next(null, options);
+        })
+        .catch(err => (next(err)));
       }
     }
   });

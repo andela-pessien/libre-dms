@@ -1,7 +1,7 @@
 import controllers from '../controllers';
 import middleware from '../middleware';
 
-const { authController, userController } = controllers;
+const { authController, userController, documentController } = controllers;
 const { auth } = middleware;
 
 /**
@@ -36,6 +36,13 @@ const routes = (app) => {
     .get(auth.checkToken, userController.retrieve)
     .put(auth.checkToken, auth.hasAccess, userController.update)
     .delete(auth.checkToken, auth.hasAccess, userController.destroy);
+
+  /**
+   * CRUD routes for documents
+   */
+  app
+    .route('/api/documents')
+    .post(auth.checkToken, documentController.create);
 };
 
 export default routes;
