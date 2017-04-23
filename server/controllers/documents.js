@@ -4,7 +4,7 @@ import model from '../models';
 const { Document } = model;
 
 export default {
-/**
+  /**
    * Method that creates a new document
    * @param {Object} req The request from the client
    * @param {Object} res The response from the server
@@ -28,5 +28,15 @@ export default {
     })
     .then(document => (res.status(201).json(document)))
     .catch(err => (dbErrorHandler(err, res)));
-  }
+  },
+
+  /**
+   * Method that retrieves a specific document by id
+   * @param {Object} req The request from the client
+   * @param {Object} res The response from the server
+   * @returns {void}
+   */
+  retrieve(req, res) {
+    res.status(200).json(req.retrievedRecord);
+  },
 };

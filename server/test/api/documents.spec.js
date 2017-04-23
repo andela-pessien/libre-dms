@@ -50,4 +50,27 @@ describe('Documents API', () => {
         done();
       });
   });
+
+  it('should retrieve a document if the requester has access to it', (done) => {
+    app
+      .get(`/api/documents/${testDocument.id}`)
+      .set('x-access-token', docOwnerToken)
+      .expect('Content-Type', /json/)
+      .expect(200)
+      .end((err, res) => {
+        if (err) throw err;
+        if (!res.body) {
+          throw new Error('Expected document to be retrieved');
+        }
+        if (
+          res.body.id !== testDocument.id ||
+          res.body.title !== testDocument.title ||
+          res.body.content !== testDocument.content ||
+          res.body.userId !== testDocument.userId
+        ) {
+          throw new Error('Did not retrieve the right document');
+        }
+        done();
+      });
+  });
 });
