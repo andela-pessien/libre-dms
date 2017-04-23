@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+import { isSuperAdmin, isOwner } from '../helpers';
 
 export default {
   /**
@@ -11,7 +12,7 @@ export default {
    */
   checkToken(req, res, next) {
     if (req.headers['x-access-token']) {
-      jwt.verify(
+      return jwt.verify(
         req.headers['x-access-token'],
         process.env.JWT_SECRET,
         (err, decoded) => {
@@ -30,6 +31,25 @@ export default {
       return res.status(401).json({
         message: 'You need to be logged in to perform that action'
       });
+    }
+  },
+
+  /**
+   * Middleware that checks if the requester has access to the resource.
+   * This means they are either the owner or a (super)admin.
+   * @param {Object} req The request from the client
+   * @param {Object} res The response from the server
+   * @param {Function} next The next handler for the route
+   * @returns {void}
+   */
+  hasAccess(req, res, next) {
+    if (!isSuperAdmin(req)) {
+      isOwner(req, (err, status) => {
+        if (err) return res.status(status).json(err);
+        next();
+      });
+    } else {
+      next();
     }
   }
 };

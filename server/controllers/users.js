@@ -72,5 +72,24 @@ export default {
         message: 'Please provide a name, email and password'
       });
     }
+  },
+
+  /**
+   * Method that retrieves a specific user by id
+   * @param {Object} req The request from the client
+   * @param {Object} res The response from the server
+   * @returns {void}
+   */
+  retrieve(req, res) {
+    User.findOne({ where: { id: req.params.id } })
+    .then((user) => {
+      if (!user) {
+        return res.status(404).json({
+          message: 'Resource not found'
+        });
+      }
+      return res.status(200).json(formatUser(user));
+    })
+    .catch(err => (dbErrorHandler(err, res)));
   }
 };

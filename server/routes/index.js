@@ -31,6 +31,9 @@ const routes = (app) => {
   app
     .route('/api/users')
     .post(auth.checkToken, userController.create);
+  app
+    .route('/api/users/:id')
+    .get(auth.checkToken, auth.hasAccess, userController.retrieve);
 };
 
 export default routes;

@@ -15,12 +15,12 @@ export default {
       User.findOne({ where: { email: req.body.email } })
       .then((user) => {
         if (!user) {
-          return res.status(401).json({
+          return res.status(404).json({
             message: 'No user with that email exists',
           });
         }
         if (!user.verifyPassword(req.body.password)) {
-          return res.status(401).json({
+          return res.status(403).json({
             message: 'Failed to authenticate with provided credentials'
           });
         }

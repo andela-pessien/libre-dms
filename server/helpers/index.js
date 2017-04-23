@@ -1,5 +1,19 @@
 import jwt from 'jsonwebtoken';
 import _ from 'underscore';
+import model from '../models';
+
+const getModel = (route) => {
+  switch (true) {
+    case (/\/api\/users/.test(route)):
+      return model.User;
+    case (/\/api\/roles/.test(route)):
+      return model.Role;
+    case (/\/api\/documents/.test(route)):
+      return model.Document;
+    default:
+      return null;
+  }
+};
 
 export const formatUser = user => (
   _.pick(user,
@@ -41,4 +55,35 @@ export const dbErrorHandler = (err, res) => {
     message: 'Oops! Something went wrong on our end',
     error: err
   });
+};
+
+export const isSuperAdmin = req => (req.decoded.roleId === 1);
+
+export const isOwner = (req, cb) => {
+  if (req.decoded.id === req.params.id) {
+    cb();
+  } else {
+    const Model = getModel(req.route.path);
+    Model.findOne({ where: { id: req.params.id } })
+    .then((record) => {
+      if (record) {
+        if (req.decoded.id === record.userId) {
+          req.retrievedRecord = record;
+          cb();
+        } else {
+          cb({
+            message: "You don't have access to this resource"
+          }, 403);
+        }
+      } else {
+        cb({ message: 'Resource not found' }, 404);
+      }
+    })
+    .catch((err) => {
+      cb({
+        message: 'Bad request',
+        error: err
+      }, 400);
+    });
+  }
 };

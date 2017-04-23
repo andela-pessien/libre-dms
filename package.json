@@ -6,7 +6,7 @@
   "scripts": {
     "build": "npm-run-all build:server build:client",
     "build:client": "webpack --config webpack.config.prod.babel.js --progress --colors",
-    "build:server": "babel server -d dist",
+    "build:server": "babel server -d dist --copy-files --ignore spec.js,helper.js",
     "clean": "rimraf ./dist && mkdir dist",
     "db:setup": "npm run db:sync -- --force && npm run sequelize -- db:seed:all",
     "db:sync": "node -r dotenv/config -r babel-register scripts/sync-db.js",
@@ -38,7 +38,6 @@
   },
   "homepage": "https://github.com/andela-pessien/libre-dms#readme",
   "dependencies": {
-    "acho": "3.2.1",
     "babel-cli": "6.24.1",
     "babel-loader": "7.0.0",
     "babel-polyfill": "6.23.0",
@@ -46,6 +45,7 @@
     "babel-preset-stage-2": "6.24.1",
     "babel-register": "6.24.1",
     "bcryptjs": "2.4.3",
+    "body-parser": "1.17.1",
     "cross-env": "4.0.0",
     "css-loader": "0.28.0",
     "csso-loader": "0.3.1",
@@ -58,7 +58,10 @@
     "html-minify-loader": "1.1.0",
     "html-webpack-plugin": "2.28.0",
     "jquery": "3.2.1",
+    "jsonwebtoken": "7.4.0",
+    "jwt-decode": "2.2.0",
     "materialize-css": "0.98.2",
+    "morgan": "1.8.1",
     "node-sass": "4.5.2",
     "npm-run-all": "4.0.2",
     "pg": "6.1.5",
@@ -70,6 +73,7 @@
     "sass-loader": "6.0.3",
     "sequelize": "3.30.4",
     "style-loader": "0.16.1",
+    "underscore": "1.8.3",
     "uuid": "3.0.1",
     "webpack": "2.4.1"
   },
@@ -83,6 +87,7 @@
     "jasmine-spec-reporter": "4.1.0",
     "nodemon": "1.11.0",
     "nyc": "10.3.2",
+    "supertest": "3.0.0",
     "webpack-dev-server": "2.4.5"
   },
   "engines": {
@@ -103,10 +108,22 @@
       "dist"
     ],
     "watermarks": {
-      "lines": [80, 100],
-      "functions": [80, 100],
-      "branches": [80, 100],
-      "statements": [80, 100]
+      "lines": [
+        80,
+        100
+      ],
+      "functions": [
+        80,
+        100
+      ],
+      "branches": [
+        80,
+        100
+      ],
+      "statements": [
+        80,
+        100
+      ]
     },
     "sourceMap": false,
     "instrument": false
