@@ -3,8 +3,10 @@ export default (sequelize, DataTypes) => {
   const Department = sequelize.define('Department', {
     id: {
       type: DataTypes.UUID,
+      allowNull: false,
       primaryKey: true,
-      defaultValue: DataTypes.UUIDV4
+      defaultValue: DataTypes.UUIDV4,
+      noUpdate: true
     },
     name: {
       type: DataTypes.STRING,

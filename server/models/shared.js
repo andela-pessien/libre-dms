@@ -2,7 +2,9 @@ export default (sequelize, DataTypes) => {
   const Shared = sequelize.define('Shared', {
     id: {
       type: DataTypes.UUID,
+      allowNull: false,
       primaryKey: true,
+      noUpdate: true,
       defaultValue: DataTypes.UUIDV4
     },
     email: {

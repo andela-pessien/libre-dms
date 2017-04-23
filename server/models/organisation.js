@@ -4,8 +4,10 @@ export default (sequelize, DataTypes) => {
   const Organisation = sequelize.define('Organisation', {
     id: {
       type: DataTypes.UUID,
+      allowNull: false,
       primaryKey: true,
-      defaultValue: DataTypes.UUIDV4
+      defaultValue: DataTypes.UUIDV4,
+      noUpdate: true
     },
     name: {
       type: DataTypes.STRING,
@@ -40,14 +42,18 @@ export default (sequelize, DataTypes) => {
         Organisation.hasMany(models.Department, {
           foreignKey: {
             name: 'organisationId',
-            allowNull: false
+            allowNull: false,
+            noUpdate: true
           },
           as: 'departments',
           onDelete: 'CASCADE',
           hooks: true
         });
         Organisation.hasMany(models.Document, {
-          foreignKey: 'organisationId',
+          foreignKey: {
+            name: 'organisationId',
+            noUpdate: true
+          },
           as: 'documents'
         });
         Organisation.hasMany(models.User, {

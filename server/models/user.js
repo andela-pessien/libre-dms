@@ -4,8 +4,10 @@ export default (sequelize, DataTypes) => {
   const User = sequelize.define('User', {
     id: {
       type: DataTypes.UUID,
+      allowNull: false,
       primaryKey: true,
-      defaultValue: DataTypes.UUIDV4
+      defaultValue: DataTypes.UUIDV4,
+      noUpdate: true
     },
     name: {
       type: DataTypes.STRING,
@@ -36,14 +38,16 @@ export default (sequelize, DataTypes) => {
         User.hasMany(models.Comment, {
           foreignKey: {
             name: 'userId',
-            allowNull: false
+            allowNull: false,
+            noUpdate: true
           },
           as: 'comments'
         });
         User.hasMany(models.Document, {
           foreignKey: {
             name: 'userId',
-            allowNull: false
+            allowNull: false,
+            noUpdate: true
           },
           as: 'documents',
         });

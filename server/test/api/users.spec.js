@@ -90,7 +90,7 @@ describe('Users API', () => {
       });
   });
 
-  it('should retrieve a user record when the owner requests it', (done) => {
+  it('should retrieve a user record on authenticated request', (done) => {
     app
       .get(`/api/users/${testUser.id}`)
       .set('x-access-token', testUserToken)

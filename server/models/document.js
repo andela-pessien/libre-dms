@@ -1,8 +1,11 @@
 export default (sequelize, DataTypes) => {
+  const User = sequelize.import('./user.js');
   const Document = sequelize.define('Document', {
     id: {
       type: DataTypes.UUID,
+      allowNull: false,
       primaryKey: true,
+      noUpdate: true,
       defaultValue: DataTypes.UUIDV4
     },
     title: {
@@ -21,10 +24,6 @@ export default (sequelize, DataTypes) => {
     accesslevel: {
       defaultValue: 'view',
       type: DataTypes.ENUM('view', 'comment', 'edit')
-    },
-    shared: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false
     }
   }, {
     classMethods: {
@@ -32,14 +31,16 @@ export default (sequelize, DataTypes) => {
         Document.hasMany(models.Comment, {
           foreignKey: {
             name: 'documentId',
-            allowNull: false
+            allowNull: false,
+            noUpdate: true
           },
           as: 'comments'
         });
         Document.hasMany(models.Shared, {
           foreignKey: {
             name: 'documentId',
-            allowNull: false
+            allowNull: false,
+            noUpdate: true
           },
           as: 'shareds',
           onDelete: 'CASCADE',

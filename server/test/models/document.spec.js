@@ -53,10 +53,6 @@ describe('Document Model', () => {
       expect(newDoc.accesslevel).toEqual('view');
     });
 
-    it('that is not shared by default', () => {
-      expect(newDoc.shared).toBe(false);
-    });
-
     it('that has the right owner', () => {
       expect(newDoc.userId).toExist();
       expect(newDoc.userId).toEqual(docOwner.id);

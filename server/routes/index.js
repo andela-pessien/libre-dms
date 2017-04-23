@@ -33,7 +33,7 @@ const routes = (app) => {
     .post(auth.checkToken, userController.create);
   app
     .route('/api/users/:id')
-    .get(auth.checkToken, auth.hasAccess, userController.retrieve)
+    .get(auth.checkToken, userController.retrieve)
     .put(auth.checkToken, auth.hasAccess, userController.update)
     .delete(auth.checkToken, auth.hasAccess, userController.destroy);
 };

@@ -24,10 +24,6 @@ module.exports = {
         defaultValue: 'view',
         type: Sequelize.ENUM('view', 'comment', 'edit')
       },
-      shared: {
-        defaultValue: false,
-        type: Sequelize.BOOLEAN
-      },
       departmentId: {
         type: Sequelize.UUID,
         references: {

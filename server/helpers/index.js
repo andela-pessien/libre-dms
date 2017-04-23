@@ -44,13 +44,18 @@ export const dbErrorHandler = (err, res) => {
       '(Validation notEmpty failed)|',
       '(Validation isEmail failed)|',
       '(Validation isDomain failed)|',
-      '(Validation isUniqueWithinOrg failed)'
+      '(Validation isUniqueWithinOrg failed)|'
     ].join(''))).test(err.message) ||
     /SequelizeForeignKeyConstraintError/.test(err.name)
   ) {
     return res.status(400).json({
       message: 'Please confirm that all fields/identifiers are valid',
       error: err
+    });
+  }
+  if (/(readOnly)|(noUpdate)/.test(err.message)) {
+    return res.status(403).json({
+      message: "You're not permitted to change that ID field"
     });
   }
   return res.status(500).json({

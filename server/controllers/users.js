@@ -79,7 +79,14 @@ export default {
    * @returns {void}
    */
   retrieve(req, res) {
-    res.status(200).json(formatUser(req.retrievedRecord));
+    User.find({ where: { id: req.params.id } })
+    .then((user) => {
+      if (!user) {
+        return res.status(404).json({ message: 'Resource not found' });
+      }
+      return res.status(200).send(formatUser(user));
+    })
+    .catch(err => (dbErrorHandler(err, res)));
   },
 
   /**
