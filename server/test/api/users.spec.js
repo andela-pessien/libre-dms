@@ -5,35 +5,37 @@ import { getValidUser } from '../helpers/data-helper';
 
 describe('Users API', () => {
   const app = request(server);
-  const newUser = getValidUser();
-  let userToken;
-  let userDecoded;
+  const newUserData = getValidUser();
+  let testUser;
+  let testUserToken;
 
   it('should create and sign in a user if all validations pass', (done) => {
     app
       .post('/api/users')
-      .send(newUser)
+      .send(newUserData)
       .expect('Content-Type', /json/)
       .expect(201)
       .end((err, res) => {
         if (err) throw err;
-        if (res.body.message !== 'Signup successful!') {
-          throw new Error(
-            `Expected ${res.body.message} to equal 'Signup successful!'`
-          );
+        if (!res.body) {
+          throw new Error('Expected created user to be returned');
+        }
+        if (
+          !res.body.id ||
+          !res.body.name ||
+          !res.body.email ||
+          !res.body.roleId ||
+          res.body.password) {
+          throw new Error('User not formatted properly');
         }
         if (!res.headers['x-access-token']) {
           throw new Error('Expected x-access-token header to exist');
         }
-        userDecoded = jwtDecode(res.headers['x-access-token']);
-        if (
-          !userDecoded.id ||
-          !userDecoded.name ||
-          !userDecoded.email ||
-          !userDecoded.roleId ||
-          userDecoded.password) {
-          throw new Error('User not formatted properly');
+        if (jwtDecode(res.headers['x-access-token']).id !== res.body.id) {
+          throw new Error('Access token does not correspond to user');
         }
+        testUser = res.body;
+        testUserToken = res.headers['x-access-token'];
         done();
       });
   });
@@ -41,6 +43,7 @@ describe('Users API', () => {
   it('should log out a user on request', (done) => {
     app
       .post('/api/auth/logout')
+      .set('x-access-token', testUserToken)
       .send({})
       .expect('Content-Type', /json/)
       .expect(200)
@@ -64,8 +67,8 @@ describe('Users API', () => {
     app
       .post('/api/auth/login')
       .send({
-        email: newUser.email,
-        password: newUser.password
+        email: newUserData.email,
+        password: newUserData.password
       })
       .expect('Content-Type', /json/)
       .expect(200)
@@ -79,19 +82,18 @@ describe('Users API', () => {
         if (!res.headers['x-access-token']) {
           throw new Error('Expected x-access-token header to exist');
         }
-        const decoded = jwtDecode(res.headers['x-access-token']);
-        if (decoded.id !== userDecoded.id) {
+        if (jwtDecode(res.headers['x-access-token']).id !== testUser.id) {
           throw new Error('Did not log in the right user');
         }
-        userToken = res.headers['x-access-token'];
+        testUserToken = res.headers['x-access-token'];
         done();
       });
   });
 
   it('should retrieve a user record when the owner requests it', (done) => {
     app
-      .get(`/api/users/${userDecoded.id}`)
-      .set('x-access-token', userToken)
+      .get(`/api/users/${testUser.id}`)
+      .set('x-access-token', testUserToken)
       .expect('Content-Type', /json/)
       .expect(200)
       .end((err, res) => {
@@ -100,13 +102,88 @@ describe('Users API', () => {
           throw new Error('Expected user to be retrieved');
         }
         if (
-          res.body.id !== userDecoded.id ||
-          res.body.name !== userDecoded.name ||
-          res.body.email !== userDecoded.email ||
-          res.body.roleId !== userDecoded.roleId
+          res.body.id !== testUser.id ||
+          res.body.name !== testUser.name ||
+          res.body.email !== testUser.email ||
+          res.body.roleId !== testUser.roleId
         ) {
           throw new Error('Did not retrieve the right user');
         }
+        done();
+      });
+  });
+
+  it('should update a user if the requester has access', (done) => {
+    const updatedUserData = getValidUser();
+    app
+      .put(`/api/users/${testUser.id}`)
+      .set('x-access-token', testUserToken)
+      .send({
+        name: updatedUserData.name,
+        email: updatedUserData.email
+      })
+      .expect('Content-Type', /json/)
+      .expect(200)
+      .end((err, res) => {
+        if (err) throw err;
+        if (!res.body) {
+          throw new Error('Expected updated user to be returned');
+        }
+        if (
+          res.body.name !== updatedUserData.name ||
+          res.body.email !== updatedUserData.email
+        ) {
+          throw new Error('User not updated properly');
+        }
+        testUser = res.body;
+        done();
+      });
+  });
+
+  it('should change the access token for a user if the password was changed',
+  (done) => {
+    const updatedUserData = getValidUser();
+    app
+      .put(`/api/users/${testUser.id}`)
+      .set('x-access-token', testUserToken)
+      .send({
+        password: updatedUserData.password
+      })
+      .expect('Content-Type', /json/)
+      .expect(200)
+      .end((err, res) => {
+        if (err) throw err;
+        if (!res.body) {
+          throw new Error('Expected updated user to be returned');
+        }
+        if (!res.headers['x-access-token']) {
+          throw new Error('Expected x-access-token header to exist');
+        }
+        if (res.headers['x-access-token'] === testUserToken) {
+          throw new Error('Expected access token to be refreshed');
+        }
+        if (jwtDecode(res.headers['x-access-token']).id !== testUser.id) {
+          throw new Error('Access token does not correspond to user');
+        }
+        testUserToken = res.headers['x-access-token'];
+        done();
+      });
+  });
+
+  it('should delete a user and their token on authenticated request',
+  (done) => {
+    app
+      .delete(`/api/users/${testUser.id}`)
+      .set('x-access-token', testUserToken)
+      .expect(204)
+      .end((err, res) => {
+        if (err) throw err;
+        if (res.headers['x-access-token'] !== '') {
+          throw new Error(
+            `Expected ${res.headers['x-access-token']} to equal ''`
+          );
+        }
+        testUserToken = res.headers['x-access-token'];
         done();
       });
   });

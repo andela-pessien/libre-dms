@@ -54,10 +54,8 @@ export default {
           departmentId: req.body.departmentId
         })
         .then((newUser) => {
-          res.set('x-access-token', signToken(formatUser(newUser)));
-          return res.status(201).json({
-            message: 'Signup successful!'
-          });
+          res.set('x-access-token', signToken(newUser));
+          return res.status(201).json(formatUser(newUser));
         })
         .catch(err => (dbErrorHandler(err, res)));
       })
@@ -81,14 +79,53 @@ export default {
    * @returns {void}
    */
   retrieve(req, res) {
-    User.findOne({ where: { id: req.params.id } })
-    .then((user) => {
-      if (!user) {
-        return res.status(404).json({
-          message: 'Resource not found'
+    res.status(200).json(formatUser(req.retrievedRecord));
+  },
+
+  /**
+   * Method that updates a specific user
+   * @param {Object} req The request from the client
+   * @param {Object} res The response from the server
+   * @returns {void}
+   */
+  update(req, res) {
+    if (req.body.password) {
+      if (req.decoded.id !== req.retrievedRecord.id) {
+        return res.status(403).json({
+          message: 'Only the user can change their password'
         });
       }
-      return res.status(200).json(formatUser(user));
+    }
+    req.retrievedRecord.update(req.body)
+    .then((user) => {
+      if (!user) {
+        return res.status(500).json({
+          message: 'Oops! Something went wrong on our end'
+        });
+      }
+      if (req.body.password) {
+        // TODO: Implement old token blacklisting/invalidation
+        res.set('x-access-token', signToken(user));
+      }
+      res.status(200).json(formatUser(user));
+    })
+    .catch(err => (dbErrorHandler(err, res)));
+  },
+
+  /**
+   * Method that deletes a specific user
+   * @param {Object} req The request from the client
+   * @param {Object} res The response from the server
+   * @returns {void}
+   */
+  destroy(req, res) {
+    req.retrievedRecord.destroy()
+    .then(() => {
+      if (req.retrievedRecord.id === req.decoded.id) {
+        // TODO: Implement old token blacklisting/invalidation
+        res.set('x-access-token', '');
+      }
+      res.sendStatus(204);
     })
     .catch(err => (dbErrorHandler(err, res)));
   }

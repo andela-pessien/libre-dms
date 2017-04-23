@@ -1,4 +1,4 @@
-import { formatUser, signToken, dbErrorHandler } from '../helpers';
+import { signToken, dbErrorHandler } from '../helpers';
 import model from '../models';
 
 const { User } = model;
@@ -24,7 +24,7 @@ export default {
             message: 'Failed to authenticate with provided credentials'
           });
         }
-        res.set('x-access-token', signToken(formatUser(user)));
+        res.set('x-access-token', signToken(user));
         return res.status(200).json({
           message: 'Login successful!'
         });

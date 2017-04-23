@@ -1,5 +1,5 @@
-import db from '../../models/';
-import { defaultRoles, superAdmin } from './data-helper';
+import db from '../server/models/';
+import { defaultRoles, superAdmin } from '../server/test/helpers/data-helper';
 
 console.log('Creating tables...');
 db.sequelize.sync({ force: true })

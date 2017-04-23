@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import { isSuperAdmin, isOwner } from '../helpers';
+import { isSuperAdmin, isOwner, getModel, dbErrorHandler } from '../helpers';
 
 export default {
   /**
@@ -43,13 +43,24 @@ export default {
    * @returns {void}
    */
   hasAccess(req, res, next) {
-    if (!isSuperAdmin(req)) {
-      isOwner(req, (err, status) => {
-        if (err) return res.status(status).json(err);
-        next();
-      });
-    } else {
-      next();
-    }
+    const Model = getModel(req.route.path);
+    Model.findOne({ where: { id: req.params.id } })
+    .then((record) => {
+      if (record) {
+        if (isSuperAdmin(req) || isOwner(req, record)) {
+          req.retrievedRecord = record;
+          next();
+        } else {
+          return res.status(403).json({
+            message: "You don't have access to this resource"
+          });
+        }
+      } else {
+        return res.status(404).json({
+          message: 'Resource not found'
+        });
+      }
+    })
+    .catch(err => (dbErrorHandler(err, res)));
   }
 };

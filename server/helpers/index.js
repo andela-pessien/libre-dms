@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken';
 import _ from 'underscore';
 import model from '../models';
 
-const getModel = (route) => {
+export const getModel = (route) => {
   switch (true) {
     case (/\/api\/users/.test(route)):
       return model.User;
@@ -22,16 +22,18 @@ export const formatUser = user => (
 
 /**
  * Hashes and signs provided data
- * @param {*} data
+ * @param {*} user The user to be authenticated
  * @returns {String} The generated JSON web token
  */
-export const signToken = data => (
-  jwt.sign(
-    data,
+export const signToken = (user) => {
+  const date = new Date();
+  while ((new Date()) - date <= 1000) { /* Wait */ }
+  return jwt.sign(
+    _.pick(user, 'id', 'roleId', 'organisationId', 'departmentId'),
     process.env.JWT_SECRET,
     { expiresIn: process.env.JWT_EXPIRATION }
-  )
-);
+  );
+};
 
 export const dbErrorHandler = (err, res) => {
   if (
@@ -47,7 +49,7 @@ export const dbErrorHandler = (err, res) => {
     /SequelizeForeignKeyConstraintError/.test(err.name)
   ) {
     return res.status(400).json({
-      message: 'Please confirm that all fields are valid',
+      message: 'Please confirm that all fields/identifiers are valid',
       error: err
     });
   }
@@ -59,31 +61,5 @@ export const dbErrorHandler = (err, res) => {
 
 export const isSuperAdmin = req => (req.decoded.roleId === 1);
 
-export const isOwner = (req, cb) => {
-  if (req.decoded.id === req.params.id) {
-    cb();
-  } else {
-    const Model = getModel(req.route.path);
-    Model.findOne({ where: { id: req.params.id } })
-    .then((record) => {
-      if (record) {
-        if (req.decoded.id === record.userId) {
-          req.retrievedRecord = record;
-          cb();
-        } else {
-          cb({
-            message: "You don't have access to this resource"
-          }, 403);
-        }
-      } else {
-        cb({ message: 'Resource not found' }, 404);
-      }
-    })
-    .catch((err) => {
-      cb({
-        message: 'Bad request',
-        error: err
-      }, 400);
-    });
-  }
-};
+export const isOwner = (req, record) =>
+  (req.decoded.id === record.userId || req.decoded.id === record.id);

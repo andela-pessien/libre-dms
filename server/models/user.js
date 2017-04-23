@@ -59,7 +59,7 @@ export default (sequelize, DataTypes) => {
         user.password = bcrypt.hashSync(user.password, bcrypt.genSaltSync(10));
       },
       beforeUpdate: (user) => {
-        if (user.password) {
+        if (!(/^\$2[ayb]\$10\$[A-Za-z0-9./]{53}$/.test(user.password))) {
           user.password = bcrypt.hashSync(user.password,
             bcrypt.genSaltSync(10));
         }
