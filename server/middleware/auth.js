@@ -53,10 +53,14 @@ export default {
     Model.findOne({ where: { id: req.params.id } })
     .then((record) => {
       if (record) {
-        if (
-        isSuperAdmin(req) ||
-        isOwner(req, record) ||
-        hasDocAccess(req, record)) {
+        let shouldProceed;
+        if (req.route.methods.delete) {
+          shouldProceed = isSuperAdmin(req) || isOwner(req, record);
+        } else {
+          shouldProceed = isSuperAdmin(req) || isOwner(req, record) ||
+            hasDocAccess(req, record);
+        }
+        if (shouldProceed) {
           req.retrievedRecord = record;
           next();
         } else {

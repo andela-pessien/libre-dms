@@ -101,4 +101,16 @@ describe('Documents API', () => {
         done();
       });
   });
+
+  it('should delete a document on authenticated request',
+  (done) => {
+    app
+      .delete(`/api/documents/${testDocument.id}`)
+      .set('x-access-token', docOwnerToken)
+      .expect(204)
+      .end((err) => {
+        if (err) throw err;
+        done();
+      });
+  });
 });

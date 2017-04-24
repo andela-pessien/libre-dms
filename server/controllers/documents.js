@@ -65,4 +65,18 @@ export default {
     })
     .catch(err => (dbErrorHandler(err, res)));
   },
+
+  /**
+   * Method that deletes a specific document
+   * @param {Object} req The request from the client
+   * @param {Object} res The response from the server
+   * @returns {void}
+   */
+  destroy(req, res) {
+    req.retrievedRecord.destroy()
+    .then(() => {
+      res.sendStatus(204);
+    })
+    .catch(err => (dbErrorHandler(err, res)));
+  }
 };
