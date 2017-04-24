@@ -54,6 +54,10 @@ export default (sequelize, DataTypes) => {
       afterValidate: function afterValidate(document, options, next) {
         User.find({ where: { id: document.userId } })
         .then((user) => {
+          if (!user) {
+            document.userName = '__deleted';
+            return next(null, options);
+          }
           document.userName = user.name;
           document.userRole = user.roleId;
           return next(null, options);

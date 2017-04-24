@@ -48,6 +48,11 @@ const routes = (app) => {
     .get(auth.checkToken, auth.hasAccess, documentController.retrieve)
     .put(auth.checkToken, auth.hasAccess, documentController.update)
     .delete(auth.checkToken, auth.hasAccess, documentController.destroy);
+  app.get(
+    '/api/users/:id/documents',
+    auth.checkToken,
+    userController.listDocuments
+  );
 };
 
 export default routes;

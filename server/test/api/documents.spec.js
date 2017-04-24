@@ -75,6 +75,35 @@ describe('Documents API', () => {
       });
   });
 
+  it("should retrieve a user's documents that the requester has access to",
+  (done) => {
+    app
+      .get(`/api/users/${docOwner.id}/documents`)
+      .set('x-access-token', docOwnerToken)
+      .expect('Content-Type', /json/)
+      .expect(200)
+      .end((err, res) => {
+        if (err) throw err;
+        if (!Array.isArray(res.body)) {
+          throw new Error('Expected response body to be an array');
+        }
+        const document = res.body[Math.floor(Math.random() * res.body.length)];
+        if (
+        !document.id ||
+        (!document.title && document.title !== '') ||
+        !document.content ||
+        !document.type ||
+        !document.access ||
+        !document.accesslevel ||
+        !document.userId ||
+        !document.userName ||
+        !document.userRole) {
+          throw new Error('Response is not an array of valid documents');
+        }
+        done();
+      });
+  });
+
   it('should update a document if the requester has proper access', (done) => {
     const updatedDocData = getValidDoc();
     app

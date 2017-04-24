@@ -1,4 +1,10 @@
-import { formatUser, signToken, dbErrorHandler } from '../helpers';
+import {
+  formatUser,
+  signToken,
+  dbErrorHandler,
+  isSuperAdmin,
+  isOwner
+} from '../helpers';
 import model from '../models';
 
 const { User } = model;
@@ -135,5 +141,40 @@ export default {
       res.sendStatus(204);
     })
     .catch(err => (dbErrorHandler(err, res)));
-  }
+  },
+
+  /**
+   * Method that retrieves a specific user's documents
+   * It only sends the documents the requester has access to
+   * @param {Object} req The request from the client
+   * @param {Object} res The response from the server
+   * @returns {void}
+   */
+  listDocuments(req, res) {
+    User.find({ where: { id: req.params.id } })
+    .then((user) => {
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+      if (isSuperAdmin(req) || isOwner(req, user)) {
+        user.getDocuments()
+        .then(documents => res.status(200).json(documents))
+        .catch(err => (dbErrorHandler(err, res)));
+      } else {
+        user.getDocuments({
+          where: {
+            $or: {
+              access: 'public',
+              userRole: {
+                $lte: req.decoded.roleId
+              }
+            }
+          }
+        })
+        .then(documents => res.status(200).json(documents))
+        .catch(err => (dbErrorHandler(err, res)));
+      }
+    })
+    .catch(err => (dbErrorHandler(err, res)));
+  },
 };
