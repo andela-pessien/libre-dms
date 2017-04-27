@@ -154,7 +154,7 @@ export default {
     if (query && query.replace(/\s+/g, '') !== '') {
       const limit = Math.floor(Number(req.query.limit)) || 10;
       const offset = Math.floor(Number(req.query.offset)) || 0;
-      if (limit < 0 || offset < 0) {
+      if (limit < 1 || offset < 0) {
         return res.status(400).json({
           message: 'Offset and limit can only be positive integers.'
         });

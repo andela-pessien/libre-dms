@@ -1,12 +1,10 @@
 import request from 'supertest';
 import server from '../../server';
-import { getValidUser, getValidDoc } from '../helpers/data-helper';
+import { getValidUser, getValidDoc, getWord } from '../helpers/data-helper';
 
-describe('Documents API', () => {
+describe('Documents Controller', () => {
   const app = request(server);
-  let docOwner;
-  let docOwnerToken;
-  let testDocument;
+  let docOwner, docOwnerToken, testDocument;
 
   beforeAll((done) => {
     app
@@ -48,6 +46,60 @@ describe('Documents API', () => {
           throw new Error('Document not assigned to the right owner');
         }
         testDocument = res.body;
+        done();
+      });
+  });
+
+  it('should search and return documents by title', (done) => {
+    const query = getWord(testDocument.title);
+    app
+      .get(`/api/search/documents?q=${query}`)
+      .set('x-access-token', docOwnerToken)
+      .expect('Content-Type', /json/)
+      .expect(200)
+      .end((err, res) => {
+        if (!Array.isArray(res.body)) {
+          throw new Error('Expected response body to be an array');
+        }
+        if (res.body.length === 0) {
+          throw new Error('Expected to find at least the test document');
+        }
+        const document = res.body[Math.floor(Math.random() * res.body.length)];
+        if (
+        !document.id ||
+        !document.title ||
+        document.content ||
+        !document.type ||
+        !document.access ||
+        document.accesslevel ||
+        !document.userId ||
+        !document.userName) {
+          throw new Error('Response is not an array of formatted documents');
+        }
+        let found = false;
+        res.body.forEach((result) => {
+          if (result.title === testDocument.title) {
+            found = true;
+          }
+        });
+        if (!found) {
+          throw new Error('Did not find the test document');
+        }
+        if (!res.headers['x-search-metadata']) {
+          throw new Error('Expected to receive search metadata');
+        }
+        const metadata = JSON.parse(
+          Buffer
+          .from(res.headers['x-search-metadata'], 'base64')
+          .toString('utf8'));
+        if (
+        !metadata.total ||
+        !metadata.pages ||
+        !metadata.currentPage ||
+        !metadata.pageSize
+        ) {
+          throw new Error('Received incomplete metadata');
+        }
         done();
       });
   });

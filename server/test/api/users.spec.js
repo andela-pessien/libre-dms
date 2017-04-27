@@ -122,6 +122,21 @@ describe('Users Controller', () => {
         if (!found) {
           throw new Error('Did not find the test user');
         }
+        if (!res.headers['x-search-metadata']) {
+          throw new Error('Expected to receive search metadata');
+        }
+        const metadata = JSON.parse(
+          Buffer
+          .from(res.headers['x-search-metadata'], 'base64')
+          .toString('utf8'));
+        if (
+        !metadata.total ||
+        !metadata.pages ||
+        !metadata.currentPage ||
+        !metadata.pageSize
+        ) {
+          throw new Error('Received incomplete metadata');
+        }
         done();
       });
   });

@@ -58,6 +58,7 @@ const routes = (app) => {
    * Search routes
    */
   app.get('/api/search/users', auth.checkToken, userController.search);
+  app.get('/api/search/documents', auth.checkToken, documentController.search);
 };
 
 export default routes;

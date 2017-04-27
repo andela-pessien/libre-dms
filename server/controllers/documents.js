@@ -78,5 +78,59 @@ export default {
       res.sendStatus(204);
     })
     .catch(err => (dbErrorHandler(err, res)));
+  },
+
+  /**
+   * Method that searches for a document by title
+   * It should only return documents that the requester has access to
+   * @param {Object} req The request from the client
+   * @param {Object} res The response from the server
+   * @returns {void}
+   */
+  search(req, res) {
+    const query = req.query.title || req.query.q || req.query.query;
+    if (query && query.replace(/\s+/g, '') !== '') {
+      const limit = Math.floor(Number(req.query.limit)) || 10;
+      const offset = Math.floor(Number(req.query.offset)) || 0;
+      if (limit < 1 || offset < 0) {
+        return res.status(400).json({
+          message: 'Offset and limit can only be positive integers.'
+        });
+      }
+      Document.findAndCountAll({
+        attributes: ['id', 'title', 'type', 'access', 'userId', 'userName'],
+        where: {
+          title: { $iLike: `%${query}%` },
+          $or: [
+            { access: 'public' },
+            {
+              userRole: {
+                $lte: req.decoded.roleId
+              }
+            }
+          ]
+        },
+        limit,
+        offset
+      })
+      .then((documents) => {
+        const metadata = JSON.stringify({
+          total: documents.count,
+          pages: Math.ceil(documents.count / limit),
+          currentPage: (Math.floor(offset / limit) + 1),
+          pageSize: documents.rows.length
+        });
+        res.set(
+          'x-search-metadata',
+          Buffer.from(metadata, 'utf8').toString('base64')
+        );
+        res.status(200).json(documents.rows);
+      })
+      .catch(err => (dbErrorHandler(err, res)));
+    } else {
+      return res.status(400).json({
+        message: 'Please provide a valid query string for the search'
+      });
+    }
   }
 };
