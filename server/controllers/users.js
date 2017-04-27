@@ -144,6 +144,49 @@ export default {
   },
 
   /**
+   * Method that searches for a user by name
+   * @param {Object} req The request from the client
+   * @param {Object} res The response from the server
+   * @returns {void}
+   */
+  search(req, res) {
+    const query = req.query.name || req.query.q || req.query.query;
+    if (query && query.replace(/\s+/g, '') !== '') {
+      const limit = Math.floor(Number(req.query.limit)) || 10;
+      const offset = Math.floor(Number(req.query.offset)) || 0;
+      if (limit < 0 || offset < 0) {
+        return res.status(400).json({
+          message: 'Offset and limit can only be positive integers.'
+        });
+      }
+      User.findAndCountAll({
+        attributes: ['id', 'name'],
+        where: { name: { $iLike: `%${query}%` } },
+        limit,
+        offset
+      })
+      .then((users) => {
+        const metadata = JSON.stringify({
+          total: users.count,
+          pages: Math.ceil(users.count / limit),
+          currentPage: (Math.floor(offset / limit) + 1),
+          pageSize: users.rows.length
+        });
+        res.set(
+          'x-search-metadata',
+          Buffer.from(metadata, 'utf8').toString('base64')
+        );
+        res.status(200).json(users.rows);
+      })
+      .catch(err => (dbErrorHandler(err, res)));
+    } else {
+      return res.status(400).json({
+        message: 'Please provide a valid query string for the search'
+      });
+    }
+  },
+
+  /**
    * Method that retrieves a specific user's documents
    * It only sends the documents the requester has access to
    * @param {Object} req The request from the client
@@ -163,12 +206,14 @@ export default {
       } else {
         user.getDocuments({
           where: {
-            $or: {
-              access: 'public',
-              userRole: {
-                $lte: req.decoded.roleId
+            $or: [
+              { access: 'public' },
+              {
+                userRole: {
+                  $lte: req.decoded.roleId
+                }
               }
-            }
+            ]
           }
         })
         .then(documents => res.status(200).json(documents))

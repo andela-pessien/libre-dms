@@ -312,3 +312,8 @@ export const invalidDeps = {
     };
   }
 };
+
+export const getWord = (string) => {
+  const words = string.replace(/[^\s\w-]|_/g, '').split(/\s+/);
+  return words[Math.floor(Math.random() * words.length)];
+};

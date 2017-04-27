@@ -1,9 +1,9 @@
 import request from 'supertest';
 import jwtDecode from 'jwt-decode';
 import server from '../../server';
-import { getValidUser } from '../helpers/data-helper';
+import { getValidUser, getWord } from '../helpers/data-helper';
 
-describe('Users API', () => {
+describe('Users Controller', () => {
   const app = request(server);
   const newUserData = getValidUser();
   let testUser;
@@ -86,6 +86,42 @@ describe('Users API', () => {
           throw new Error('Did not log in the right user');
         }
         testUserToken = res.headers['x-access-token'];
+        done();
+      });
+  });
+
+  it('should search and return users by name', (done) => {
+    const query = getWord(testUser.name);
+    app
+      .get(`/api/search/users?q=${query}`)
+      .set('x-access-token', testUserToken)
+      .expect('Content-Type', /json/)
+      .expect(200)
+      .end((err, res) => {
+        if (!Array.isArray(res.body)) {
+          throw new Error('Expected response body to be an array');
+        }
+        if (res.body.length === 0) {
+          throw new Error('Expected to find at least the test user');
+        }
+        const user = res.body[Math.floor(Math.random() * res.body.length)];
+        if (
+        !user.id ||
+        !user.name ||
+        user.email ||
+        user.roleId ||
+        user.password) {
+          throw new Error('Response is not an array of formatted users');
+        }
+        let found = false;
+        res.body.forEach((result) => {
+          if (result.name === testUser.name) {
+            found = true;
+          }
+        });
+        if (!found) {
+          throw new Error('Did not find the test user');
+        }
         done();
       });
   });

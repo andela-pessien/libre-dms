@@ -53,6 +53,11 @@ const routes = (app) => {
     auth.checkToken,
     userController.listDocuments
   );
+
+  /**
+   * Search routes
+   */
+  app.get('/api/search/users', auth.checkToken, userController.search);
 };
 
 export default routes;
