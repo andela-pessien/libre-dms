@@ -79,6 +79,40 @@ export default {
   },
 
   /**
+   * Method that lists all users
+   * @param {Object} req The request from the client
+   * @param {Object} res The response from the server
+   * @returns {void}
+   */
+  list(req, res) {
+    const limit = Math.floor(Number(req.query.limit)) || 100;
+    const offset = Math.floor(Number(req.query.offset)) || 0;
+    if (limit < 1 || offset < 0) {
+      return res.status(400).json({
+        message: 'Offset and limit can only be positive integers.'
+      });
+    }
+    User.findAndCountAll({
+      limit,
+      offset
+    })
+    .then((users) => {
+      const metadata = JSON.stringify({
+        total: users.count,
+        pages: Math.ceil(users.count / limit),
+        currentPage: (Math.floor(offset / limit) + 1),
+        pageSize: users.rows.length
+      });
+      res.set(
+        'x-list-metadata',
+        Buffer.from(metadata, 'utf8').toString('base64')
+      );
+      res.status(200).json(users.rows.map(user => formatUser(user)));
+    })
+    .catch(err => (dbErrorHandler(err, res)));
+  },
+
+  /**
    * Method that retrieves a specific user by id
    * @param {Object} req The request from the client
    * @param {Object} res The response from the server

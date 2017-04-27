@@ -30,7 +30,8 @@ const routes = (app) => {
    */
   app
     .route('/api/users')
-    .post(auth.checkToken, userController.create);
+    .post(auth.checkToken, userController.create)
+    .get(auth.checkToken, auth.superAdminAccess, userController.list);
   app
     .route('/api/users/:id')
     .get(auth.checkToken, userController.retrieve)
@@ -42,7 +43,8 @@ const routes = (app) => {
    */
   app
     .route('/api/documents')
-    .post(auth.checkToken, documentController.create);
+    .post(auth.checkToken, documentController.create)
+    .get(auth.checkToken, documentController.list);
   app
     .route('/api/documents/:id')
     .get(auth.checkToken, auth.hasAccess, documentController.retrieve)

@@ -50,6 +50,48 @@ describe('Documents Controller', () => {
       });
   });
 
+  it('should return all documents the requester has access to', (done) => {
+    app
+      .get('/api/documents')
+      .set('x-access-token', docOwnerToken)
+      .expect('Content-Type', /json/)
+      .expect(200)
+      .end((err, res) => {
+        if (!Array.isArray(res.body)) {
+          throw new Error('Expected response body to be an array');
+        }
+        const document = res.body[Math.floor(Math.random() * res.body.length)];
+        if (
+        !document.id ||
+        !document.title ||
+        !document.content ||
+        !document.type ||
+        !document.access ||
+        !document.accesslevel ||
+        !document.userId ||
+        !document.userName ||
+        !document.userRole) {
+          throw new Error('Response is not an array of formatted documents');
+        }
+        if (!res.headers['x-list-metadata']) {
+          throw new Error('Expected to receive list metadata');
+        }
+        const metadata = JSON.parse(
+          Buffer
+          .from(res.headers['x-list-metadata'], 'base64')
+          .toString('utf8'));
+        if (
+        !metadata.total ||
+        !metadata.pages ||
+        !metadata.currentPage ||
+        !metadata.pageSize
+        ) {
+          throw new Error('Received incomplete metadata');
+        }
+        done();
+      });
+  });
+
   it('should search and return documents by title', (done) => {
     const query = getWord(testDocument.title);
     app

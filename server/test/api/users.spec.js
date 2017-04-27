@@ -6,8 +6,7 @@ import { getValidUser, getWord } from '../helpers/data-helper';
 describe('Users Controller', () => {
   const app = request(server);
   const newUserData = getValidUser();
-  let testUser;
-  let testUserToken;
+  let testUser, testUserToken, superAdminToken;
 
   it('should create and sign in a user if all validations pass', (done) => {
     app
@@ -87,6 +86,54 @@ describe('Users Controller', () => {
         }
         testUserToken = res.headers['x-access-token'];
         done();
+      });
+  });
+
+  it('should return a list of all users when requested by the superadmin',
+  (done) => {
+    app
+      .post('/api/auth/login')
+      .send({
+        email: process.env.SADMIN_EMAIL,
+        password: process.env.SADMIN_PASSWORD
+      })
+      .end((err, res) => {
+        if (err) throw err;
+        superAdminToken = res.headers['x-access-token'];
+        app
+          .get('/api/users')
+          .set('x-access-token', superAdminToken)
+          .expect('Content-Type', /json/)
+          .expect(200)
+          .end((err, res) => {
+            if (err) throw err;
+            if (!Array.isArray(res.body)) {
+              throw new Error('Expected response body to be an array');
+            }
+            const user = res.body[Math.floor(Math.random() * res.body.length)];
+            if (!(user.id && user.name && user.email && user.roleId)) {
+              throw new Error('Response is not an array of valid users');
+            }
+            if (user.password) {
+              throw new Error("Should not retrieve people's passwords");
+            }
+            if (!res.headers['x-list-metadata']) {
+              throw new Error('Expected to receive list metadata');
+            }
+            const metadata = JSON.parse(
+              Buffer
+              .from(res.headers['x-list-metadata'], 'base64')
+              .toString('utf8'));
+            if (
+            !metadata.total ||
+            !metadata.pages ||
+            !metadata.currentPage ||
+            !metadata.pageSize
+            ) {
+              throw new Error('Received incomplete metadata');
+            }
+            done();
+          });
       });
   });
 

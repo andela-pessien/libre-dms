@@ -41,6 +41,23 @@ export default {
   },
 
   /**
+   * Middleware that checks if the requester is the superadmin.
+   * @param {Object} req The request from the client
+   * @param {Object} res The response from the server
+   * @param {Function} next The next handler for the route
+   * @returns {void}
+   */
+  superAdminAccess(req, res, next) {
+    if (!isSuperAdmin(req)) {
+      res.status(403).json({
+        message: 'You need to be a superadministrator to perform that action'
+      });
+    } else {
+      next();
+    }
+  },
+
+  /**
    * Middleware that checks if the requester has access to the resource.
    * This means they are either the owner or a (super)admin.
    * @param {Object} req The request from the client
