@@ -4,7 +4,9 @@
   "env": {
     "node": true,
     "es6": true,
-    "jasmine": true
+    "jasmine": true,
+    "browser": true,
+    "jquery": true
   },
   "plugins": [
     "react",
@@ -33,6 +35,11 @@
         "MethodDefinition": true,
         "ClassDeclaration": true
       }
-    }]
+    }],
+    "react/forbid-prop-types": [
+      1, {
+        "forbid": ["any"]
+      }
+    ]
   }
 }

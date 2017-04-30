@@ -1,4 +1,4 @@
-import { signToken, dbErrorHandler } from '../helpers';
+import { formatUser, signToken, dbErrorHandler } from '../helpers';
 import model from '../models';
 
 const { User } = model;
@@ -25,9 +25,7 @@ export default {
           });
         }
         res.set('x-access-token', signToken(user));
-        return res.status(200).json({
-          message: 'Login successful!'
-        });
+        return res.status(200).json(formatUser(user));
       })
       .catch(err => (dbErrorHandler(err, res)));
     } else {

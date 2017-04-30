@@ -37,7 +37,7 @@ export default {
    * @returns {void}
    */
   list(req, res) {
-    const limit = Math.floor(Number(req.query.limit)) || 100;
+    const limit = Math.floor(Number(req.query.limit)) || 50;
     const offset = Math.floor(Number(req.query.offset)) || 0;
     if (limit < 1 || offset < 0) {
       return res.status(400).json({
@@ -45,6 +45,7 @@ export default {
       });
     }
     Document.findAndCountAll({
+      attributes: ['id', 'title', 'type', 'access', 'userId', 'userName'],
       where: {
         $or: [
           { access: 'public' },

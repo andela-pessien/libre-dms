@@ -1,7 +1,12 @@
 import controllers from '../controllers';
 import middleware from '../middleware';
 
-const { authController, userController, documentController } = controllers;
+const {
+  authController,
+  userController,
+  documentController,
+  photoController
+} = controllers;
 const { auth } = middleware;
 
 /**
@@ -61,6 +66,11 @@ const routes = (app) => {
    */
   app.get('/api/search/users', auth.checkToken, userController.search);
   app.get('/api/search/documents', auth.checkToken, documentController.search);
+
+  /**
+   * Photo routes
+   */
+  app.get('/api/photo', photoController.random);
 };
 
 export default routes;

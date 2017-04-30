@@ -1,23 +1,34 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { Provider } from 'react-redux';
+import { Router, browserHistory } from 'react-router';
+import 'materialize-css/dist/fonts/roboto/Roboto-Bold.woff';
+import 'materialize-css/dist/fonts/roboto/Roboto-Bold.woff2';
+import 'materialize-css/dist/fonts/roboto/Roboto-Light.woff';
+import 'materialize-css/dist/fonts/roboto/Roboto-Light.woff2';
+import 'materialize-css/dist/fonts/roboto/Roboto-Medium.woff';
+import 'materialize-css/dist/fonts/roboto/Roboto-Medium.woff2';
+import 'materialize-css/dist/fonts/roboto/Roboto-Regular.woff';
+import 'materialize-css/dist/fonts/roboto/Roboto-Regular.woff2';
+import 'materialize-css/dist/fonts/roboto/Roboto-Thin.woff';
+import 'materialize-css/dist/fonts/roboto/Roboto-Thin.woff2';
+import 'materialize-css/dist/css/materialize.css';
+import 'jquery';
+import 'materialize-css/dist/js/materialize';
+import 'materialize-css/js/velocity.min';
 import './images/favicon.ico';
-import '../node_modules/materialize-css/dist/fonts/roboto/Roboto-Bold.woff';
-import '../node_modules/materialize-css/dist/fonts/roboto/Roboto-Bold.woff2';
-import '../node_modules/materialize-css/dist/fonts/roboto/Roboto-Light.woff';
-import '../node_modules/materialize-css/dist/fonts/roboto/Roboto-Light.woff2';
-import '../node_modules/materialize-css/dist/fonts/roboto/Roboto-Medium.woff';
-import '../node_modules/materialize-css/dist/fonts/roboto/Roboto-Medium.woff2';
-import '../node_modules/materialize-css/dist/fonts/roboto/Roboto-Regular.woff';
-import '../node_modules/materialize-css/dist/fonts/roboto/Roboto-Regular.woff2';
-import '../node_modules/materialize-css/dist/fonts/roboto/Roboto-Thin.woff';
-import '../node_modules/materialize-css/dist/fonts/roboto/Roboto-Thin.woff2';
-import '../node_modules/materialize-css/dist/css/materialize.css';
-import '../node_modules/jquery/dist/jquery';
-import '../node_modules/materialize-css/dist/js/materialize';
-import './styles/index.scss';
-import App from './components/App';
+import './fonts/MaterialIcons.woff2';
+import './styles/common.scss';
+import routes from './routes';
+import configureStore from './store/configureStore';
+import setAccessToken from './utils/setAccessToken';
+
+const store = configureStore();
+setAccessToken();
 
 ReactDOM.render(
-  <App />,
+  <Provider store={store}>
+    <Router history={browserHistory} routes={routes} />
+  </Provider>,
   document.getElementById('app')
 );

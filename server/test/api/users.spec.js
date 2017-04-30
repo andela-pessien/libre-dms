@@ -73,10 +73,16 @@ describe('Users Controller', () => {
       .expect(200)
       .end((err, res) => {
         if (err) throw err;
-        if (res.body.message !== 'Login successful!') {
-          throw new Error(
-            `Expected ${res.body.message} to equal 'Login successful!'`
-          );
+        if (!res.body) {
+          throw new Error('Expected user to be returned');
+        }
+        if (
+          !res.body.id ||
+          !res.body.name ||
+          !res.body.email ||
+          !res.body.roleId ||
+          res.body.password) {
+          throw new Error('User not formatted properly');
         }
         if (!res.headers['x-access-token']) {
           throw new Error('Expected x-access-token header to exist');

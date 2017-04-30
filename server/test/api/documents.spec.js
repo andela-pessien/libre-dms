@@ -64,13 +64,13 @@ describe('Documents Controller', () => {
         if (
         !document.id ||
         !document.title ||
-        !document.content ||
+        document.content ||
         !document.type ||
         !document.access ||
-        !document.accesslevel ||
+        document.accesslevel ||
         !document.userId ||
         !document.userName ||
-        !document.userRole) {
+        document.userRole) {
           throw new Error('Response is not an array of formatted documents');
         }
         if (!res.headers['x-list-metadata']) {

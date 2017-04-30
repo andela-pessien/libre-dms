@@ -9,7 +9,10 @@ dotenv.load();
 export default {
   devtool: 'source-map',
   resolve: {
-    extensions: ['.js', '.jsx']
+    extensions: ['.js', '.jsx'],
+    alias: {
+      jquery: path.join(__dirname, 'node_modules/jquery/dist/jquery'),
+    }
   },
   plugins: [
     new webpack.LoaderOptionsPlugin({
@@ -60,7 +63,33 @@ export default {
     filename: 'static/js/main.js'
   },
   module: {
-    loaders: [
+    rules: [
+      {
+        test: require.resolve('jquery'),
+        use: [{
+          loader: 'expose-loader',
+          options: 'jQuery'
+        },
+        {
+          loader: 'expose-loader',
+          options: 'window.jQuery'
+        },
+        {
+          loader: 'expose-loader',
+          options: '$'
+        },
+        {
+          loader: 'expose-loader',
+          options: 'window.$'
+        }]
+      },
+      {
+        test: require.resolve('materialize-css/js/velocity.min'),
+        use: [{
+          loader: 'expose-loader',
+          options: 'window.Vel'
+        }]
+      },
       {
         test: /\.js$/,
         loader: 'babel-loader?sourceMap',
