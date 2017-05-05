@@ -35,7 +35,7 @@ switch (process.env.NODE_ENV) {
 }
 
 const server = app.listen(port, () => {
-  console.log('LibreDMS API Server listening on', port);
+  console.log('\nLibreDMS API Server listening on', port);
 });
 
 export default server;

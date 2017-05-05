@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import axios from 'axios';
 
 /**
@@ -11,9 +12,6 @@ class App extends Component {
    * @returns {void}
    */
   componentWillMount() {
-    // window.addEventListener('resize', () => {
-    //   $('#body-background-image').attr('height', window.innerHeight);
-    // });
     axios.get(`/api/photo?width=${screen.width}&height=${screen.height}`)
     .then((res) => {
       $('.body-background').css({
@@ -27,6 +25,7 @@ class App extends Component {
       console.log(err.error);
     });
   }
+
   /**
    * Renders the App component.
    * @returns {String} - HTML markup for App component
@@ -34,7 +33,9 @@ class App extends Component {
   render() {
     return (
       <div>
-        {this.props.children}
+        <div className="wrapper">
+          {this.props.children}
+        </div>
         <div className="body-background" />
       </div>
     );

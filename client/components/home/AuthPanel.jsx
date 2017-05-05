@@ -2,7 +2,24 @@ import React, { Component } from 'react';
 import SignInForm from '../authentication/SignInForm';
 import SignUpForm from '../authentication/SignUpForm';
 
+/**
+ * Home page panel that holds authentication components.
+ * @author Princess-Jewel Essien
+ */
 class AuthPanel extends Component {
+  /**
+   * Runs when the AuthPanel component has mounted.
+   * Initializes the Materialize jQuery plugin for tabbed content.
+   * @returns {undefined}
+   */
+  componentDidMount() {
+    $('.tabs').tabs({
+      onShow() {
+        $('.carousel').carousel();
+      }
+    });
+  }
+
   /**
    * Renders the AuthPanel component.
    * @returns {String} - HTML markup for AuthPanel component

@@ -1,12 +1,19 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Link } from 'react-router';
+import Preloader from '../common/Preloader';
 
+/**
+ * Component that displays a feed of documents.
+ * @param {Object} props The props for the component
+ * @returns {String} JSX markup for DocumentFeed component
+ */
 function DocumentFeed({ documents }) {
   return (
     <div className="feed">
-      {Array.isArray(documents) ?
-        (documents.length > 0 ?
-          <ul>
+      {(Array.isArray(documents))
+        ? ((documents.length > 0)
+          ? <ul>
             {documents.map(document =>
               <div key={document.id}>
                 <li>
@@ -19,17 +26,16 @@ function DocumentFeed({ documents }) {
                 </li>
                 <li className="divider" />
               </div>)}
-          </ul> :
-          <div className="valign-wrapper">
-            <h5 className="center-align">No documents to display</h5>
-          </div>
-        ) :
-          <div className="valign-wrapper">
-            <h5 className="center-align">Loading documents...</h5>
-          </div>
+          </ul>
+          : <h5 className="middle">No documents to display</h5>)
+        : <Preloader className="middle" />
       }
     </div>
   );
 }
+
+DocumentFeed.propTypes = {
+  documents: PropTypes.arrayOf(PropTypes.number).isRequired
+};
 
 export default DocumentFeed;

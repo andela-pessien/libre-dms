@@ -44,18 +44,21 @@ export default {
         message: 'Offset and limit can only be positive integers.'
       });
     }
+    const dbQuery = req.decoded.roleId === 1 ? {} : {
+      $or: [
+        { access: 'public' },
+        {
+          userRole: {
+            $gte: req.decoded.roleId
+          },
+          access: 'role'
+        },
+        { userId: req.decoded.id }
+      ]
+    };
     Document.findAndCountAll({
       attributes: ['id', 'title', 'type', 'access', 'userId', 'userName'],
-      where: {
-        $or: [
-          { access: 'public' },
-          {
-            userRole: {
-              $lte: req.decoded.roleId
-            }
-          }
-        ]
-      },
+      where: dbQuery,
       limit,
       offset
     })
@@ -142,19 +145,22 @@ export default {
           message: 'Offset and limit can only be positive integers.'
         });
       }
+      const dbQuery = req.decoded.roleId === 1 ? {} : {
+        $or: [
+          { access: 'public' },
+          {
+            userRole: {
+              $gte: req.decoded.roleId
+            },
+            access: 'role'
+          },
+          { userId: req.decoded.id }
+        ]
+      };
+      dbQuery.title = { $iLike: `%${query}%` };
       Document.findAndCountAll({
         attributes: ['id', 'title', 'type', 'access', 'userId', 'userName'],
-        where: {
-          title: { $iLike: `%${query}%` },
-          $or: [
-            { access: 'public' },
-            {
-              userRole: {
-                $lte: req.decoded.roleId
-              }
-            }
-          ]
-        },
+        where: dbQuery,
         limit,
         offset
       })

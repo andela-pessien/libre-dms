@@ -15,7 +15,7 @@ export default (sequelize, DataTypes) => {
     content: DataTypes.TEXT,
     type: {
       defaultValue: 'text',
-      type: DataTypes.ENUM('text', 'image')
+      type: DataTypes.ENUM('text', 'quill')
     },
     access: {
       defaultValue: 'private',
