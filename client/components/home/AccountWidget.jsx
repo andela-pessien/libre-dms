@@ -66,6 +66,7 @@ class AccountWidget extends Component {
         >{user.name[0]}</div>
         <ul id="account-dropdown" className="dropdown-content">
           <li><Link to="/dashboard">Dashboard</Link></li>
+          <li><Link to="/profile">Profile</Link></li>
           <li><a href="#!" onClick={this.onSignOutClick}>Sign Out</a></li>
         </ul>
       </div>

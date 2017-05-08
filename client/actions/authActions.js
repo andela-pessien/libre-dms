@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { auth } from './actionTypes';
 import setAccessToken from '../utils/setAccessToken';
-import saveCurrentUser from '../utils/saveCurrentUser';
+import { saveCurrentUser } from '../utils/currentUser';
 
 export function signUpAction(userData) {
   return (dispatch) => {
@@ -11,6 +11,9 @@ export function signUpAction(userData) {
         saveCurrentUser(res.data);
         dispatch({
           type: auth.SIGNUP_SUCCESS,
+        });
+        dispatch({
+          type: auth.SET_CURRENT_USER,
           user: res.data
         });
       }, (err) => {
@@ -30,6 +33,9 @@ export function signInAction(userData) {
         saveCurrentUser(res.data);
         dispatch({
           type: auth.SIGNIN_SUCCESS,
+        });
+        dispatch({
+          type: auth.SET_CURRENT_USER,
           user: res.data
         });
       }, (err) => {
@@ -49,6 +55,10 @@ export function signOutAction() {
         saveCurrentUser(null);
         dispatch({
           type: auth.SIGNOUT_SUCCESS
+        });
+        dispatch({
+          type: auth.SET_CURRENT_USER,
+          user: null
         });
       }, (err) => {
         dispatch({

@@ -77,7 +77,8 @@ const mapStoreToProps = (state) => {
     error: state.documentReducer.getAllDocsError,
     searchResults: state.documentReducer.docSearchResults,
     searchMetadata: state.documentReducer.docSearchMetadata,
-    searchError: state.documentReducer.docSearchError
+    searchError: state.documentReducer.docSearchError,
+    user: state.authReducer.user
   };
 };
 

@@ -159,16 +159,16 @@ body {
   right: 3%;
 }
 
-.btn-floating {
-  &:hover {
-    background: transparent !important;
-    border: 1px solid $indigo-darken-4;
+// .btn-floating {
+//   &:hover {
+//     background: transparent !important;
+//     border: 1px solid $indigo-darken-4;
 
-    i {
-      color: $indigo-darken-4;
-    }
-  }
-}
+//     i {
+//       color: $indigo-darken-4;
+//     }
+//   }
+// }
 
 .tabs {
   .indicator {
@@ -231,18 +231,21 @@ li {
   }
 }
 
-.document-wrapper {
+.view-wrapper {
   background-color: $white-100;
   border: 2px solid $indigo-darken-4;
   border-radius: 5px;
   color: $black-100;
-  display: flex;
-  flex-direction: column;
   height: 100%;
 
   .middle {
     margin-top: 40vh;
   }
+}
+
+.document-wrapper {
+  display: flex;
+  flex-direction: column;
 }
 
 .ql-container.ql-snow {
@@ -368,4 +371,90 @@ input.title-editor {
 
 .spinner-layer {
   border-color: $indigo-darken-4;
+}
+
+.user-details-side {
+  height: 100%;
+
+  .col {
+    height: 100%;
+
+    &.l5 {
+      padding: 0;
+    }
+
+    &.l7 {
+      padding: 3%;
+    }
+  }
+}
+
+.user-details {
+  border-right: 2px solid $indigo-darken-4;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: scroll;
+  position: relative;
+
+  .fixed-action-btn {
+    bottom: 3%;
+    position: absolute;
+    right: 3%;
+  }
+
+  .header-photo {
+    background-color: $indigo-darken-4;
+    flex-shrink: 0;
+    position: relative;
+
+    .profile-photo {
+      background-color: $white-100;
+      border: 1px solid $indigo-darken-4;
+      border-radius: 50%;
+      left: 50%;
+      position: absolute;
+      top: 50%;
+      transform: translate(-50%, -50%);
+    }
+  }
+
+  .details-body {
+    flex-grow: 1;
+  }
+}
+
+.profile-action-bar {
+  background-color: $indigo-darken-4;
+  flex-shrink: 0;
+  height: 50px;
+  position: relative;
+
+  .action-items {
+    left: 50%;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+
+    a {
+      color: $white-100;
+      padding: 0 10%;
+
+      i {
+        font-size: 36px;
+      }
+    }
+  }
+}
+
+.user-detail {
+  &[type='text'],
+  &[type='email'] {
+    color: $black-100 !important;
+    margin: 0 !important;
+
+    &[disabled] {
+      border-bottom: 0;
+    }
+  }
 }

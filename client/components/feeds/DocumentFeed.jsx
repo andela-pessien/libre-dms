@@ -20,9 +20,10 @@ function DocumentFeed({ documents }) {
                   <h5><Link to={`/document/${document.id}`}>
                     {document.title}
                   </Link></h5>
-                  <h6><Link to={`/profile/${document.userId}`}>
-                    {document.userName}
-                  </Link></h6>
+                  {(document.User) &&
+                    <h6><Link to={`/profile/${document.userId}`}>
+                      {document.User.name}
+                    </Link></h6>}
                 </li>
                 <li className="divider" />
               </div>)}
@@ -35,7 +36,7 @@ function DocumentFeed({ documents }) {
 }
 
 DocumentFeed.propTypes = {
-  documents: PropTypes.arrayOf(PropTypes.number).isRequired
+  documents: PropTypes.arrayOf(PropTypes.object).isRequired
 };
 
 export default DocumentFeed;

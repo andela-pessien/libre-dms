@@ -5,8 +5,7 @@ export default function authReducer(state = {}, action) {
     case auth.SIGNUP_SUCCESS:
       return {
         ...state,
-        isAuthenticated: true,
-        user: Object.assign({}, action.user)
+        isAuthenticated: true
       };
     case auth.SIGNUP_FAILURE:
       return {
@@ -18,8 +17,7 @@ export default function authReducer(state = {}, action) {
     case auth.SIGNIN_SUCCESS:
       return {
         ...state,
-        isAuthenticated: true,
-        user: Object.assign({}, action.user)
+        isAuthenticated: true
       };
     case auth.SIGNIN_FAILURE:
       return {
@@ -32,7 +30,6 @@ export default function authReducer(state = {}, action) {
       return {
         ...state,
         isAuthenticated: false,
-        user: null
       };
     case auth.SIGNOUT_FAILURE:
       return {
@@ -40,6 +37,11 @@ export default function authReducer(state = {}, action) {
         isAuthenticated: true,
         signOutError: action.error,
         success: null
+      };
+    case auth.SET_CURRENT_USER:
+      return {
+        ...state,
+        user: Object.assign({}, action.user)
       };
     default:
       return {
