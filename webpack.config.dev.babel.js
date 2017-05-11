@@ -18,6 +18,7 @@ export default {
       debug: true
     }),
     new webpack.HotModuleReplacementPlugin(),
+    new webpack.EnvironmentPlugin(['NODE_ENV']),
     new HtmlWebpackPlugin({
       inject: true,
       template: path.join(__dirname, 'client/index.html')
