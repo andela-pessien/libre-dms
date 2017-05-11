@@ -11,7 +11,6 @@
     "db:seed": "node -r dotenv/config -r babel-register scripts/seed-db.js",
     "db:seed:random": "node -r dotenv/config -r babel-register scripts/random-seed-db.js",
     "db:sync": "node -r dotenv/config -r babel-register scripts/sync-db.js",
-    "postbuild": "npm start",
     "postinstall": "npm run db:seed:random && npm run build",
     "prebuild": "npm run clean",
     "pretest": "cross-env NODE_ENV=test npm run db:seed",
