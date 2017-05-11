@@ -23,9 +23,11 @@ import './styles/common.scss';
 import routes from './routes';
 import configureStore from './store/configureStore';
 import setAccessToken from './utils/setAccessToken';
+import { setCurrentUser } from './actions/authActions';
 
 const store = configureStore();
 setAccessToken();
+store.dispatch(setCurrentUser());
 
 ReactDOM.render(
   <Provider store={store}>

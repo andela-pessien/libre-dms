@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import DocumentView from './DocumentView';
+import Navbar from '../common/Navbar';
 
 /**
  * Full-page wrapping component for a DocumentView
@@ -8,7 +9,12 @@ import DocumentView from './DocumentView';
  * @returns {String} The HTML markup for the component
  */
 function DocumentPage(props) {
-  return (<DocumentView id={props.params.param} />);
+  return (
+    <div className="document-wrapper">
+      <Navbar />
+      <DocumentView id={props.params.param} />
+    </div>
+  );
 }
 
 DocumentPage.propTypes = {

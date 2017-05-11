@@ -8,7 +8,7 @@ import Preloader from '../common/Preloader';
  * @param {Object} props The props for the component
  * @returns {String} JSX markup for DocumentFeed component
  */
-function DocumentFeed({ documents }) {
+function DocumentFeed({ documents, documentClickAction, profileClickAction }) {
   return (
     <div className="feed">
       {(Array.isArray(documents))
@@ -17,13 +17,29 @@ function DocumentFeed({ documents }) {
             {documents.map(document =>
               <div key={document.id}>
                 <li>
-                  <h5><Link to={`/document/${document.id}`}>
-                    {document.title}
-                  </Link></h5>
+                  <h5>
+                    {(documentClickAction)
+                      ? <a
+                        onClick={documentClickAction}
+                        name={document.id}
+                      >
+                        {document.title}
+                      </a>
+                      : <Link to={`/document/${document.id}`}>
+                        {document.title}
+                      </Link>}
+                  </h5>
                   {(document.User) &&
-                    <h6><Link to={`/profile/${document.userId}`}>
-                      {document.User.name}
-                    </Link></h6>}
+                    ((profileClickAction)
+                      ? <a
+                        onClick={profileClickAction}
+                        name={document.userId}
+                      >
+                        {document.User.name}
+                      </a>
+                      : <Link to={`/profile/${document.userId}`}>
+                        {document.User.name}
+                      </Link>)}
                 </li>
                 <li className="divider" />
               </div>)}
@@ -36,7 +52,9 @@ function DocumentFeed({ documents }) {
 }
 
 DocumentFeed.propTypes = {
-  documents: PropTypes.arrayOf(PropTypes.object).isRequired
+  documents: PropTypes.arrayOf(PropTypes.object).isRequired,
+  profileClickAction: PropTypes.func,
+  documentClickAction: PropTypes.func
 };
 
 export default DocumentFeed;

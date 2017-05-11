@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { auth, user } from './actionTypes';
 import setAccessToken from '../utils/setAccessToken';
-import { getCurrentUserId } from '../utils/currentUser';
+import { getCurrentUserId, saveCurrentUser } from '../utils/currentUser';
 
 /**
  * Requests for all accessible users (paginated) from the API
@@ -45,6 +45,7 @@ export function getUser(id) {
           user: res.data,
         });
         if (id === getCurrentUserId()) {
+          saveCurrentUser(res.data);
           dispatch({
             type: auth.SET_CURRENT_USER,
             user: res.data
@@ -103,6 +104,7 @@ export function updateUser(id, patch) {
           user: res.data,
         });
         if (id === getCurrentUserId()) {
+          saveCurrentUser(res.data);
           dispatch({
             type: auth.SET_CURRENT_USER,
             user: res.data
@@ -130,6 +132,13 @@ export function deleteUser(id) {
           type: user.DELETE_SUCCESS,
           id
         });
+        if (id === getCurrentUserId()) {
+          saveCurrentUser(null);
+          dispatch({
+            type: auth.SET_CURRENT_USER,
+            user: null
+          });
+        }
       }, (err) => {
         dispatch({
           type: user.DELETE_FAILURE,

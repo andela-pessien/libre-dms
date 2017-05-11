@@ -33,6 +33,8 @@ class DocumentView extends Component {
   componentWillReceiveProps(nextProps) {
     if (!nextProps.container) {
       browserHistory.push(this.props.deleteTarget);
+    } else if (nextProps.id && nextProps.id !== this.props.id) {
+      this.props.getDocument(nextProps.id);
     }
   }
 

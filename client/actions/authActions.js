@@ -68,3 +68,33 @@ export function signOutAction() {
       });
   };
 }
+
+export function setCurrentUser() {
+  return (dispatch) => {
+    try {
+      const user = JSON.parse(localStorage.getItem('libredms-user'));
+      if (
+        typeof user !== 'object' ||
+        !user.name ||
+        !user.email ||
+        !user.roleId ||
+        !user.createdAt
+      ) {
+        dispatch({
+          type: auth.SET_CURRENT_USER,
+          user: null
+        });
+      } else {
+        dispatch({
+          type: auth.SET_CURRENT_USER,
+          user
+        });
+      }
+    } catch (err) {
+      dispatch({
+        type: auth.SET_CURRENT_USER,
+        user: null
+      });
+    }
+  };
+}

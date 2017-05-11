@@ -108,7 +108,7 @@ class DocumentEditor extends Component {
       this.id = newDocument.id;
       this.container = documents[this.id];
       this.setState({ status: 'All changes saved to cloud' });
-      browserHistory.push(`/document/${this.id}`);
+      // browserHistory.push(`/document/${this.id}`);
     }
   }
 

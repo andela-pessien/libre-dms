@@ -4,6 +4,7 @@ import App from '../components/App';
 import LandingPage from '../components/home/LandingPage';
 import DocumentPage from '../components/document/DocumentPage';
 import ProfilePage from '../components/user/ProfilePage';
+import Dashboard from '../components/dashboard/Dashboard';
 import requireAuth from '../components/authentication/requireAuth';
 
 export default (
@@ -20,6 +21,10 @@ export default (
     <Route
       path="/profile/:param"
       component={requireAuth(ProfilePage, LandingPage)}
+    />
+    <Route
+      path="/dashboard"
+      component={requireAuth(Dashboard, LandingPage)}
     />
   </Route>
 );

@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Link } from 'react-router';
 
 /**
  * Menu bar component for the DocumentEditor
@@ -57,14 +56,6 @@ class EditorMenuBar extends Component {
           data-beloworigin="true"
         >
           <span>Sharing</span>
-        </a>
-        <a
-          className="dropdown-button btn right menu-button"
-          data-activates="user-dropdown"
-          data-beloworigin="true"
-        >
-          <span>{this.props.user.name}</span>
-          <i className="material-icons">arrow_drop_down</i>
         </a>
         <a className="status-container menu-button">
           <span className="status-span">{this.props.status}</span>
@@ -134,11 +125,6 @@ class EditorMenuBar extends Component {
               role="menuitem"
               onClick={this.onAccessLevelClick}
             >Edit and comment</a></li>
-        </ul>
-        <ul id="user-dropdown" className="dropdown-content menu-dropdown">
-          <li><Link to="/">Home</Link></li>
-          <li><Link to="/profile">Profile</Link></li>
-          <li><Link to="/dashboard">Dashboard</Link></li>
         </ul>
       </div>
     );

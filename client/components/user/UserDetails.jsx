@@ -26,6 +26,15 @@ class UserDetails extends Component {
     avatar.css('height', 0.2 * header.width());
   }
 
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.user) {
+      this.setState({
+        name: nextProps.user.name,
+        email: nextProps.user.email
+      });
+    }
+  }
+
   onChange(e) {
     this.setState({ [e.target.id]: e.target.value });
   }

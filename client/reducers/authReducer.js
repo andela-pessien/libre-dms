@@ -46,8 +46,7 @@ export default function authReducer(state = {}, action) {
     default:
       return {
         ...state,
-        isAuthenticated: !!localStorage.getItem('libredms-token'),
-        user: JSON.parse(localStorage.getItem('libredms-user')) || null
+        isAuthenticated: !!localStorage.getItem('libredms-token')
       };
   }
 }

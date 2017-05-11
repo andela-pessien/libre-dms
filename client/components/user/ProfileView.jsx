@@ -6,7 +6,6 @@ import Preloader from '../common/Preloader';
 import UserDetails from './UserDetails';
 import DocumentFeed from '../feeds/DocumentFeed';
 import { getUser, getUserDocuments } from '../../actions/userActions';
-import { getCurrentUserId } from '../../utils/currentUser';
 
 /**
  * Component that displays a user's profile.
@@ -20,10 +19,9 @@ class ProfileView extends Component {
    * @returns {undefined}
    */
   componentWillMount() {
-    const id = this.props.id || getCurrentUserId();
-    this.props.getUser(id);
+    this.props.getUser(this.props.id);
     if (this.props.full) {
-      this.props.getUserDocuments(id);
+      this.props.getUserDocuments(this.props.id);
     }
   }
 
@@ -36,6 +34,11 @@ class ProfileView extends Component {
   componentWillReceiveProps(nextProps) {
     if (!nextProps.container) {
       browserHistory.push(this.props.deleteTarget);
+    } else if (nextProps.id && nextProps.id !== this.props.id) {
+      this.props.getUser(nextProps.id);
+      if (this.props.full) {
+        this.props.getUserDocuments(nextProps.id);
+      }
     }
   }
 
@@ -45,7 +48,7 @@ class ProfileView extends Component {
    */
   render() {
     return (
-      <div className="view-wrapper z-index-3">
+      <div className="view-wrapper profile-wrapper z-index-3">
         {(this.props.container.user)
           ? (this.props.full)
             ? <div className="row user-details-side">
@@ -65,12 +68,9 @@ class ProfileView extends Component {
   }
 }
 
-const mapStoreToProps = (state, ownProps) => {
-  const id = ownProps.id || getCurrentUserId();
-  return {
-    container: state.userReducer.users[id]
-  };
-};
+const mapStoreToProps = (state, ownProps) => ({
+  container: state.userReducer.users[ownProps.id]
+});
 
 const mapDispatchToProps = dispatch => ({
   getUser: id => dispatch(getUser(id)),
@@ -86,7 +86,8 @@ ProfileView.propTypes = {
     error: PropTypes.string,
     documents: PropTypes.arrayOf(PropTypes.object)
   }),
-  getUser: PropTypes.func.isRequired
+  getUser: PropTypes.func.isRequired,
+  getUserDocuments: PropTypes.func.isRequired
 };
 
 ProfileView.defaultProps = {

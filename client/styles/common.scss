@@ -101,7 +101,6 @@ body {
 
       .feed {
         bottom: 0;
-        overflow-y: auto;
         padding: 5%;
         position: absolute;
         top: 20%;
@@ -130,17 +129,17 @@ body {
         text-align: right;
       }
 
-      .avatar-small {
-        background-color: $indigo-darken-4;
-        border-radius: 50%;
-        cursor: pointer;
-        display: inline-block;
-        font-size: 3rem;
-        height: 4rem;
-        margin: 10px;
-        text-align: center;
-        width: 4rem;
-      }
+      // .avatar-small {
+      //   background-color: $indigo-darken-4;
+      //   border-radius: 50%;
+      //   cursor: pointer;
+      //   display: inline-block;
+      //   font-size: 3rem;
+      //   height: 4rem;
+      //   margin: 10px;
+      //   text-align: center;
+      //   width: 4rem;
+      // }
     }
   }
 }
@@ -243,9 +242,15 @@ li {
   }
 }
 
+.profile-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
 .document-wrapper {
   display: flex;
   flex-direction: column;
+  height: 100%;
 }
 
 .ql-container.ql-snow {
@@ -375,6 +380,8 @@ input.title-editor {
 
 .user-details-side {
   height: 100%;
+  margin: 0;
+  flex-grow: 1;
 
   .col {
     height: 100%;
@@ -457,4 +464,69 @@ input.title-editor {
       border-bottom: 0;
     }
   }
+}
+
+.avatar-small {
+  background-color: $indigo-darken-4;
+  border-radius: 50%;
+  cursor: pointer;
+  display: inline-block;
+  font-size: 3rem;
+  height: 4rem;
+  margin: 10px;
+  text-align: center;
+  width: 4rem;
+}
+
+.app-navbar {
+  background-color: transparent;
+  box-shadow: none;
+  transform: translate(0, -25%);
+}
+
+.dashboard-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.dashboard {
+  display: flex;
+  flex-grow: 1;
+
+  .fixed-side-menu {
+    .fixed-side-menu-item {
+      cursor: pointer;
+      padding: 10px;
+
+      &.active {
+        color: $indigo-darken-4;
+      }
+    }
+  }
+
+  .row {
+    flex-grow: 1;
+
+    .col {
+      height: 100%;
+    }
+  }
+}
+
+.dashboard-panel {
+  height: 100%;
+  overflow-y: auto;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.feed {
+  overflow-y: scroll;
+}
+
+.main-view {
+  height: 100%;
 }
