@@ -39,10 +39,7 @@ describe('Documents Controller', () => {
         !res.body.accesslevel) {
           throw new Error('Document not created properly');
         }
-        if (
-        res.body.userId !== docOwner.id ||
-        res.body.userName !== docOwner.name ||
-        res.body.userRole !== docOwner.roleId) {
+        if (res.body.userId !== docOwner.id) {
           throw new Error('Document not assigned to the right owner');
         }
         testDocument = res.body;
@@ -68,9 +65,7 @@ describe('Documents Controller', () => {
         !document.type ||
         !document.access ||
         document.accesslevel ||
-        !document.userId ||
-        !document.userName ||
-        document.userRole) {
+        !document.userId) {
           throw new Error('Response is not an array of formatted documents');
         }
         if (!res.headers['x-list-metadata']) {
@@ -114,8 +109,7 @@ describe('Documents Controller', () => {
         !document.type ||
         !document.access ||
         document.accesslevel ||
-        !document.userId ||
-        !document.userName) {
+        !document.userId) {
           throw new Error('Response is not an array of formatted documents');
         }
         let found = false;
@@ -185,13 +179,8 @@ describe('Documents Controller', () => {
         if (
         !document.id ||
         (!document.title && document.title !== '') ||
-        !document.content ||
         !document.type ||
-        !document.access ||
-        !document.accesslevel ||
-        !document.userId ||
-        !document.userName ||
-        !document.userRole) {
+        !document.access) {
           throw new Error('Response is not an array of valid documents');
         }
         done();

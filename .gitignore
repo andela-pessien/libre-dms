@@ -44,3 +44,8 @@ dist
 
 # MacOS file system essentials
 .DS_Store
+
+client/images
+server/controllers
+
+data

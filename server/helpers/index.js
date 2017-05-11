@@ -16,8 +16,16 @@ export const getModel = (route) => {
 };
 
 export const formatUser = user => (
-  _.pick(user,
-    'id', 'name', 'email', 'roleId', 'organisationId', 'departmentId')
+  _.pick(
+    user,
+    'id',
+    'name',
+    'email',
+    'roleId',
+    'organisationId',
+    'departmentId',
+    'createdAt'
+  )
 );
 
 /**

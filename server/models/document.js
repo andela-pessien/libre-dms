@@ -25,7 +25,6 @@ export default (sequelize, DataTypes) => {
       defaultValue: 'view',
       type: DataTypes.ENUM('view', 'comment', 'edit')
     },
-    userName: DataTypes.STRING,
     userRole: DataTypes.INTEGER
   }, {
     classMethods: {
@@ -48,6 +47,12 @@ export default (sequelize, DataTypes) => {
           onDelete: 'CASCADE',
           hooks: true
         });
+        Document.belongsTo(models.User, {
+          foreignKey: {
+            name: 'userId',
+            noUpdate: true
+          },
+        });
       }
     },
     hooks: {
@@ -55,10 +60,9 @@ export default (sequelize, DataTypes) => {
         User.find({ where: { id: document.userId } })
         .then((user) => {
           if (!user) {
-            document.userName = '__deleted';
+            document.userRole = 6;
             return next(null, options);
           }
-          document.userName = user.name;
           document.userRole = user.roleId;
           return next(null, options);
         })

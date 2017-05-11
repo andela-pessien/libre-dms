@@ -93,6 +93,7 @@ export default {
       });
     }
     User.findAndCountAll({
+      attributes: ['id', 'name'],
       limit,
       offset
     })
@@ -107,7 +108,7 @@ export default {
         'x-list-metadata',
         Buffer.from(metadata, 'utf8').toString('base64')
       );
-      res.status(200).json(users.rows.map(user => formatUser(user)));
+      res.status(200).json(users.rows);
     })
     .catch(err => (dbErrorHandler(err, res)));
   },
@@ -119,12 +120,15 @@ export default {
    * @returns {void}
    */
   retrieve(req, res) {
-    User.find({ where: { id: req.params.id } })
+    User.find({
+      attributes: ['id', 'name', 'email', 'roleId', 'organisationId', 'departmentId', 'createdAt'],
+      where: { id: req.params.id }
+    })
     .then((user) => {
       if (!user) {
         return res.status(404).json({ message: 'Resource not found' });
       }
-      return res.status(200).send(formatUser(user));
+      return res.status(200).send(user);
     })
     .catch(err => (dbErrorHandler(err, res)));
   },
@@ -174,7 +178,10 @@ export default {
       }
       res.sendStatus(204);
     })
-    .catch(err => (dbErrorHandler(err, res)));
+    .catch((err) => {
+      console.log(err);
+      return (dbErrorHandler(err, res));
+    });
   },
 
   /**
@@ -233,26 +240,23 @@ export default {
       if (!user) {
         return res.status(404).json({ message: 'User not found' });
       }
-      if (isSuperAdmin(req) || isOwner(req, user)) {
-        user.getDocuments()
-        .then(documents => res.status(200).json(documents))
-        .catch(err => (dbErrorHandler(err, res)));
-      } else {
-        user.getDocuments({
-          where: {
-            $or: [
-              { access: 'public' },
-              {
-                userRole: {
-                  $lte: req.decoded.roleId
-                }
-              }
-            ]
+      const dbQuery = (isSuperAdmin(req) || isOwner(req, user)) ? {} : {
+        $or: [
+          { access: 'public' },
+          {
+            userRole: {
+              $gte: req.decoded.roleId
+            },
+            access: 'role'
           }
-        })
-        .then(documents => res.status(200).json(documents))
-        .catch(err => (dbErrorHandler(err, res)));
-      }
+        ]
+      };
+      user.getDocuments({
+        attributes: ['id', 'title', 'type', 'access'],
+        where: dbQuery
+      })
+      .then(documents => res.status(200).json(documents))
+      .catch(err => (dbErrorHandler(err, res)));
     })
     .catch(err => (dbErrorHandler(err, res)));
   },

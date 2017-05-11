@@ -46,7 +46,6 @@ export default (sequelize, DataTypes) => {
         User.hasMany(models.Document, {
           foreignKey: {
             name: 'userId',
-            allowNull: false,
             noUpdate: true
           },
           as: 'documents',

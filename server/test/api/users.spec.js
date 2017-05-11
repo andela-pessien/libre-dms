@@ -117,7 +117,7 @@ describe('Users Controller', () => {
               throw new Error('Expected response body to be an array');
             }
             const user = res.body[Math.floor(Math.random() * res.body.length)];
-            if (!(user.id && user.name && user.email && user.roleId)) {
+            if (!(user.id && user.name)) {
               throw new Error('Response is not an array of valid users');
             }
             if (user.password) {

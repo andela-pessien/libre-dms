@@ -1,7 +1,7 @@
 import { isSuperAdmin, isOwner, dbErrorHandler } from '../helpers';
 import model from '../models';
 
-const { Document } = model;
+const { Document, User } = model;
 
 export default {
   /**
@@ -57,8 +57,13 @@ export default {
       ]
     };
     Document.findAndCountAll({
-      attributes: ['id', 'title', 'type', 'access', 'userId', 'userName'],
+      attributes: ['id', 'title', 'type', 'access', 'userId'],
       where: dbQuery,
+      include: [{
+        model: User,
+        attributes: ['id', 'name', 'roleId']
+      }],
+      order: [['updatedAt', 'DESC']],
       limit,
       offset
     })
@@ -75,7 +80,10 @@ export default {
       );
       res.status(200).json(documents.rows);
     })
-    .catch(err => (dbErrorHandler(err, res)));
+    .catch((err) => {
+      console.log(err);
+      return (dbErrorHandler(err, res));
+    });
   },
 
   /**
@@ -159,8 +167,13 @@ export default {
       };
       dbQuery.title = { $iLike: `%${query}%` };
       Document.findAndCountAll({
-        attributes: ['id', 'title', 'type', 'access', 'userId', 'userName'],
+        attributes: ['id', 'title', 'type', 'access', 'userId'],
         where: dbQuery,
+        include: [{
+          model: User,
+          attributes: ['id', 'name', 'roleId']
+        }],
+        order: [['updatedAt', 'DESC']],
         limit,
         offset
       })
