@@ -9,6 +9,7 @@
     "server/test/models/comment.spec.js",
     "server/test/models/organisation.spec.js",
     "server/test/models/department.spec.js",
+    "server/test/api/roles.spec.js",
     "server/test/api/users.spec.js",
     "server/test/api/documents.spec.js"
   ],

@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import axios from 'axios';
 
 /**
  * Main wrapping component for application.
@@ -8,22 +7,31 @@ import axios from 'axios';
  */
 class App extends Component {
   /**
-   * Runs when the App component is going to be mounted.
+   * Runs when the App component has mounted.
    * @returns {void}
    */
-  componentWillMount() {
-    axios.get(`/api/photo?width=${screen.width}&height=${screen.height}`)
-    .then((res) => {
+  componentDidMount() {
+    const xhr = new XMLHttpRequest();
+    xhr.open(
+      'GET',
+      `https://source.unsplash.com/${screen.width}x${screen.height}/?nature`,
+      true
+    );
+    xhr.responseType = 'arraybuffer';
+    xhr.onload = function setBackgroundPhoto() {
+      const arr = new Uint8Array(this.response);
+      let raw = '';
+      arr.forEach((charCode) => {
+        raw += String.fromCharCode(charCode);
+      });
       $('.body-background').css({
-        'background-image': `url(${res.data.url})`,
+        'background-image': `url(data:image/jpeg;base64,${btoa(raw)})`,
         'background-size': 'cover',
         'background-position': '50% 50%'
       });
       $('.body-background').animate({ opacity: 0.75 }, 1500);
-    }, (err) => {
-      console.log(err.message);
-      console.log(err.error);
-    });
+    };
+    xhr.send();
   }
 
   /**
@@ -35,8 +43,8 @@ class App extends Component {
       <div>
         <div className="wrapper">
           {this.props.children}
+          <div className="body-background" />
         </div>
-        <div className="body-background" />
       </div>
     );
   }

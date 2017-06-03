@@ -5,8 +5,7 @@ const {
   authController,
   userController,
   documentController,
-  rolesController,
-  photoController
+  rolesController
 } = controllers;
 const { auth } = middleware;
 
@@ -73,11 +72,6 @@ const routes = (app) => {
    */
   app.get('/api/roles', rolesController.list);
   app.get('/api/roles/:id', rolesController.retrieve);
-
-  /**
-   * Photo routes
-   */
-  app.get('/api/photo', photoController.random);
 };
 
 export default routes;
