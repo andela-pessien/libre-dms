@@ -77,7 +77,7 @@ const routes = (app) => {
   /**
    * Photo routes
    */
-  // app.get('/api/backgroundphoto', photoController.background);
+  app.get('/api/photo', photoController.random);
 };
 
 export default routes;

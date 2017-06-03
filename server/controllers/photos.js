@@ -25,7 +25,7 @@ export default {
         raw += String.fromCharCode(charCode);
       });
       return res.status(200).json({
-        url: `data:image/jpeg;base64,${btoa(raw)}`
+        uri: `data:image/jpeg;base64,${btoa(raw)}`
       });
     }, error => (
       res.status(500).json({
