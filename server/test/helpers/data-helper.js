@@ -3,17 +3,17 @@ import uuid from 'uuid/v4';
 
 export const defaultRoles = [
   {
-    label: 'superadministrator'
+    label: 'Superadministrator'
   }, {
-    label: 'administrator'
+    label: 'Administrator of organisation'
   }, {
-    label: 'department head'
+    label: 'Head of department at organisation'
   }, {
-    label: 'department member'
+    label: 'Member of department at organisation'
   }, {
-    label: 'member'
+    label: 'Member of organisation'
   }, {
-    label: 'regular'
+    label: 'Regular'
   }
 ];
 

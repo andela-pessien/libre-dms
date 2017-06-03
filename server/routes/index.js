@@ -5,6 +5,7 @@ const {
   authController,
   userController,
   documentController,
+  rolesController,
   photoController
 } = controllers;
 const { auth } = middleware;
@@ -68,9 +69,15 @@ const routes = (app) => {
   app.get('/api/search/documents', auth.checkToken, documentController.search);
 
   /**
+   * Routes for retrieving roles
+   */
+  app.get('/api/roles', rolesController.list);
+  app.get('/api/roles/:id', rolesController.retrieve);
+
+  /**
    * Photo routes
    */
-  app.get('/api/photo', photoController.random);
+  // app.get('/api/backgroundphoto', photoController.background);
 };
 
 export default routes;
