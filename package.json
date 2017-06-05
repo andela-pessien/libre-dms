@@ -14,13 +14,14 @@
     "postinstall": "npm run db:seed:random && npm run build",
     "prebuild": "npm run clean",
     "pretest": "cross-env NODE_ENV=test npm run db:seed:random",
+    "pretest:cover": "npm run pretest",
     "sequelize": "node -r dotenv/config ./node_modules/.bin/sequelize",
     "start": "cross-env NODE_ENV=production node -r dotenv/config dist/server.js",
     "start:api": "nodemon --exec 'node -r dotenv/config -r babel-register' server/server.js",
     "start:dev": "cross-env NODE_ENV=development npm-run-all --parallel start:api start:web",
     "start:web": "webpack-dev-server --config webpack.config.dev.babel.js --progress --colors",
     "test": "cross-env NODE_ENV=test node -r dotenv/config ./node_modules/.bin/jasmine --config=jasmine.json",
-    "test:cover": "npm run pretest && cross-env NODE_ENV=test nyc node -r dotenv/config ./node_modules/.bin/jasmine --config=jasmine.json"
+    "test:cover": "cross-env NODE_ENV=test nyc node -r dotenv/config ./node_modules/.bin/jasmine --config=jasmine.json"
   },
   "repository": {
     "type": "git",
@@ -80,7 +81,7 @@
     "react": "15.5.4",
     "react-dom": "15.5.4",
     "react-redux": "5.0.5",
-    "react-router": "2.4.0",
+    "react-router-dom": "4.1.1",
     "redux": "3.6.0",
     "redux-devtools": "3.4.0",
     "redux-thunk": "2.2.0",
@@ -101,10 +102,12 @@
     "eslint-plugin-react": "6.10.3",
     "jasmine": "2.6.0",
     "jasmine-spec-reporter": "4.1.0",
+    "nock": "9.0.13",
     "nodemon": "1.11.0",
     "nyc": "10.3.2",
     "redux-devtools-extension": "2.13.2",
     "redux-immutable-state-invariant": "2.0.0",
+    "redux-mock-store": "1.2.3",
     "sass-lint": "1.10.2",
     "supertest": "3.0.0",
     "webpack-dev-server": "2.4.5"
