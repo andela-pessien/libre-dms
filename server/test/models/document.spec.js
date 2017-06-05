@@ -1,6 +1,11 @@
 import expect from 'expect';
 import model from '../../models';
-import { getValidUser, getValidDoc, invalidDocs } from '../helpers/data-helper';
+import {
+  getValidUser,
+  getValidDoc,
+  getValidQuillDoc,
+  invalidDocs
+} from '../helpers/data-helper';
 
 const { User, Document } = model;
 
@@ -38,9 +43,53 @@ describe('Document Model', () => {
       expect(newDoc.content).toExist();
     });
 
-    it('that is type "text" by default', () => {
+    it('that is type "text" if it is a text document', () => {
       expect(newDoc.type).toExist();
       expect(newDoc.type).toEqual('text');
+    });
+
+    it('that defaults to type "text" if it is an invalid quill', (done) => {
+      Document.create({
+        userId: docOwner.id,
+        title: 'No operations',
+        content: {}
+      })
+      .then((noOpsDocument) => {
+        expect(noOpsDocument.type).toEqual('text');
+        Document.create({
+          userId: docOwner.id,
+          title: 'No insert operations',
+          content: {
+            ops: [
+              {}
+            ]
+          }
+        })
+        .then((noInsertOpsDocument) => {
+          expect(noInsertOpsDocument.type).toEqual('text');
+          Document.create({
+            userId: docOwner.id,
+            title: 'Invalid insert operations',
+            content: {
+              ops: [
+                { insert: 123 }
+              ]
+            }
+          })
+          .then((invalidInsertOpsDocument) => {
+            expect(invalidInsertOpsDocument.type).toEqual('text');
+            done();
+          });
+        });
+      });
+    });
+
+    it('that is type "quill" if it is a quill document', (done) => {
+      Document.create(getValidQuillDoc(docOwner.id))
+      .then((document) => {
+        expect(document.type).toEqual('quill');
+        done();
+      });
     });
 
     it('that is private by default', () => {
@@ -72,6 +121,18 @@ describe('Document Model', () => {
       newDoc.getShareds()
       .then((shareds) => {
         expect(Array.isArray(shareds)).toBeTruthy();
+        done();
+      });
+    });
+
+    it('that is blank', (done) => {
+      Document.create({
+        userId: docOwner.id,
+        title: '',
+        content: ''
+      })
+      .then((document) => {
+        expect(document.type).toEqual('text');
         done();
       });
     });
@@ -107,14 +168,6 @@ describe('Document Model', () => {
       Document.create(invalidDocs.invalidOwner())
       .catch((err) => {
         expect(/invalid input syntax/.test(err.message)).toBeTruthy();
-        done();
-      });
-    });
-
-    it('that has an invalid type', (done) => {
-      Document.create(invalidDocs.invalidType(docOwner.id))
-      .catch((err) => {
-        expect(/invalid input value/.test(err.message)).toBeTruthy();
         done();
       });
     });

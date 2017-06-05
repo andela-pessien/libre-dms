@@ -51,6 +51,15 @@ describe('Department Model', () => {
       });
     });
 
+    it("if it doesn't match any departments in its organisation", (done) => {
+      Department.create(getValidDep(parentOrg.id))
+      .then((department) => {
+        expect(department.name).toExist();
+        expect(department.organisationId).toEqual(parentOrg.id);
+        done();
+      });
+    });
+
     it('that is not necessarily unique across organisations', (done) => {
       Organisation.create(getValidOrg())
       .then((organisation) => {

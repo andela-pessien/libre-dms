@@ -41,6 +41,10 @@ describe('User Model', () => {
       expect(newUser.roleId).toEqual(6);
     });
 
+    it('that is private by default', () => {
+      expect(newUser.isPrivate).toBe(true);
+    });
+
     it('that has a unique email', (done) => {
       User.create(validUser)
       .catch((err) => {

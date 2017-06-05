@@ -7,7 +7,9 @@ export default (sequelize, DataTypes) => {
       allowNull: false,
       primaryKey: true,
       defaultValue: DataTypes.UUIDV4,
-      noUpdate: true
+      noUpdate: {
+        readOnly: true
+      }
     },
     name: {
       type: DataTypes.STRING,
@@ -32,6 +34,10 @@ export default (sequelize, DataTypes) => {
         notEmpty: true
       }
     },
+    isPrivate: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true
+    }
   }, {
     classMethods: {
       associate: (models) => {
@@ -46,6 +52,7 @@ export default (sequelize, DataTypes) => {
         User.hasMany(models.Document, {
           foreignKey: {
             name: 'userId',
+            allowNull: false,
             noUpdate: true
           },
           as: 'documents',
@@ -67,7 +74,8 @@ export default (sequelize, DataTypes) => {
             bcrypt.genSaltSync(10));
         }
       }
-    }
+    },
+    paranoid: true
   });
   return User;
 };

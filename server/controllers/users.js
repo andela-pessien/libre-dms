@@ -2,6 +2,7 @@ import {
   formatUser,
   signToken,
   dbErrorHandler,
+  getMetadata,
   isSuperAdmin,
   isOwner
 } from '../helpers';
@@ -18,46 +19,23 @@ export default {
    */
   create(req, res) {
     if (req.body.name && req.body.email && req.body.password) {
-      User.findOne({ where: { email: req.body.email } })
+      if (req.body.roleId) {
+        return res.status(403).json({
+          message: "You're not permitted to specify your own role."
+        });
+      }
+      User.findOne({ where: { email: req.body.email }, paranoid: false })
       .then((user) => {
         if (user) {
           return res.status(403).json({
             message: 'A user with that email already exists'
           });
         }
-        if (req.body.roleId === 1) {
-          if (req.decoded) {
-            if (req.decoded.data.roleId > 1) {
-              return res.status(403).json({
-                message: "You're not permitted to create a superadministrator"
-              });
-            }
-          } else {
-            return res.status(403).json({
-              message: "You're not permitted to create a superadministrator"
-            });
-          }
-        }
-        if (req.body.roleId === 2) {
-          if (req.decoded) {
-            if (req.decoded.data.roleId > 2) {
-              return res.status(403).json({
-                message: "You're not permitted to create an administrator"
-              });
-            }
-          } else {
-            return res.status(403).json({
-              message: "You're not permitted to create an administrator"
-            });
-          }
-        }
         User.create({
           name: req.body.name,
           email: req.body.email,
           password: req.body.password,
-          roleId: req.body.roleId,
-          organisationId: req.body.organisationId,
-          departmentId: req.body.departmentId
+          isPrivate: req.body.isPrivate
         })
         .then((newUser) => {
           res.set('x-access-token', signToken(newUser));
@@ -65,12 +43,7 @@ export default {
         })
         .catch(err => (dbErrorHandler(err, res)));
       })
-      .catch(err => (
-        res.status(400).json({
-          message: 'Please provide a valid email',
-          error: err
-        })
-      ));
+      .catch(err => (dbErrorHandler(err, res)));
     } else {
       return res.status(400).json({
         message: 'Please provide a name, email and password'
@@ -85,28 +58,26 @@ export default {
    * @returns {void}
    */
   list(req, res) {
-    const limit = Math.floor(Number(req.query.limit)) || 50;
-    const offset = Math.floor(Number(req.query.offset)) || 0;
-    if (limit < 1 || offset < 0) {
-      return res.status(400).json({
-        message: 'Offset and limit can only be positive integers.'
-      });
-    }
+    const dbQuery = isSuperAdmin(req) ? {} : {
+      $or: [
+        { id: req.decoded.id },
+        { isPrivate: false }
+      ]
+    };
     User.findAndCountAll({
       attributes: ['id', 'name'],
-      limit,
-      offset
+      where: dbQuery,
+      limit: req.listOptions.limit,
+      offset: req.listOptions.offset
     })
     .then((users) => {
-      const metadata = JSON.stringify({
-        total: users.count,
-        pages: Math.ceil(users.count / limit),
-        currentPage: (Math.floor(offset / limit) + 1),
-        pageSize: users.rows.length
-      });
       res.set(
         'x-list-metadata',
-        Buffer.from(metadata, 'utf8').toString('base64')
+        getMetadata(
+          users,
+          req.listOptions.limit,
+          req.listOptions.offset
+        )
       );
       res.status(200).json(users.rows);
     })
@@ -121,16 +92,32 @@ export default {
    */
   retrieve(req, res) {
     User.find({
-      attributes: ['id', 'name', 'email', 'roleId', 'organisationId', 'departmentId', 'createdAt'],
+      attributes: [
+        'id',
+        'name',
+        'email',
+        'roleId',
+        'isPrivate',
+        'organisationId',
+        'departmentId',
+        'createdAt'
+      ],
       where: { id: req.params.id }
     })
     .then((user) => {
       if (!user) {
-        return res.status(404).json({ message: 'Resource not found' });
+        return res.status(404).json({ message: 'Could not find that user' });
       }
-      return res.status(200).send(user);
+      if (user.isPrivate && (!isSuperAdmin(req) && !isOwner(req))) {
+        return res.status(403).json({
+          message: "You don't have access to this resource"
+        });
+      }
+      return res.status(200).json(user);
     })
-    .catch(err => (dbErrorHandler(err, res)));
+    .catch(() => res.status(400).json({
+      message: 'Invalid resource identifier'
+    }));
   },
 
   /**
@@ -140,20 +127,13 @@ export default {
    * @returns {void}
    */
   update(req, res) {
-    if (req.body.password) {
-      if (req.decoded.id !== req.retrievedRecord.id) {
-        return res.status(403).json({
-          message: 'Only the user can change their password'
-        });
-      }
+    if (req.body.roleId) {
+      return res.status(403).json({
+        message: "You're not permitted to specify your own role."
+      });
     }
     req.retrievedRecord.update(req.body)
     .then((user) => {
-      if (!user) {
-        return res.status(500).json({
-          message: 'Oops! Something went wrong on our end'
-        });
-      }
       if (req.body.password) {
         // TODO: Implement old token blacklisting/invalidation
         res.set('x-access-token', signToken(user));
@@ -170,6 +150,11 @@ export default {
    * @returns {void}
    */
   destroy(req, res) {
+    if (req.retrievedRecord.roleId === 1) {
+      return res.status(403).json({
+        message: "You can't delete the superadministrator."
+      });
+    }
     req.retrievedRecord.destroy()
     .then(() => {
       if (req.retrievedRecord.id === req.decoded.id) {
@@ -178,10 +163,7 @@ export default {
       }
       res.sendStatus(204);
     })
-    .catch((err) => {
-      console.log(err);
-      return (dbErrorHandler(err, res));
-    });
+    .catch(err => (dbErrorHandler(err, res)));
   },
 
   /**
@@ -191,73 +173,30 @@ export default {
    * @returns {void}
    */
   search(req, res) {
-    const query = req.query.name || req.query.q || req.query.query;
-    if (query && query.replace(/\s+/g, '') !== '') {
-      const limit = Math.floor(Number(req.query.limit)) || 10;
-      const offset = Math.floor(Number(req.query.offset)) || 0;
-      if (limit < 1 || offset < 0) {
-        return res.status(400).json({
-          message: 'Offset and limit can only be positive integers.'
-        });
-      }
-      User.findAndCountAll({
-        attributes: ['id', 'name'],
-        where: { name: { $iLike: `%${query}%` } },
-        limit,
-        offset
-      })
-      .then((users) => {
-        const metadata = JSON.stringify({
-          total: users.count,
-          pages: Math.ceil(users.count / limit),
-          currentPage: (Math.floor(offset / limit) + 1),
-          pageSize: users.rows.length
-        });
-        res.set(
-          'x-search-metadata',
-          Buffer.from(metadata, 'utf8').toString('base64')
-        );
-        res.status(200).json(users.rows);
-      })
-      .catch(err => (dbErrorHandler(err, res)));
-    } else {
-      return res.status(400).json({
-        message: 'Please provide a valid query string for the search'
-      });
-    }
-  },
-
-  /**
-   * Method that retrieves a specific user's documents
-   * It only sends the documents the requester has access to
-   * @param {Object} req The request from the client
-   * @param {Object} res The response from the server
-   * @returns {void}
-   */
-  listDocuments(req, res) {
-    User.find({ where: { id: req.params.id } })
-    .then((user) => {
-      if (!user) {
-        return res.status(404).json({ message: 'User not found' });
-      }
-      const dbQuery = (isSuperAdmin(req) || isOwner(req, user)) ? {} : {
-        $or: [
-          { access: 'public' },
-          {
-            userRole: {
-              $gte: req.decoded.roleId
-            },
-            access: 'role'
-          }
-        ]
-      };
-      user.getDocuments({
-        attributes: ['id', 'title', 'type', 'access'],
-        where: dbQuery
-      })
-      .then(documents => res.status(200).json(documents))
-      .catch(err => (dbErrorHandler(err, res)));
+    const dbQuery = isSuperAdmin(req) ? {} : {
+      $or: [
+        { id: req.decoded.id },
+        { isPrivate: false }
+      ]
+    };
+    dbQuery.name = { $iLike: `%${req.listOptions.query}%` };
+    User.findAndCountAll({
+      attributes: ['id', 'name'],
+      where: dbQuery,
+      limit: req.listOptions.limit,
+      offset: req.listOptions.offset
+    })
+    .then((users) => {
+      res.set(
+        'x-list-metadata',
+        getMetadata(
+          users,
+          req.listOptions.limit,
+          req.listOptions.offset
+        )
+      );
+      res.status(200).json(users.rows);
     })
     .catch(err => (dbErrorHandler(err, res)));
-  },
+  }
 };

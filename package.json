@@ -13,7 +13,7 @@
     "db:sync": "node -r dotenv/config -r babel-register scripts/sync-db.js",
     "postinstall": "npm run db:seed:random && npm run build",
     "prebuild": "npm run clean",
-    "pretest": "cross-env NODE_ENV=test npm run db:seed",
+    "pretest": "cross-env NODE_ENV=test npm run db:seed:random",
     "sequelize": "node -r dotenv/config ./node_modules/.bin/sequelize",
     "start": "cross-env NODE_ENV=production node -r dotenv/config dist/server.js",
     "start:api": "nodemon --exec 'node -r dotenv/config -r babel-register' server/server.js",
@@ -75,6 +75,7 @@
     "pg-hstore": "2.3.2",
     "prop-types": "15.5.4",
     "quill": "1.2.4",
+    "quill-delta": "3.5.0",
     "raw-loader": "0.5.1",
     "react": "15.5.4",
     "react-dom": "15.5.4",
@@ -123,6 +124,7 @@
     "exclude": [
       "**/*.spec.js",
       "**/*-helper.js",
+      "server/server.js",
       "dist"
     ],
     "watermarks": {

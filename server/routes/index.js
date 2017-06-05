@@ -7,7 +7,7 @@ const {
   documentController,
   rolesController
 } = controllers;
-const { auth } = middleware;
+const { auth, database, list } = middleware;
 
 /**
  * Configures API routes for Express app
@@ -28,20 +28,35 @@ const routes = (app) => {
    * Routes for user authentication.
    */
   app.post('/api/auth/login', authController.login);
-  app.post('/api/auth/logout', authController.logout);
+  app.post('/api/auth/logout', auth.checkToken, authController.logout);
 
   /**
    * CRUD routes for users
    */
   app
     .route('/api/users')
-    .post(auth.checkToken, userController.create)
-    .get(auth.checkToken, auth.superAdminAccess, userController.list);
+    .post(userController.create)
+    .get(
+      auth.checkToken,
+      list.setOptions,
+      userController.list
+    );
   app
     .route('/api/users/:id')
     .get(auth.checkToken, userController.retrieve)
-    .put(auth.checkToken, auth.hasAccess, userController.update)
-    .delete(auth.checkToken, auth.hasAccess, userController.destroy);
+    .put(
+      auth.checkToken,
+      database.retrieveRecord,
+      auth.ownerAccess,
+      database.noIDChange,
+      userController.update
+    )
+    .delete(
+      auth.checkToken,
+      database.retrieveRecord,
+      auth.hasAccess,
+      userController.destroy
+    );
 
   /**
    * CRUD routes for documents
@@ -49,29 +64,56 @@ const routes = (app) => {
   app
     .route('/api/documents')
     .post(auth.checkToken, documentController.create)
-    .get(auth.checkToken, documentController.list);
+    .get(auth.checkToken, list.setOptions, documentController.list);
   app
     .route('/api/documents/:id')
-    .get(auth.checkToken, auth.hasAccess, documentController.retrieve)
-    .put(auth.checkToken, auth.hasAccess, documentController.update)
-    .delete(auth.checkToken, auth.hasAccess, documentController.destroy);
+    .get(
+      auth.checkToken,
+      database.retrieveRecord,
+      auth.hasAccess,
+      documentController.retrieve
+    )
+    .put(
+      auth.checkToken,
+      database.retrieveRecord,
+      auth.hasAccess,
+      database.noIDChange,
+      documentController.update
+    )
+    .delete(
+      auth.checkToken,
+      database.retrieveRecord,
+      auth.hasAccess,
+      documentController.destroy
+    );
   app.get(
     '/api/users/:id/documents',
     auth.checkToken,
-    userController.listDocuments
+    list.setOptions,
+    documentController.listByUser
   );
 
   /**
    * Search routes
    */
-  app.get('/api/search/users', auth.checkToken, userController.search);
-  app.get('/api/search/documents', auth.checkToken, documentController.search);
+  app.get(
+    '/api/search/users',
+    auth.checkToken,
+    list.setOptions,
+    userController.search
+  );
+  app.get(
+    '/api/search/documents',
+    auth.checkToken,
+    list.setOptions,
+    documentController.search
+  );
 
   /**
    * Routes for retrieving roles
    */
   app.get('/api/roles', rolesController.list);
-  app.get('/api/roles/:id', rolesController.retrieve);
+  app.get('/api/roles/:id', database.retrieveRecord, rolesController.retrieve);
 };
 
 export default routes;

@@ -2,9 +2,8 @@ import jwt from 'jsonwebtoken';
 import {
   isSuperAdmin,
   isOwner,
-  hasDocAccess,
-  getModel,
-  dbErrorHandler
+  hasRetrieveAccess,
+  hasEditAccess
 } from '../helpers';
 
 export default {
@@ -23,6 +22,7 @@ export default {
         process.env.JWT_SECRET,
         (err, decoded) => {
           if (err) {
+            res.setHeader('x-access-token', '');
             return res.status(401).json({
               message: 'Access token is invalid'
             });
@@ -31,26 +31,23 @@ export default {
           next();
         }
       );
-    } else if (req.route.path === '/api/users' && req.route.methods.post) {
-      next();
-    } else {
-      return res.status(401).json({
-        message: 'You need to be logged in to perform that action'
-      });
     }
+    return res.status(401).json({
+      message: 'You need to be logged in to perform that action'
+    });
   },
 
   /**
-   * Middleware that checks if the requester is the superadmin.
+   * Middleware that checks if the requester is the owner.
    * @param {Object} req The request from the client
    * @param {Object} res The response from the server
    * @param {Function} next The next handler for the route
    * @returns {void}
    */
-  superAdminAccess(req, res, next) {
-    if (!isSuperAdmin(req)) {
+  ownerAccess(req, res, next) {
+    if (!isOwner(req)) {
       res.status(403).json({
-        message: 'You need to be a superadministrator to perform that action'
+        message: "Only this resource's owner can perform that action"
       });
     } else {
       next();
@@ -66,31 +63,24 @@ export default {
    * @returns {void}
    */
   hasAccess(req, res, next) {
-    const Model = getModel(req.route.path);
-    Model.findOne({ where: { id: req.params.id } })
-    .then((record) => {
-      if (record) {
-        let shouldProceed;
-        if (req.route.methods.delete) {
-          shouldProceed = isSuperAdmin(req) || isOwner(req, record);
-        } else {
-          shouldProceed = isSuperAdmin(req) || isOwner(req, record) ||
-            hasDocAccess(req, record);
-        }
-        if (shouldProceed) {
-          req.retrievedRecord = record;
-          next();
-        } else {
-          return res.status(403).json({
-            message: "You don't have access to this resource"
-          });
-        }
-      } else {
-        return res.status(404).json({
-          message: 'Resource not found'
-        });
-      }
-    })
-    .catch(err => (dbErrorHandler(err, res)));
+    let shouldProceed;
+    switch (req.method) {
+      case 'DELETE':
+        shouldProceed = isSuperAdmin(req) || isOwner(req);
+        break;
+      case 'PUT':
+        shouldProceed = isOwner(req) || hasEditAccess(req);
+        break;
+      default:
+        shouldProceed = isSuperAdmin(req) || isOwner(req) ||
+          hasRetrieveAccess(req);
+    }
+    if (shouldProceed) {
+      next();
+    } else {
+      return res.status(403).json({
+        message: "You don't have permission to perform that action"
+      });
+    }
   }
 };

@@ -1,5 +1,6 @@
 import faker from 'faker';
 import uuid from 'uuid/v4';
+import Delta from 'quill-delta';
 
 export const defaultRoles = [
   {
@@ -24,6 +25,8 @@ export const superAdmin = {
   roleId: 1
 };
 
+export const getValidId = () => uuid();
+
 export const getValidRole = () => ({
   label: faker.lorem.word()
 });
@@ -46,6 +49,14 @@ export const getValidUser = roleId => ({
   email: faker.internet.email(),
   password: faker.internet.password(),
   roleId
+});
+
+export const getValidPublicUser = roleId => ({
+  name: faker.name.findName(),
+  email: faker.internet.email(),
+  password: faker.internet.password(),
+  roleId,
+  isPrivate: false
 });
 
 export const invalidUsers = {
@@ -97,13 +108,19 @@ export const invalidUsers = {
   }
 };
 
-export const getValidDoc = (userId, type, access, accesslevel, shared) => ({
+export const getValidDoc = (userId, access, accesslevel) => ({
   title: faker.company.catchPhrase(),
   content: faker.lorem.paragraphs(),
-  type,
   access,
   accesslevel,
-  shared,
+  userId
+});
+
+export const getValidQuillDoc = (userId, access, accesslevel) => ({
+  title: faker.company.catchPhrase(),
+  content: new Delta([{ insert: faker.lorem.paragraphs() }]),
+  access,
+  accesslevel,
   userId
 });
 

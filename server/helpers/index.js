@@ -21,6 +21,7 @@ export const formatUser = user => (
     'id',
     'name',
     'email',
+    'isPrivate',
     'roleId',
     'organisationId',
     'departmentId',
@@ -44,39 +45,76 @@ export const signToken = (user) => {
 };
 
 export const dbErrorHandler = (err, res) => {
-  if (
-    (new RegExp([
-      '(notNull Violation)|',
-      '(invalid input syntax)|',
-      '(invalid input value)',
-      '(Validation notEmpty failed)|',
-      '(Validation isEmail failed)|',
-      '(Validation isDomain failed)|',
-      '(Validation isUniqueWithinOrg failed)|'
-    ].join(''))).test(err.message) ||
-    /SequelizeForeignKeyConstraintError/.test(err.name)
-  ) {
-    return res.status(400).json({
-      message: 'Please confirm that all fields/identifiers are valid',
-      error: err
-    });
+  switch (true) {
+    case (/notNull Violation/.test(err.message)):
+    case (/invalid input syntax/.test(err.message)):
+    case (/invalid input value/.test(err.message)):
+    case (/Validation notEmpty failed/.test(err.message)):
+    case (/Validation isEmail failed/.test(err.message)):
+    case (/Validation isDomain failed/.test(err.message)):
+    case (/Validation isUniqueWithinOrg failed/.test(err.message)):
+    case (/operator does not exist/.test(err.message)):
+      return res.status(400).json({
+        message: 'Please confirm that all fields are valid',
+        error: err
+      });
+    case (/noUpdate/.test(err.message)):
+      return res.status(403).json({
+        message: "You're not permitted to change identifier fields"
+      });
+    default:
+      return res.status(500).json({
+        message: 'Oops! Something went wrong on our end',
+        error: err
+      });
   }
-  if (/(readOnly)|(noUpdate)/.test(err.message)) {
-    return res.status(403).json({
-      message: "You're not permitted to change that ID field"
-    });
-  }
-  return res.status(500).json({
-    message: 'Oops! Something went wrong on our end',
-    error: err
-  });
 };
 
 export const isSuperAdmin = req => (req.decoded.roleId === 1);
 
-export const isOwner = (req, record) =>
-  (req.decoded.id === record.userId || req.decoded.id === record.id);
+export const isOwner = req => (
+  req.decoded.id === req.params.id ||
+  (req.retrievedRecord &&
+    (req.decoded.id === req.retrievedRecord.userId ||
+    req.decoded.id === req.retrievedRecord.id))
+);
 
-export const hasDocAccess = (req, document) =>
-  (document.access === 'public' ||
-    (document.access === 'role' && req.decoded.roleId <= document.userRole));
+export const hasRetrieveAccess = req => (
+  req.retrievedRecord.access === 'public' ||
+  (req.retrievedRecord.access === 'role' &&
+    req.decoded.roleId <= req.retrievedRecord.userRole)
+);
+
+export const hasEditAccess = req => (
+  hasRetrieveAccess(req) &&
+  req.retrievedRecord.accesslevel === 'edit'
+);
+
+export const getMetadata = (results, limit, offset) => {
+  const metadata = JSON.stringify({
+    total: results.count,
+    pages: Math.ceil(results.count / limit),
+    currentPage: (Math.floor(offset / limit) + 1),
+    pageSize: results.rows.length
+  });
+  return Buffer.from(metadata, 'utf8').toString('base64');
+};
+
+export const isQuillDocument = (content) => {
+  let delta;
+  try {
+    delta = JSON.parse(content);
+  } catch (err) {
+    return false;
+  }
+  if (!delta.ops || !Array.isArray(delta.ops) || delta.ops.length === 0) {
+    return false;
+  }
+  let flag = true;
+  delta.ops.forEach((operation) => {
+    if (!operation.insert || typeof operation.insert !== 'string') {
+      flag = false;
+    }
+  });
+  return flag;
+};

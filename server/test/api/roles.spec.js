@@ -1,7 +1,7 @@
 import request from 'supertest';
 import server from '../../server';
 
-describe('Roles controller', () => {
+describe('Roles API', () => {
   const app = request(server);
   let roles;
 
@@ -37,6 +37,26 @@ describe('Roles controller', () => {
         }
         if (!res.body.id || !res.body.label) {
           throw new Error('Response is not an array of roles');
+        }
+        done();
+      });
+  });
+
+  it('should return appropriate error if role does not exist', (done) => {
+    const id = roles.length + 10;
+    app
+      .get(`/api/roles/${id}`)
+      .expect('Content-Type', /json/)
+      .expect(404)
+      .end((err, res) => {
+        if (err) throw err;
+        if (!res.body) {
+          throw new Error('Expected error to be returned');
+        }
+        if (res.body.message !== 'Resource not found') {
+          throw new Error(
+            `Expected ${res.body.message} to equal 'Resource not found'`
+          );
         }
         done();
       });

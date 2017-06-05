@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import Sequelize from 'sequelize';
 import sequelizeNoUpdateAttributes from 'sequelize-noupdate-attributes';
+// import noUpdateHelper from '../helpers/noupdate-helper';
 import allConfig from '../config/config';
 
 const basename = path.basename(module.filename);
@@ -11,6 +12,7 @@ const db = {};
 
 const sequelize = new Sequelize(config.url, config);
 sequelizeNoUpdateAttributes(sequelize);
+// noUpdateHelper(sequelize);
 
 fs.readdirSync(__dirname)
   .filter(file =>

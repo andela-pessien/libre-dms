@@ -1,3 +1,5 @@
+import { isQuillDocument } from '../helpers';
+
 export default (sequelize, DataTypes) => {
   const User = sequelize.import('./user.js');
   const Document = sequelize.define('Document', {
@@ -13,10 +15,7 @@ export default (sequelize, DataTypes) => {
       allowNull: false
     },
     content: DataTypes.TEXT,
-    type: {
-      defaultValue: 'text',
-      type: DataTypes.ENUM('text', 'quill')
-    },
+    type: DataTypes.ENUM('text', 'quill'),
     access: {
       defaultValue: 'private',
       type: DataTypes.ENUM('public', 'role', 'private')
@@ -50,14 +49,29 @@ export default (sequelize, DataTypes) => {
         Document.belongsTo(models.User, {
           foreignKey: {
             name: 'userId',
+            allowNull: false,
             noUpdate: true
           },
         });
       }
     },
     hooks: {
+      beforeValidate: function beforeValidate(document) {
+        if (!document.content) {
+          document.type = 'text';
+        } else {
+          if (typeof document.content === 'object') {
+            document.content = JSON.stringify(document.content);
+          }
+          if (isQuillDocument(document.content)) {
+            document.type = 'quill';
+          } else {
+            document.type = 'text';
+          }
+        }
+      },
       afterValidate: function afterValidate(document, options, next) {
-        User.find({ where: { id: document.userId } })
+        User.find({ where: { id: document.userId }, paranoid: false })
         .then((user) => {
           if (!user) {
             document.userRole = 6;
@@ -66,7 +80,7 @@ export default (sequelize, DataTypes) => {
           document.userRole = user.roleId;
           return next(null, options);
         })
-        .catch(err => (next(err)));
+        .catch(err => next(err));
       }
     }
   });
