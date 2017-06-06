@@ -45,9 +45,6 @@ dist
 # MacOS file system essentials
 .DS_Store
 
-client/images
-server/controllers
-
 data
 client_old
 client/styles/materialize
