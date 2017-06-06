@@ -41,7 +41,7 @@ class DocumentView extends Component {
    */
   render() {
     return (
-      <div className="view-wrapper document-wrapper z-index-3">
+      <div className="view-wrapper">
         {(this.props.id === 'new')
           ? <DocumentEditor />
           : (this.props.container.document)

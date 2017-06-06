@@ -49,7 +49,6 @@ class Dashboard extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    console.log(nextProps);
     if (
     nextProps.documentSearch &&
     this.state.documentKeywords.replace(/\s+/g, '') !== '') {
@@ -235,7 +234,6 @@ class Dashboard extends Component {
               </div>
               <a
                 className="btn-floating btn-large new-doc z-depth-4"
-                href="#!"
                 onClick={this.onDocumentSelect}
               >
                 <i className="material-icons">add</i>
