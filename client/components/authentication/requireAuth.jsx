@@ -23,7 +23,7 @@ function requireAuth(RestrictedComponent, FallbackComponent, wait) {
     render() {
       if (this.props.isAuthenticated && this.props.ownId) {
         return (<RestrictedComponent {...this.props} />);
-      } else if (wait) {
+      } else if (wait && this.props.isAuthenticated) {
         return (<div className="logo-image center" style={{ width: '50%' }}>
           <img src={logo} alt="logo" />
         </div>);
