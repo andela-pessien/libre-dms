@@ -8,6 +8,9 @@
     "browser": true,
     "jquery": true
   },
+  "globals": {
+    "Materialize": false
+  },
   "plugins": [
     "react",
     "jsx-a11y",
@@ -39,6 +42,12 @@
     "react/forbid-prop-types": [
       1, {
         "forbid": ["any"]
+      }
+    ],
+    "react/no-unused-prop-types": [
+      2, {
+        "customValidators": ["nextProps"],
+        "skipShapeProps": true
       }
     ]
   }

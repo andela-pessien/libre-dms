@@ -18,7 +18,7 @@ export default {
     new webpack.LoaderOptionsPlugin({
       debug: true,
     }),
-    new webpack.EnvironmentPlugin(['NODE_ENV']),
+    new webpack.EnvironmentPlugin({ NODE_ENV: 'production' }),
     new ExtractTextPlugin('static/css/main.css'),
     new webpack.optimize.OccurrenceOrderPlugin(),
     new webpack.optimize.UglifyJsPlugin({

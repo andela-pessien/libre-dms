@@ -11,7 +11,7 @@ export default function userReducer(state = {}, action) {
     case user.GET_ALL_SUCCESS:
       return {
         ...state,
-        allUsers: {
+        all: {
           list: action.users,
           metadata: action.metadata
         }
@@ -19,7 +19,7 @@ export default function userReducer(state = {}, action) {
     case user.GET_ALL_FAILURE:
       return {
         ...state,
-        allUsers: {
+        all: {
           ...state.allUsers,
           error: action.error
         },
@@ -68,15 +68,15 @@ export default function userReducer(state = {}, action) {
     case user.SEARCH_SUCCESS:
       return {
         ...state,
-        userSearch: {
-          results: action.results,
+        search: {
+          list: action.results,
           metadata: action.metadata
         }
       };
     case user.SEARCH_FAILURE:
       return {
         ...state,
-        userSearch: {
+        search: {
           ...state.userSearch,
           error: action.error
         },

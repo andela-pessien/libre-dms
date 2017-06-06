@@ -45,7 +45,7 @@ export default function documentReducer(state = { documents: {} }, action) {
       return {
         ...state,
         search: {
-          results: action.results,
+          list: action.results,
           metadata: action.metadata
         }
       };

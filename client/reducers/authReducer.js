@@ -12,7 +12,8 @@ export default function authReducer(state = {}, action) {
       return {
         ...state,
         isAuthenticated: true,
-        currentUser: action.userId
+        currentUser: action.userId,
+        signUpError: null
       };
     case auth.SIGNUP_FAILURE:
       return {
@@ -26,7 +27,8 @@ export default function authReducer(state = {}, action) {
       return {
         ...state,
         isAuthenticated: true,
-        currentUser: action.userId
+        currentUser: action.userId,
+        signInError: null
       };
     case auth.SIGNIN_FAILURE:
       return {
@@ -40,7 +42,8 @@ export default function authReducer(state = {}, action) {
       return {
         ...state,
         isAuthenticated: false,
-        currentUser: null
+        currentUser: null,
+        signOutError: null
       };
     case auth.SIGNOUT_FAILURE:
       return {
