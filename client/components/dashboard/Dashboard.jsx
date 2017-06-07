@@ -58,6 +58,20 @@ class Dashboard extends Component {
     this.onPeoplePageClick = this.onPeoplePageClick.bind(this);
   }
 
+  /**
+   * Runs when the Dashboard component has mounted
+   * Initialize Materialize tooltip plugin
+   * @returns {undefined}
+   */
+  componentDidMount() {
+    $('.tooltipped').tooltip({ delay: 50 });
+  }
+
+  /**
+   * Runs when the Dashboard component will receive new props
+   * @param {Object} nextProps The props to be received
+   * @returns {undefined}
+   */
   componentWillReceiveProps(nextProps) {
     if (
     nextProps.documentSearch &&
@@ -75,10 +89,11 @@ class Dashboard extends Component {
     }
   }
 
-  componentDidMount() {
-    $('.tooltipped').tooltip({ delay: 50 });
-  }
-
+  /**
+   * Click event handler for selecting own documents option from menu
+   * @param {Object} e The click event
+   * @returns {undefined}
+   */
   onOwnDocumentsClick(e) {
     e.preventDefault();
     $('.fixed-side-menu-item').removeClass('active');
@@ -88,6 +103,11 @@ class Dashboard extends Component {
     this.props.getUserDocuments(this.props.ownId);
   }
 
+  /**
+   * Click event handler for selecting all documents option from menu
+   * @param {Object} e The click event
+   * @returns {undefined}
+   */
   onPublicButtonClick(e) {
     e.preventDefault();
     $('.fixed-side-menu-item').removeClass('active');
@@ -97,6 +117,11 @@ class Dashboard extends Component {
     this.props.getAllDocuments();
   }
 
+  /**
+   * Click event handler for selecting other users option from menu
+   * @param {Object} e The click event
+   * @returns {undefined}
+   */
   onPeopleButtonClick(e) {
     e.preventDefault();
     $('.fixed-side-menu-item').removeClass('active');
@@ -106,6 +131,11 @@ class Dashboard extends Component {
     this.props.getAllUsers();
   }
 
+  /**
+   * Click event handler for selecting settings option from menu
+   * @param {Object} e The click event
+   * @returns {undefined}
+   */
   onSettingsButtonClick(e) {
     e.preventDefault();
     $('.fixed-side-menu-item').removeClass('active');
@@ -114,6 +144,11 @@ class Dashboard extends Component {
     $('.settings').removeClass('hidden');
   }
 
+  /**
+   * Change event handler for searching for documents
+   * @param {Object} e The change event
+   * @returns {undefined}
+   */
   onDocumentSearchChange(e) {
     this.setState({ documentKeywords: e.target.value }, () => {
       if (this.state.documentKeywords.replace(/\s+/g, '') !== '') {
@@ -124,6 +159,11 @@ class Dashboard extends Component {
     });
   }
 
+  /**
+   * Change event handler for searching for users
+   * @param {Object} e The change event
+   * @returns {undefined}
+   */
   onUserSearchChange(e) {
     this.setState({ userKeywords: e.target.value }, () => {
       if (this.state.userKeywords.replace(/\s+/g, '') !== '') {
@@ -134,6 +174,11 @@ class Dashboard extends Component {
     });
   }
 
+  /**
+   * Click event handler for selecting a document
+   * @param {Object} e The click event
+   * @returns {undefined}
+   */
   onDocumentSelect(e) {
     $('.main-view').addClass('hidden');
     $('.main-panel').removeClass('hidden');
@@ -141,6 +186,11 @@ class Dashboard extends Component {
     this.setState({ showDocumentId: e.target.name || 'new' });
   }
 
+  /**
+   * Click event handler for selecting a user profile
+   * @param {Object} e The click event
+   * @returns {undefined}
+   */
   onProfileSelect(e) {
     e.preventDefault();
     $('.main-view').addClass('hidden');
@@ -149,11 +199,21 @@ class Dashboard extends Component {
     this.setState({ showProfileId: e.target.name || this.props.ownId });
   }
 
+  /**
+   * Click event handler for selecting a settings option
+   * @param {Object} e The click event
+   * @returns {undefined}
+   */
   onSettingsSelect() {
     $('.main-view').addClass('hidden');
     $('.show-settings').removeClass('hidden');
   }
 
+  /**
+   * Click event handler for pagination
+   * @param {Object} e The click event
+   * @returns {undefined}
+   */
   onOwnLeftClick() {
     const { pageSize, currentPage } =
       this.props.users[this.props.ownId].documents.metadata;
@@ -163,6 +223,11 @@ class Dashboard extends Component {
       (currentPage - 2) * pageSize);
   }
 
+  /**
+   * Click event handler for pagination
+   * @param {Object} e The click event
+   * @returns {undefined}
+   */
   onOwnPageClick(e) {
     const { pageSize } =
       this.props.users[this.props.ownId].documents.metadata;
@@ -172,6 +237,11 @@ class Dashboard extends Component {
       (e.target.name - 1) * pageSize);
   }
 
+  /**
+   * Click event handler for pagination
+   * @param {Object} e The click event
+   * @returns {undefined}
+   */
   onOwnRightClick() {
     const { pageSize, currentPage } =
       this.props.users[this.props.ownId].documents.metadata;
@@ -181,6 +251,11 @@ class Dashboard extends Component {
       currentPage * pageSize);
   }
 
+  /**
+   * Click event handler for pagination
+   * @param {Object} e The click event
+   * @returns {undefined}
+   */
   onPublicLeftClick() {
     const { pageSize, currentPage } = this.documents.metadata;
     if (this.state.documentKeywords.replace(/\s+/g, '') !== '') {
@@ -194,6 +269,11 @@ class Dashboard extends Component {
     }
   }
 
+  /**
+   * Click event handler for pagination
+   * @param {Object} e The click event
+   * @returns {undefined}
+   */
   onPublicPageClick(e) {
     const { pageSize } = this.documents.metadata;
     if (this.state.documentKeywords.replace(/\s+/g, '') !== '') {
@@ -207,6 +287,11 @@ class Dashboard extends Component {
     }
   }
 
+  /**
+   * Click event handler for pagination
+   * @param {Object} e The click event
+   * @returns {undefined}
+   */
   onPublicRightClick() {
     const { pageSize, currentPage } = this.documents.metadata;
     if (this.state.documentKeywords.replace(/\s+/g, '') !== '') {
@@ -220,6 +305,11 @@ class Dashboard extends Component {
     }
   }
 
+  /**
+   * Click event handler for pagination
+   * @param {Object} e The click event
+   * @returns {undefined}
+   */
   onPeopleLeftClick() {
     const { pageSize, currentPage } = this.users.metadata;
     if (this.state.userKeywords.replace(/\s+/g, '') !== '') {
@@ -233,6 +323,11 @@ class Dashboard extends Component {
     }
   }
 
+  /**
+   * Click event handler for pagination
+   * @param {Object} e The click event
+   * @returns {undefined}
+   */
   onPeoplePageClick(e) {
     const { pageSize } = this.users.metadata;
     if (this.state.userKeywords.replace(/\s+/g, '') !== '') {
@@ -246,6 +341,11 @@ class Dashboard extends Component {
     }
   }
 
+  /**
+   * Click event handler for pagination
+   * @param {Object} e The click event
+   * @returns {undefined}
+   */
   onPeopleRightClick() {
     const { pageSize, currentPage } = this.users.metadata;
     if (this.state.userKeywords.replace(/\s+/g, '') !== '') {
@@ -259,6 +359,10 @@ class Dashboard extends Component {
     }
   }
 
+  /**
+   * Renders the Dashboard component
+   * @returns {String} JSX markup for the Dashboard component
+   */
   render() {
     return (
       <div className="dashboard-wrapper">
@@ -411,10 +515,12 @@ class Dashboard extends Component {
           <div className="col l8">
             <div className="card dashboard-panel main-panel hidden">
               <div className="main-view show-document hidden">
-                {(this.state.showDocumentId) && <DocumentView id={this.state.showDocumentId} />}
+                {(this.state.showDocumentId) &&
+                  <DocumentView id={this.state.showDocumentId} />}
               </div>
               <div className="main-view show-profile hidden">
-                {(this.state.showProfileId) && <ProfileView id={this.state.showProfileId} />}
+                {(this.state.showProfileId) &&
+                  <ProfileView id={this.state.showProfileId} />}
               </div>
             </div>
           </div>
@@ -434,7 +540,8 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   getUser: id => dispatch(getUser(id)),
-  getUserDocuments: (id, limit, offset) => dispatch(getUserDocuments(id, limit, offset)),
+  getUserDocuments: (id, limit, offset) =>
+    dispatch(getUserDocuments(id, limit, offset)),
   getAllDocuments: (limit, offset) => dispatch(getAllDocuments(limit, offset)),
   searchDocuments: (query, limit, offset) =>
     dispatch(searchDocuments(query, limit, offset)),
@@ -446,10 +553,15 @@ const mapDispatchToProps = dispatch => ({
 Dashboard.propTypes = {
   ownId: PropTypes.string.isRequired,
   users: PropTypes.object.isRequired,
+  allUsers: PropTypes.object.isRequired,
   allDocuments: PropTypes.object.isRequired,
+  userSearch: PropTypes.object.isRequired,
+  documentSearch: PropTypes.object.isRequired,
   getUser: PropTypes.func.isRequired,
   getUserDocuments: PropTypes.func.isRequired,
+  getAllUsers: PropTypes.func.isRequired,
   getAllDocuments: PropTypes.func.isRequired,
+  searchUsers: PropTypes.func.isRequired,
   searchDocuments: PropTypes.func.isRequired
 };
 

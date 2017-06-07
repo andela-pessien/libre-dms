@@ -79,7 +79,9 @@ ProfileView.propTypes = {
   full: PropTypes.bool,
   container: PropTypes.shape({
     user: PropTypes.object,
-    error: PropTypes.string,
+    error: PropTypes.shape({
+      message: PropTypes.string
+    }),
     documents: PropTypes.object
   }),
   getUser: PropTypes.func.isRequired,

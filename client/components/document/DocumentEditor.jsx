@@ -84,7 +84,7 @@ class DocumentEditor extends Component {
   /**
    * Runs when the DocumentEditor's props have changed.
    * Updates editor status to reflect successful/failed actions.
-   * @param {Object} props The props to be received
+   * @param {Object} nextProps The props to be received
    * @returns {undefined}
    */
   componentWillReceiveProps(nextProps) {
@@ -102,6 +102,10 @@ class DocumentEditor extends Component {
     }
   }
 
+  /**
+   * Runs when the DocumentEditor component will update
+   * @returns {undefined}
+   */
   componentWillUpdate() {
     if (this.props.id !== this.id && this.props.documents[this.props.id]) {
       this.setupComponent(this.props);
@@ -144,6 +148,11 @@ class DocumentEditor extends Component {
     }
   }
 
+  /**
+   * Sets up the DocumentEditor component
+   * @param {Object} props The component's props
+   * @returns {undefined}
+   */
   setupComponent(props) {
     this.id = props.id;
     this.container = props.documents[this.id];
@@ -167,6 +176,10 @@ class DocumentEditor extends Component {
     this.contentChanges = new Delta();
   }
 
+  /**
+   * Sets up the Quill editor
+   * @returns {undefined}
+   */
   setupEditor() {
     $(`#${this.state.attributes.access}`).addClass('active');
     $(`#${this.state.attributes.accesslevel}`).addClass('active');
@@ -206,6 +219,7 @@ class DocumentEditor extends Component {
       $(`#${value}`).addClass('active');
     });
   }
+
   /**
    * Method that autosaves document changes if any.
    * @returns {undefined}
@@ -286,6 +300,7 @@ DocumentEditor.propTypes = {
   id: PropTypes.string,
   userId: PropTypes.string.isRequired,
   documents: PropTypes.object,
+  newDocument: PropTypes.object,
   createDocument: PropTypes.func.isRequired,
   updateDocument: PropTypes.func.isRequired,
   deleteDocument: PropTypes.func.isRequired
@@ -293,7 +308,8 @@ DocumentEditor.propTypes = {
 
 DocumentEditor.defaultProps = {
   id: '',
-  documents: {}
+  documents: {},
+  newDocument: {}
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(DocumentEditor);

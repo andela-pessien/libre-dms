@@ -64,7 +64,9 @@ DocumentView.propTypes = {
   id: PropTypes.string.isRequired,
   container: PropTypes.shape({
     document: PropTypes.object,
-    error: PropTypes.string
+    error: PropTypes.shape({
+      message: PropTypes.string
+    })
   }),
   getDocument: PropTypes.func.isRequired
 };
