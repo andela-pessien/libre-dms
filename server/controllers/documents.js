@@ -144,7 +144,7 @@ export default {
     if (!isOwner(req)) {
       if (req.body.access || req.body.accesslevel) {
         return res.status(403).json({
-          message: "You're not permitted to change the share settings of this document"
+          message: "You can't change the share settings of this document"
         });
       }
     }

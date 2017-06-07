@@ -652,8 +652,8 @@ describe('Documents API', () => {
           if (!res.body) {
             throw new Error('Expected error to be returned');
           }
-          if (res.body.message !== "You're not permitted to change the share settings of this document") {
-            throw new Error(`Expected ${res.body.message} to equal "You're not permitted to change the share settings of this document"`);
+          if (res.body.message !== "You can't change the share settings of this document") {
+            throw new Error(`Expected ${res.body.message} to equal "You can't change the share settings of this document"`);
           }
           done();
         });
