@@ -119,13 +119,6 @@ li {
   }
 }
 
-// .row,
-// .col {
-//   box-sizing: border-box;
-//   flex-grow: 1;
-//   height: 100%;
-// }
-
 .auth-page-wrapper {
   display: flex;
   flex-grow: 1;
@@ -245,9 +238,9 @@ li {
 
 .new-doc {
   background-color: $indigo-darken-4;
-  bottom: 3%;
-  position: absolute;
-  right: 3%;
+  bottom: 20%;
+  position: fixed;
+  left: 3%;
 }
 
 .hidden {
@@ -485,5 +478,17 @@ input.title-editor {
     box-shadow: none;
     color: $white-100;
     transform: translate(0, 10%);
+  }
+}
+
+.pagination {
+  li {
+    &.active {
+      background-color: $indigo-darken-4;
+
+      a {
+        color: $white-100 !important;
+      }
+    }
   }
 }

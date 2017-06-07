@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { updateUser, deleteUser } from '../../actions/userActions';
+import parseDate from '../../utils/chronology';
 
 class UserDetails extends Component {
   constructor(props) {
@@ -46,7 +47,6 @@ class UserDetails extends Component {
   }
 
   onEditClick(e) {
-    $('.user-details > .fixed-action-btn').closeFAB();
     $('#profile-edit-button').addClass('disabled');
     $('#profile-clear-button').removeClass('disabled');
     $('#profile-save-button').removeClass('disabled');
@@ -102,6 +102,8 @@ class UserDetails extends Component {
     switch (roleId) {
       case 1:
         return 'Superadministrator';
+      case 2:
+        return 'Administrator';
       default:
         return 'Regular user';
     }
@@ -206,7 +208,7 @@ class UserDetails extends Component {
               </tr>
               <tr>
                 <td className="center">User since</td>
-                <td>{this.props.user.createdAt.substring(0, 10)}</td>
+                <td>{parseDate(this.props.user.createdAt)}</td>
               </tr>
             </tbody>
           </table>

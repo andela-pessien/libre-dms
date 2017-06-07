@@ -6,13 +6,7 @@ export const defaultRoles = [
   {
     label: 'Superadministrator'
   }, {
-    label: 'Administrator of organisation'
-  }, {
-    label: 'Head of department at organisation'
-  }, {
-    label: 'Member of department at organisation'
-  }, {
-    label: 'Member of organisation'
+    label: 'Administrator'
   }, {
     label: 'Regular'
   }

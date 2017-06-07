@@ -44,7 +44,15 @@ export default {
       ]
     };
     Document.findAndCountAll({
-      attributes: ['id', 'title', 'type', 'access', 'userId'],
+      attributes: [
+        'id',
+        'title',
+        'type',
+        'access',
+        'userId',
+        'createdAt',
+        'updatedAt'
+      ],
       where: dbQuery,
       include: [{
         model: User,
@@ -89,7 +97,14 @@ export default {
       ];
     }
     Document.findAndCountAll({
-      attributes: ['id', 'title', 'type', 'access'],
+      attributes: [
+        'id',
+        'title',
+        'type',
+        'access',
+        'createdAt',
+        'updatedAt'
+      ],
       where: dbQuery,
       order: [['updatedAt', 'DESC']],
       limit: req.listOptions.limit,
@@ -174,7 +189,15 @@ export default {
     };
     dbQuery.title = { $iLike: `%${req.listOptions.query}%` };
     Document.findAndCountAll({
-      attributes: ['id', 'title', 'type', 'access', 'userId'],
+      attributes: [
+        'id',
+        'title',
+        'type',
+        'access',
+        'userId',
+        'createdAt',
+        'updatedAt'
+      ],
       where: dbQuery,
       include: [{
         model: User,

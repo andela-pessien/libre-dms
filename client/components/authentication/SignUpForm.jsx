@@ -34,7 +34,8 @@ class SignUpForm extends Component {
   componentWillReceiveProps(nextProps) {
     const { error } = nextProps;
     if (error && error.message) {
-      Materialize.toast(error.message, 3000, 'indigo darken-4 rounded');
+      Materialize.toast(error.message, 3000,
+        'indigo darken-4 white-text rounded');
     }
   }
 
@@ -73,7 +74,8 @@ class SignUpForm extends Component {
       }
       this.props.signUp(this.state);
     } catch (err) {
-      Materialize.toast(err.message, 3000, 'indigo darken-4 rounded');
+      Materialize.toast(err.message, 3000,
+        'indigo darken-4 white-text rounded');
     }
   }
 
