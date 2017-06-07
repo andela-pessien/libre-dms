@@ -1,0 +1,33 @@
+{
+  "name": "libre-dms",
+  "description": "A full-stack document management system",
+  "scripts": {
+  },
+  "env": {
+    "JWT_EXPIRATION": {
+      "required": true
+    },
+    "JWT_SECRET": {
+      "required": true
+    },
+    "SADMIN_EMAIL": {
+      "required": true
+    },
+    "SADMIN_NAME": {
+      "required": true
+    },
+    "SADMIN_PASSWORD": {
+      "required": true
+    }
+  },
+  "formation": {
+  },
+  "addons": [
+    "heroku-postgresql"
+  ],
+  "buildpacks": [
+    {
+      "url": "heroku/nodejs"
+    }
+  ]
+}
