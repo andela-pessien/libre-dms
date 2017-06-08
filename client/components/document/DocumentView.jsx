@@ -30,7 +30,10 @@ class DocumentView extends Component {
    * @returns {undefined}
    */
   componentWillReceiveProps(nextProps) {
-    if (nextProps.id && nextProps.id !== this.props.id) {
+    if (
+    nextProps.id &&
+    nextProps.id !== this.props.id &&
+    nextProps.id !== 'new') {
       this.props.getDocument(nextProps.id);
     }
   }
@@ -41,7 +44,7 @@ class DocumentView extends Component {
    */
   render() {
     return (
-      <div className="view-wrapper document-wrapper z-index-3">
+      <div className="view-wrapper">
         {(this.props.id === 'new')
           ? <DocumentEditor />
           : (this.props.container.document)
@@ -64,7 +67,9 @@ DocumentView.propTypes = {
   id: PropTypes.string.isRequired,
   container: PropTypes.shape({
     document: PropTypes.object,
-    error: PropTypes.string
+    error: PropTypes.shape({
+      message: PropTypes.string
+    })
   }),
   getDocument: PropTypes.func.isRequired
 };

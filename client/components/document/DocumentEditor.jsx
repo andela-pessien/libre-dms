@@ -42,8 +42,14 @@ class DocumentEditor extends Component {
    */
   constructor(props) {
     super(props);
-    this.id = this.props.id;
-    this.container = this.props.documents[this.id];
+    this.setupComponent = this.setupComponent.bind(this);
+    this.setupEditor = this.setupEditor.bind(this);
+    this.onTitleChange = this.onTitleChange.bind(this);
+    this.updateAttribute = this.updateAttribute.bind(this);
+    this.saveChanges = this.saveChanges.bind(this);
+    this.onDeleteClick = this.onDeleteClick.bind(this);
+    this.id = props.id;
+    this.container = props.documents[this.id];
     this.state = {
       attributes: {
         title: this.container ? this.container.document.title : '',
@@ -53,18 +59,14 @@ class DocumentEditor extends Component {
       },
       status: ''
     };
+    this.initialState = { ...this.state.attributes };
     if (
     this.container &&
-    this.props.userId !== this.container.document.userId) {
+    props.userId !== this.container.document.userId) {
       modules.toolbar = false;
       this.readOnly = true;
     }
-    this.initialState = Object.assign({}, this.state.attributes);
     this.contentChanges = new Delta();
-    this.onTitleChange = this.onTitleChange.bind(this);
-    this.updateAttribute = this.updateAttribute.bind(this);
-    this.saveChanges = this.saveChanges.bind(this);
-    this.onDeleteClick = this.onDeleteClick.bind(this);
   }
 
   /**
@@ -76,44 +78,38 @@ class DocumentEditor extends Component {
    */
   componentDidMount() {
     $('.dropdown-button').dropdown();
-    $(`#${this.state.attributes.access}`).addClass('active');
-    $(`#${this.state.attributes.accesslevel}`).addClass('active');
-    this.contentEditor = new Quill('.content-editor', {
-      modules,
-      placeholder: contentPlaceholder,
-      theme,
-      readOnly: this.readOnly
-    });
-    if (this.container && this.container.document) {
-      if (this.container.document.type === 'quill') {
-        this.contentEditor.setContents(
-          JSON.parse(this.container.document.content), 'silent');
-      } else {
-        this.contentEditor.setText(this.container.document.content, 'silent');
-      }
-    }
-    this.contentEditor.on('text-change', (delta) => {
-      this.contentChanges = this.contentChanges.compose(delta);
-    });
-    this.saveInterval = setInterval(this.saveChanges, 10000);
+    this.setupEditor();
   }
 
   /**
    * Runs when the DocumentEditor's props have changed.
    * Updates editor status to reflect successful/failed actions.
-   * @param {Object} props The props to be received
+   * @param {Object} nextProps The props to be received
    * @returns {undefined}
    */
-  componentWillReceiveProps({ newDocument, documents }) {
-    if (
-    documents[this.id] &&
-    documents[this.id].document &&
-    !isEqual(documents[this.id], this.container.document)) {
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.id !== this.id && nextProps.documents[nextProps.id]) {
+      return undefined;
+    } else if (
+    nextProps.documents[this.id] &&
+    nextProps.documents[this.id].document &&
+    !isEqual(nextProps.documents[this.id], this.container.document)) {
       this.setState({ status: 'All changes saved to cloud' });
-    } else if (newDocument.id && !this.id) {
-      this.id = newDocument.id;
-      this.container = documents[this.id];
+    } else if (nextProps.newDocument.id && !this.id) {
+      this.id = nextProps.newDocument.id;
+      this.container = nextProps.documents[this.id];
       this.setState({ status: 'All changes saved to cloud' });
+    }
+  }
+
+  /**
+   * Runs when the DocumentEditor component will update
+   * @returns {undefined}
+   */
+  componentWillUpdate() {
+    if (this.props.id !== this.id && this.props.documents[this.props.id]) {
+      this.setupComponent(this.props);
+      this.setupEditor();
     }
   }
 
@@ -153,6 +149,62 @@ class DocumentEditor extends Component {
   }
 
   /**
+   * Sets up the DocumentEditor component
+   * @param {Object} props The component's props
+   * @returns {undefined}
+   */
+  setupComponent(props) {
+    this.id = props.id;
+    this.container = props.documents[this.id];
+    this.setState({
+      attributes: {
+        title: this.container ? this.container.document.title : '',
+        access: this.container ? this.container.document.access : 'private',
+        accesslevel: this.container ?
+          this.container.document.accesslevel : 'view'
+      },
+      status: ''
+    }, () => {
+      this.initialState = Object.assign({}, this.state.attributes);
+    });
+    if (
+    this.container &&
+    props.userId !== this.container.document.userId) {
+      modules.toolbar = false;
+      this.readOnly = true;
+    }
+    this.contentChanges = new Delta();
+  }
+
+  /**
+   * Sets up the Quill editor
+   * @returns {undefined}
+   */
+  setupEditor() {
+    $(`#${this.state.attributes.access}`).addClass('active');
+    $(`#${this.state.attributes.accesslevel}`).addClass('active');
+    $('.ql-toolbar').remove();
+    this.contentEditor = new Quill('.content-editor', {
+      modules,
+      placeholder: contentPlaceholder,
+      theme,
+      readOnly: this.readOnly
+    });
+    if (this.container && this.container.document) {
+      if (this.container.document.type === 'quill') {
+        this.contentEditor.setContents(
+          JSON.parse(this.container.document.content), 'silent');
+      } else {
+        this.contentEditor.setText(this.container.document.content, 'silent');
+      }
+    }
+    this.contentEditor.on('text-change', (delta) => {
+      this.contentChanges = this.contentChanges.compose(delta);
+    });
+    this.saveInterval = setInterval(this.saveChanges, 10000);
+  }
+
+  /**
    * Method that updates an attribute of the document
    * Called from the menu bar
    * @param {String} attribute The attribute to be changed
@@ -167,6 +219,7 @@ class DocumentEditor extends Component {
       $(`#${value}`).addClass('active');
     });
   }
+
   /**
    * Method that autosaves document changes if any.
    * @returns {undefined}
@@ -247,6 +300,7 @@ DocumentEditor.propTypes = {
   id: PropTypes.string,
   userId: PropTypes.string.isRequired,
   documents: PropTypes.object,
+  newDocument: PropTypes.object,
   createDocument: PropTypes.func.isRequired,
   updateDocument: PropTypes.func.isRequired,
   deleteDocument: PropTypes.func.isRequired
@@ -254,7 +308,8 @@ DocumentEditor.propTypes = {
 
 DocumentEditor.defaultProps = {
   id: '',
-  documents: {}
+  documents: {},
+  newDocument: {}
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(DocumentEditor);

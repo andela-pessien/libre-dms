@@ -46,18 +46,7 @@ db.sequelize.sync({ force: true })
         console.log('Adding documents...');
         db.Document.bulkCreate(documents, { individualHooks: true, validate: true })
         .then(() => {
-          if (process.env.NODE_ENV === 'test') {
-            console.log('Done setting up database.');
-          } else {
-            console.log('Saving user credentials...');
-            const file = fs.openSync('./data/users.json', 'w');
-            fs.writeSync(file, JSON.stringify({ users }, null, 2));
-            fs.close(file, (err) => {
-              if (err) throw err;
-              console.log('Saved data to data/users.json');
-              console.log('Done setting up database.');
-            });
-          }
+          console.log('Done setting up database.');
         });
       });
     });

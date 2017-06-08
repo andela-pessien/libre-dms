@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { signOut } from '../../actions/authActions';
 
@@ -58,7 +57,6 @@ class AccountMenu extends Component {
           <ul id="account-dropdown" className="dropdown-content account-menu">
             <li><a>Hi, {this.props.user.name.split(/\s+/)[0]}</a></li>
             <li className="divider" />
-            <li><Link to="/profile">Profile</Link></li>
             <li>
               <a href="#!" onClick={this.onSignOutClick}>Sign Out</a>
             </li>

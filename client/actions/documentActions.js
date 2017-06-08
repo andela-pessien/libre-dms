@@ -25,7 +25,9 @@ export function getAllDocuments(limit, offset) {
       }, (err) => {
         dispatch({
           type: document.GET_ALL_FAILURE,
-          error: err
+          error: (typeof err.response.data === 'object')
+            ? err.response.data
+            : { message: 'Connection failed' }
         });
       }));
 }
@@ -48,7 +50,9 @@ export function getDocument(id) {
         dispatch({
           type: document.GET_FAILURE,
           id,
-          error: err
+          error: (typeof err.response.data === 'object')
+            ? err.response.data
+            : { message: 'Connection failed' }
         });
       }));
 }
@@ -77,7 +81,9 @@ export function searchDocuments(query, limit, offset) {
       }, (err) => {
         dispatch({
           type: document.SEARCH_FAILURE,
-          error: err
+          error: (typeof err.response.data === 'object')
+            ? err.response.data
+            : { message: 'Connection failed' }
         });
       }));
 }
@@ -99,7 +105,9 @@ export function createDocument(newDocument) {
       }, (err) => {
         dispatch({
           type: document.CREATE_FAILURE,
-          error: err
+          error: (typeof err.response.data === 'object')
+            ? err.response.data
+            : { message: 'Connection failed' }
         });
       }));
 }
@@ -123,7 +131,9 @@ export function updateDocument(id, patch) {
         dispatch({
           type: document.UPDATE_FAILURE,
           id,
-          error: err
+          error: (typeof err.response.data === 'object')
+            ? err.response.data
+            : { message: 'Connection failed' }
         });
       }));
 }
@@ -146,7 +156,9 @@ export function deleteDocument(id) {
         dispatch({
           type: document.DELETE_FAILURE,
           id,
-          error: err
+          error: (typeof err.response.data === 'object')
+            ? err.response.data
+            : { message: 'Connection failed' }
         });
       }));
 }

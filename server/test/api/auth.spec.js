@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import request from 'supertest';
 import jwtDecode from 'jwt-decode';
 import server from '../../server';

@@ -32,7 +32,8 @@ class SignInForm extends Component {
   componentWillReceiveProps(nextProps) {
     const { error } = nextProps;
     if (error && error.message) {
-      Materialize.toast(error.message, 3000, 'indigo darken-4 rounded');
+      Materialize.toast(error.message, 3000,
+        'indigo darken-4 white-text rounded');
     }
   }
 
@@ -64,7 +65,8 @@ class SignInForm extends Component {
       }
       this.props.signIn(this.state);
     } catch (err) {
-      Materialize.toast(err.message, 3000, 'indigo darken-4 rounded');
+      Materialize.toast(err.message, 3000,
+        'indigo darken-4 white-text rounded');
     }
   }
 
@@ -109,7 +111,7 @@ class SignInForm extends Component {
 
 const mapStateToProps = state => ({
   ownId: state.authReducer.currentUser,
-  error: state.authReducer.signUpError
+  error: state.authReducer.signInError
 });
 
 const mapDispatchToProps = dispatch => ({

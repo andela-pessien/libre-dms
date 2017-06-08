@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { user } from './actionTypes';
+import { auth, user } from './actionTypes';
 import decodeMetadata from '../utils/decodeMetadata';
 import setAuthentication from '../utils/setAuthentication';
 
@@ -25,7 +25,9 @@ export function getAllUsers(limit, offset) {
       }, (err) => {
         dispatch({
           type: user.GET_ALL_FAILURE,
-          error: err
+          error: (typeof err.response.data === 'object')
+            ? err.response.data
+            : { message: 'Connection failed' }
         });
       })
   );
@@ -49,7 +51,9 @@ export function getUser(id) {
         dispatch({
           type: user.GET_FAILURE,
           id,
-          error: err
+          error: (typeof err.response.data === 'object')
+            ? err.response.data
+            : { message: 'Connection failed' }
         });
       }));
 }
@@ -78,7 +82,9 @@ export function searchUsers(query, limit, offset) {
       }, (err) => {
         dispatch({
           type: user.SEARCH_FAILURE,
-          error: err
+          error: (typeof err.response.data === 'object')
+            ? err.response.data
+            : { message: 'Connection failed' }
         });
       }));
 }
@@ -102,7 +108,9 @@ export function updateUser(id, patch) {
         dispatch({
           type: user.UPDATE_FAILURE,
           id,
-          error: err
+          error: (typeof err.response.data === 'object')
+            ? err.response.data
+            : { message: 'Connection failed' }
         });
       }));
 }
@@ -110,9 +118,11 @@ export function updateUser(id, patch) {
 /**
  * Requests the API to delete a user
  * @param {String} id The ID of the user to be deleted
+ * @param {Boolean} isSelf Whether or not the user to be deleted is the
+ * currently signed in user
  * @returns {Function} A thunk that asynchronously makes the request/dispatch
  */
-export function deleteUser(id) {
+export function deleteUser(id, isSelf) {
   return dispatch => (
     axios.delete(`/api/users/${id}`)
       .then((res) => {
@@ -121,11 +131,18 @@ export function deleteUser(id) {
           type: user.DELETE_SUCCESS,
           id
         });
+        if (isSelf) {
+          dispatch({
+            type: auth.SIGNOUT_SUCCESS
+          });
+        }
       }, (err) => {
         dispatch({
           type: user.DELETE_FAILURE,
           id,
-          error: err
+          error: (typeof err.response.data === 'object')
+            ? err.response.data
+            : { message: 'Connection failed' }
         });
       }));
 }
@@ -156,7 +173,9 @@ export function getUserDocuments(id, limit, offset) {
         dispatch({
           type: user.GET_DOCS_FAILURE,
           id,
-          error: err
+          error: (typeof err.response.data === 'object')
+            ? err.response.data
+            : { message: 'Connection failed' }
         });
       }));
 }

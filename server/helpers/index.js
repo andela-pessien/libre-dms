@@ -95,7 +95,7 @@ export const getMetadata = (results, limit, offset) => {
     total: results.count,
     pages: Math.ceil(results.count / limit),
     currentPage: (Math.floor(offset / limit) + 1),
-    pageSize: results.rows.length
+    pageSize: limit
   });
   return Buffer.from(metadata, 'utf8').toString('base64');
 };

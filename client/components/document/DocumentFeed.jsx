@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import Preloader from '../common/Preloader';
+import parseDate from '../../utils/chronology';
 
 /**
  * Component that displays a feed of documents.
@@ -25,7 +26,7 @@ function DocumentFeed({ documents, documentClickAction, profileClickAction }) {
                           onClick={documentClickAction}
                           name={document.id}
                         >
-                          {document.title}
+                          {document.title || 'Untitled Document'}
                         </a>
                         : <Link to={`/document/${document.id}`}>
                           {document.title}
@@ -36,12 +37,21 @@ function DocumentFeed({ documents, documentClickAction, profileClickAction }) {
                         ? <a
                           onClick={profileClickAction}
                           name={document.userId}
+                          className="right"
                         >
                           {document.User.name}
                         </a>
-                        : <Link to={`/profile/${document.userId}`}>
+                        : <Link
+                          className="right"
+                          to={`/profile/${document.userId}`}
+                        >
                           {document.User.name}
                         </Link>)}
+                    <p>
+                      Last edited: {document.updatedAt
+                        ? parseDate(document.updatedAt)
+                        : parseDate(document.createdAt)}
+                    </p>
                   </li>
                   <li className="divider" />
                 </div>)}
