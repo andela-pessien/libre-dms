@@ -103,7 +103,7 @@ export default function userReducer(state = {}, action) {
       return Object.keys(state).reduce((result, key) => {
         console.log(action.id, key);
         if (key !== action.id) {
-          result[key] = state.users[key];
+          result[key] = state[key];
         }
         return result;
       }, {});

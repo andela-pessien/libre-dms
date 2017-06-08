@@ -95,7 +95,7 @@ export default function documentReducer(state = { documents: {} }, action) {
     case document.DELETE_SUCCESS:
       return Object.keys(state).reduce((result, key) => {
         if (key !== action.id) {
-          result[key] = state.users[key];
+          result[key] = state[key];
         }
         return result;
       }, {});

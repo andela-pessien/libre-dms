@@ -20,7 +20,7 @@ class UserDetails extends Component {
    */
   constructor(props) {
     super(props);
-    this.user = this.props.users[this.props.id];
+    this.user = this.props.users[this.props.id].user;
     this.state = {
       name: this.user.name,
       email: this.user.email,
@@ -54,11 +54,14 @@ class UserDetails extends Component {
    * @returns {undefined}
    */
   componentWillReceiveProps(nextProps) {
-    if (nextProps.users[this.id]) {
+    const userContainer = nextProps.users[this.props.id];
+    if (userContainer && userContainer.user) {
       this.setState({
-        name: nextProps.users[this.id].name,
-        email: nextProps.users[this.id].email
+        name: userContainer.user.name,
+        email: userContainer.user.email,
+        isPrivate: userContainer.user.isPrivate
       });
+      this.user = nextProps.users[this.props.id].user;
     }
   }
 
@@ -205,7 +208,7 @@ class UserDetails extends Component {
               </li>
             </ul>
           </div>
-          : (isAdminOrHigher(this.props.users[this.props.ownId])) &&
+          : (isAdminOrHigher(this.props.users[this.props.ownId].user)) &&
             <div className="fixed-action-btn horizontal click-to-toggle">
               <a className="btn-floating btn-large indigo darken-4">
                 <i className="material-icons">menu</i>
@@ -298,7 +301,7 @@ UserDetails.propTypes = {
   deleteUser: PropTypes.func.isRequired,
   updateUser: PropTypes.func.isRequired,
   ownId: PropTypes.string.isRequired,
-  id: PropTypes.object.isRequired,
+  id: PropTypes.string.isRequired,
   users: PropTypes.object.isRequired
 };
 
