@@ -59,7 +59,7 @@ class DocumentEditor extends Component {
       },
       status: ''
     };
-    this.initialState = Object.assign({}, this.state.attributes);
+    this.initialState = { ...this.state.attributes };
     if (
     this.container &&
     props.userId !== this.container.document.userId) {

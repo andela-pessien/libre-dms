@@ -111,7 +111,7 @@ class SignInForm extends Component {
 
 const mapStateToProps = state => ({
   ownId: state.authReducer.currentUser,
-  error: state.authReducer.signUpError
+  error: state.authReducer.signInError
 });
 
 const mapDispatchToProps = dispatch => ({

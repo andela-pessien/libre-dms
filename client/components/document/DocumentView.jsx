@@ -30,7 +30,10 @@ class DocumentView extends Component {
    * @returns {undefined}
    */
   componentWillReceiveProps(nextProps) {
-    if (nextProps.id && nextProps.id !== this.props.id) {
+    if (
+    nextProps.id &&
+    nextProps.id !== this.props.id &&
+    nextProps.id !== 'new') {
       this.props.getDocument(nextProps.id);
     }
   }

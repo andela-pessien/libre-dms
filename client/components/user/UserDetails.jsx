@@ -3,14 +3,28 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { updateUser, deleteUser } from '../../actions/userActions';
 import parseDate from '../../utils/chronology';
+import {
+  isSuperAdmin,
+  isAdminOrHigher,
+  getRole
+} from '../../utils/roles';
 
+/**
+ * Component that displays a user's details
+ * @author Princess-Jewel Essine
+ */
 class UserDetails extends Component {
+  /**
+   * @param {Object} props The props for the component
+   * @constructor
+   */
   constructor(props) {
     super(props);
+    this.user = this.props.users[this.props.id];
     this.state = {
-      name: this.props.user.name,
-      email: this.props.user.email,
-      isPrivate: this.props.user.isPrivate
+      name: this.user.name,
+      email: this.user.email,
+      isPrivate: this.user.isPrivate
     };
     this.onChange = this.onChange.bind(this);
     this.onEditClick = this.onEditClick.bind(this);
@@ -19,6 +33,10 @@ class UserDetails extends Component {
     this.onDeleteClick = this.onDeleteClick.bind(this);
   }
 
+  /**
+   * Runs when the UserDetails component has mounted
+   * @returns {undefined}
+   */
   componentDidMount() {
     const header = $('.header-photo');
     const avatar = $('.profile-photo');
@@ -30,15 +48,25 @@ class UserDetails extends Component {
     avatar.css('font-size', 0.75 * avatar.height());
   }
 
+  /**
+   * Runs when the UserDetails component will receive new props
+   * @param {Object} nextProps The props to be received
+   * @returns {undefined}
+   */
   componentWillReceiveProps(nextProps) {
-    if (nextProps.user) {
+    if (nextProps.users[this.id]) {
       this.setState({
-        name: nextProps.user.name,
-        email: nextProps.user.email
+        name: nextProps.users[this.id].name,
+        email: nextProps.users[this.id].email
       });
     }
   }
 
+  /**
+   * Change event handler for editing user details
+   * @param {Object} e The change event
+   * @returns {undefined}
+   */
   onChange(e) {
     this.setState({ [e.target.id]: e.target.value });
     if (e.target.id === 'isPrivate') {
@@ -46,6 +74,11 @@ class UserDetails extends Component {
     }
   }
 
+  /**
+   * Click event handler for editing user details
+   * @param {Object} e The click event
+   * @returns {undefined}
+   */
   onEditClick(e) {
     $('#profile-edit-button').addClass('disabled');
     $('#profile-clear-button').removeClass('disabled');
@@ -54,42 +87,65 @@ class UserDetails extends Component {
     $('select').prop('disabled', false);
   }
 
-  onClearClick(e) {
+  /**
+   * Click event handler for clearing edits
+   * @param {Object} e The click event
+   * @returns {undefined}
+   */
+  onClearClick() {
     $('.user-details > .fixed-action-btn').closeFAB();
     this.setState({
-      name: this.props.user.name,
-      email: this.props.user.email,
-      isPrivate: this.props.user.isPrivate
+      name: this.user.name,
+      email: this.user.email,
+      isPrivate: this.user.isPrivate
     });
     this.setReadonly();
   }
 
-  onSaveClick(e) {
+  /**
+   * Click event handler for saving edited details
+   * @param {Object} e The click event
+   * @returns {undefined}
+   */
+  onSaveClick() {
     $('.user-details > .fixed-action-btn').closeFAB();
     const patch = {};
-    if (this.state.name && this.state.name !== this.props.user.name) {
+    if (this.state.name && this.state.name !== this.user.name) {
       patch.name = this.state.name;
     }
     if (
     this.state.email &&
     $('#email').hasClass('valid') &&
-    this.state.email !== this.props.user.email) {
+    this.state.email !== this.user.email) {
       patch.email = this.state.email;
     }
-    if (this.state.isPrivate !== this.props.user.isPrivate) {
+    if (this.state.isPrivate !== this.user.isPrivate) {
       patch.isPrivate = this.state.isPrivate;
     }
     if (!$.isEmptyObject(patch)) {
-      this.props.updateUser(this.props.user.id, patch);
+      this.props.updateUser(this.user.id, patch);
     }
     this.setReadonly();
   }
 
+  /**
+   * Click event handler for deleting a user
+   * @param {Object} e The click event
+   * @returns {undefined}
+   */
   onDeleteClick(e) {
     $('.user-details > .fixed-action-btn').closeFAB();
-    this.props.deleteUser(this.props.user.id);
+    if (e.target.name === 'self') {
+      this.props.deleteUser(this.user.id, true);
+    } else {
+      this.props.deleteUser(this.user.id);
+    }
   }
 
+  /**
+   * Method that sets read only element visibility
+   * @returns {undefined}
+   */
   setReadonly() {
     $('#profile-edit-button').removeClass('disabled');
     $('#profile-clear-button').addClass('disabled');
@@ -98,22 +154,15 @@ class UserDetails extends Component {
     $('select').prop('disabled', true);
   }
 
-  getRole(roleId) {
-    switch (roleId) {
-      case 1:
-        return 'Superadministrator';
-      case 2:
-        return 'Administrator';
-      default:
-        return 'Regular user';
-    }
-  }
-
+  /**
+   * Renders the UserDetails component
+   * @returns {String} JSX markup for the UserDetails component
+   */
   render() {
     return (
-      <div className="user-details">
-        {(this.props.user.id === this.props.ownId)
-          && <div className="fixed-action-btn horizontal click-to-toggle">
+      this.user && <div className="user-details">
+        {(this.props.id === this.props.ownId)
+          ? <div className="fixed-action-btn horizontal click-to-toggle">
             <a className="btn-floating btn-large indigo darken-4">
               <i className="material-icons">menu</i>
             </a>
@@ -148,15 +197,32 @@ class UserDetails extends Component {
               <li>
                 <a
                   className="btn-floating indigo darken-4"
+                  name="self"
                   onClick={this.onDeleteClick}
                 >
                   <i className="material-icons">delete</i>
                 </a>
               </li>
             </ul>
-          </div>}
+          </div>
+          : (isAdminOrHigher(this.props.users[this.props.ownId])) &&
+            <div className="fixed-action-btn horizontal click-to-toggle">
+              <a className="btn-floating btn-large indigo darken-4">
+                <i className="material-icons">menu</i>
+              </a>
+              <ul>
+                <li>
+                  <a
+                    className="btn-floating indigo darken-4"
+                    onClick={this.onDeleteClick}
+                  >
+                    <i className="material-icons">delete</i>
+                  </a>
+                </li>
+              </ul>
+            </div>}
         <div className="header-photo">
-          <div className="profile-photo">{this.props.user.name[0]}</div>
+          <div className="profile-photo">{this.user.name[0]}</div>
         </div>
         <div className="details-body">
           <table className="striped">
@@ -204,11 +270,11 @@ class UserDetails extends Component {
               </tr>
               <tr>
                 <td className="center">Role</td>
-                <td>{this.getRole(this.props.user.roleId)}</td>
+                <td>{getRole(this.user.roleId)}</td>
               </tr>
               <tr>
                 <td className="center">User since</td>
-                <td>{parseDate(this.props.user.createdAt)}</td>
+                <td>{parseDate(this.user.createdAt)}</td>
               </tr>
             </tbody>
           </table>
@@ -219,19 +285,21 @@ class UserDetails extends Component {
 }
 
 const mapStateToProps = state => ({
-  ownId: state.authReducer.currentUser
+  ownId: state.authReducer.currentUser,
+  users: state.userReducer
 });
 
 const mapDispatchToProps = dispatch => ({
   updateUser: (id, patch) => dispatch(updateUser(id, patch)),
-  deleteUser: id => dispatch(deleteUser(id))
+  deleteUser: (id, isSelf) => dispatch(deleteUser(id, isSelf))
 });
 
 UserDetails.propTypes = {
   deleteUser: PropTypes.func.isRequired,
   updateUser: PropTypes.func.isRequired,
   ownId: PropTypes.string.isRequired,
-  user: PropTypes.object.isRequired
+  id: PropTypes.object.isRequired,
+  users: PropTypes.object.isRequired
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(UserDetails);

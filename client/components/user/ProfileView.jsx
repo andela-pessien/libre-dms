@@ -50,7 +50,7 @@ class ProfileView extends Component {
           ? (this.props.full)
             ? <div className="row user-details-side">
               <div className="col l5">
-                <UserDetails user={this.props.container.user} />
+                <UserDetails id={this.props.id} />
               </div>
               <div className="col l7">
                 {(this.props.container.documents)
@@ -58,7 +58,7 @@ class ProfileView extends Component {
                   : <Preloader className="middle" />}
               </div>
             </div>
-            : <UserDetails user={this.props.container.user} />
+            : <UserDetails id={this.props.id} />
           : <Preloader className="middle" />}
       </div>
     );

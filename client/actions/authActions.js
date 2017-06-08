@@ -21,9 +21,12 @@ export function signUp(userData) {
           userId: res.data.id
         });
       }, (err) => {
+        console.log(err.response.data);
         dispatch({
           type: auth.SIGNUP_FAILURE,
-          error: err
+          error: (typeof err.response.data === 'object')
+            ? err.response.data
+            : { message: 'Connection failed' }
         });
       })
   );
@@ -50,7 +53,9 @@ export function signIn(credentials) {
       }, (err) => {
         dispatch({
           type: auth.SIGNIN_FAILURE,
-          error: err
+          error: (typeof err.response.data === 'object')
+            ? err.response.data
+            : { message: 'Connection failed' }
         });
       })
   );
@@ -71,7 +76,9 @@ export function signOut() {
       }, (err) => {
         dispatch({
           type: auth.SIGNOUT_FAILURE,
-          error: err
+          error: (typeof err.response.data === 'object')
+            ? err.response.data
+            : { message: 'Connection failed' }
         });
       })
   );
@@ -99,7 +106,9 @@ export function getCurrentUser(id) {
       }, (err) => {
         dispatch({
           type: auth.SIGNIN_FAILURE,
-          error: err
+          error: (typeof err.response.data === 'object')
+            ? err.response.data
+            : { message: 'Connection failed' }
         });
       })
   );
