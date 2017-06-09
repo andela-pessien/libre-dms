@@ -46,3 +46,5 @@ dist
 .DS_Store
 
 client/styles/materialize
+scripts
+server/controllers

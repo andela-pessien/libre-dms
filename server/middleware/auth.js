@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken';
 import {
   isSuperAdmin,
+  isAdminOrHigher,
   isOwner,
   hasRetrieveAccess,
   hasEditAccess
@@ -28,12 +29,30 @@ export default {
             });
           }
           req.decoded = decoded;
-          next();
+          return next();
         }
       );
     }
     return res.status(401).json({
       message: 'You need to be logged in to perform that action'
+    });
+  },
+
+  superAdminAccess(req, res, next) {
+    if (isSuperAdmin(req)) {
+      return next();
+    }
+    return res.status(403).json({
+      message: 'Only the superadministrator can perform that action'
+    });
+  },
+
+  adminAccess(req, res, next) {
+    if (isAdminOrHigher(req)) {
+      return next();
+    }
+    return res.status(403).json({
+      message: 'Only an administrator or higher can perform that action'
     });
   },
 

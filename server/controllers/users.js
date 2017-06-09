@@ -198,5 +198,53 @@ export default {
       res.status(200).json(users.rows);
     })
     .catch(err => (dbErrorHandler(err, res)));
+  },
+
+  /**
+   * Method that promotes a user to administrator status
+   * @param {Object} req The request from the client
+   * @param {Object} res The response from the server
+   * @returns {undefined}
+   */
+  promote(req, res) {
+    if (req.retrievedRecord.roleId === 1) {
+      res.status(409).json({
+        message: 'This user is already the superadministrator'
+      });
+    } else if (req.retrievedRecord.roleId === 2) {
+      res.status(409).json({
+        message: `${req.retrievedRecord.name} is already an administrator`
+      });
+    } else {
+      req.retrievedRecord.update({ roleId: 2 })
+      .then(administrator => (res.status(200).json(formatUser(administrator))))
+      .catch(() => res.status(500).json({
+        message: 'An error occurred while promoting this user'
+      }));
+    }
+  },
+
+  /**
+   * Method that demotes a user from administrator status
+   * @param {Object} req The request from the client
+   * @param {Object} res The response from the server
+   * @returns {undefined}
+   */
+  demote(req, res) {
+    if (req.retrievedRecord.roleId === 1) {
+      res.status(403).json({
+        message: "You can't demote the superadministrator"
+      });
+    } else if (req.retrievedRecord.roleId === 3) {
+      res.status(409).json({
+        message: `${req.retrievedRecord.name} is already a regular user`
+      });
+    } else {
+      req.retrievedRecord.update({ roleId: 3 })
+      .then(user => (res.status(200).json(formatUser(user))))
+      .catch(() => res.status(500).json({
+        message: 'An error occurred while demoting this user'
+      }));
+    }
   }
 };

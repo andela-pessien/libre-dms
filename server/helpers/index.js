@@ -72,6 +72,8 @@ export const dbErrorHandler = (err, res) => {
 
 export const isSuperAdmin = req => (req.decoded.roleId === 1);
 
+export const isAdminOrHigher = req => (req.decoded.roleId <= 2);
+
 export const isOwner = req => (
   req.decoded.id === req.params.id ||
   (req.retrievedRecord &&

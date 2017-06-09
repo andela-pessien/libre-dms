@@ -59,6 +59,24 @@ const routes = (app) => {
     );
 
   /**
+   * Routes for promoting/demoting administrators
+   */
+  app.put(
+    '/api/users/:id/promote',
+    auth.checkToken,
+    auth.adminAccess,
+    database.retrieveRecord,
+    userController.promote
+  );
+  app.put(
+    '/api/users/:id/demote',
+    auth.checkToken,
+    auth.superAdminAccess,
+    database.retrieveRecord,
+    userController.demote
+  );
+
+  /**
    * CRUD routes for documents
    */
   app
