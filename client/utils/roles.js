@@ -26,19 +26,20 @@ export function isAdminOrHigher(user) {
 }
 
 /**
+ * Labels for user roles
+ */
+export const roles = [
+  'Superadministrator',
+  'Administrator',
+  'Reviewer',
+  'Regular user'
+];
+
+/**
  * Function that gets the name of a user's role
  * @param {Number} roleId The role id of the user
  * @returns {String} The name of the role
  */
 export function getRole(roleId) {
-  switch (roleId) {
-    case 1:
-      return 'Superadministrator';
-    case 2:
-      return 'Administrator';
-    case 3:
-      return 'Reviewer';
-    default:
-      return 'Regular user';
-  }
+  return roles[roleId - 1];
 }

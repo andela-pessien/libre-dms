@@ -492,3 +492,15 @@ input.title-editor {
     }
   }
 }
+
+.confirm-dialog {
+  @media #{$large-and-up} {
+    width: 30%;
+  }
+}
+
+.modal-footer {
+  .btn {
+    margin: 6px;
+  }
+}

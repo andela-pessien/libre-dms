@@ -14,12 +14,11 @@ export default {
     .then((record) => {
       if (record) {
         req.retrievedRecord = record;
-        next();
-      } else {
-        return res.status(404).json({
-          message: 'Resource not found'
-        });
+        return next();
       }
+      return res.status(404).json({
+        message: 'Resource not found'
+      });
     })
     .catch(() => res.status(400).json({
       message: 'Invalid resource identifier'
