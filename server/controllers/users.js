@@ -3,7 +3,7 @@ import {
   signToken,
   dbErrorHandler,
   getMetadata,
-  isSuperAdmin,
+  isAdminOrHigher,
   isOwner
 } from '../helpers';
 import model from '../models';
@@ -58,7 +58,7 @@ export default {
    * @returns {void}
    */
   list(req, res) {
-    const dbQuery = isSuperAdmin(req) ? {} : {
+    const dbQuery = isAdminOrHigher(req) ? {} : {
       $or: [
         { id: req.decoded.id },
         { isPrivate: false }
@@ -108,7 +108,7 @@ export default {
       if (!user) {
         return res.status(404).json({ message: 'Could not find that user' });
       }
-      if (user.isPrivate && (!isSuperAdmin(req) && !isOwner(req))) {
+      if (user.isPrivate && (!isAdminOrHigher(req) && !isOwner(req))) {
         return res.status(403).json({
           message: "You don't have access to this resource"
         });
@@ -173,7 +173,7 @@ export default {
    * @returns {void}
    */
   search(req, res) {
-    const dbQuery = isSuperAdmin(req) ? {} : {
+    const dbQuery = isAdminOrHigher(req) ? {} : {
       $or: [
         { id: req.decoded.id },
         { isPrivate: false }
@@ -201,50 +201,52 @@ export default {
   },
 
   /**
-   * Method that promotes a user to administrator status
+   * Method that sets a user's role
    * @param {Object} req The request from the client
    * @param {Object} res The response from the server
    * @returns {undefined}
    */
-  promote(req, res) {
-    if (req.retrievedRecord.roleId === 1) {
-      res.status(409).json({
-        message: 'This user is already the superadministrator'
-      });
-    } else if (req.retrievedRecord.roleId === 2) {
-      res.status(409).json({
-        message: `${req.retrievedRecord.name} is already an administrator`
-      });
-    } else {
-      req.retrievedRecord.update({ roleId: 2 })
-      .then(administrator => (res.status(200).json(formatUser(administrator))))
-      .catch(() => res.status(500).json({
-        message: 'An error occurred while promoting this user'
-      }));
-    }
-  },
-
-  /**
-   * Method that demotes a user from administrator status
-   * @param {Object} req The request from the client
-   * @param {Object} res The response from the server
-   * @returns {undefined}
-   */
-  demote(req, res) {
-    if (req.retrievedRecord.roleId === 1) {
-      res.status(403).json({
-        message: "You can't demote the superadministrator"
-      });
-    } else if (req.retrievedRecord.roleId === 3) {
-      res.status(409).json({
-        message: `${req.retrievedRecord.name} is already a regular user`
-      });
-    } else {
-      req.retrievedRecord.update({ roleId: 3 })
-      .then(user => (res.status(200).json(formatUser(user))))
-      .catch(() => res.status(500).json({
-        message: 'An error occurred while demoting this user'
-      }));
+  setRole(req, res) {
+    req.body.roleId = parseInt(req.body.roleId, 10);
+    switch (true) {
+      case (!(req.body.roleId >= 1 && req.body.roleId <= 4)):
+        res.status(400).json({
+          message: 'Please provide a valid role ID'
+        });
+        break;
+      case (req.body.roleId === 1):
+        res.status(403).json({
+          message: 'There can only be one superadministrator'
+        });
+        break;
+      case (req.retrievedRecord.roleId === 1):
+        res.status(403).json({
+          message: "The superadministrator's role cannot be changed"
+        });
+        break;
+      case (req.retrievedRecord.id === req.decoded.id):
+        res.status(403).json({
+          message: "You're not permitted to set your own role"
+        });
+        break;
+      case (req.retrievedRecord.roleId === req.body.roleId):
+        res.status(409).json({
+          message: `${req.retrievedRecord.name} already occupies that role`
+        });
+        break;
+      case (
+      req.retrievedRecord.roleId === 2 &&
+      req.decoded.roleId !== 1):
+        res.status(403).json({
+          message: 'Only the superadministrator can demote administrators'
+        });
+        break;
+      default:
+        req.retrievedRecord.update({ roleId: req.body.roleId })
+        .then(user => (res.status(200).json(formatUser(user))))
+        .catch(() => res.status(500).json({
+          message: 'An error occurred while demoting this user'
+        }));
     }
   }
 };

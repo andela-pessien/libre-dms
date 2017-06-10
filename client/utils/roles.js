@@ -36,6 +36,8 @@ export function getRole(roleId) {
       return 'Superadministrator';
     case 2:
       return 'Administrator';
+    case 3:
+      return 'Reviewer';
     default:
       return 'Regular user';
   }

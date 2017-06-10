@@ -57,23 +57,15 @@ const routes = (app) => {
       auth.hasAccess,
       userController.destroy
     );
-
   /**
-   * Routes for promoting/demoting administrators
+   * Route for setting a user's role
    */
   app.put(
-    '/api/users/:id/promote',
+    '/api/users/:id/set-role',
     auth.checkToken,
     auth.adminAccess,
     database.retrieveRecord,
-    userController.promote
-  );
-  app.put(
-    '/api/users/:id/demote',
-    auth.checkToken,
-    auth.superAdminAccess,
-    database.retrieveRecord,
-    userController.demote
+    userController.setRole
   );
 
   /**
@@ -94,7 +86,7 @@ const routes = (app) => {
     .put(
       auth.checkToken,
       database.retrieveRecord,
-      auth.hasAccess,
+      auth.ownerAccess,
       database.noIDChange,
       documentController.update
     )

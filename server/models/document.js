@@ -22,7 +22,7 @@ export default (sequelize, DataTypes) => {
     },
     accesslevel: {
       defaultValue: 'view',
-      type: DataTypes.ENUM('view', 'comment', 'edit')
+      type: DataTypes.ENUM('view', 'comment')
     },
     userRole: DataTypes.INTEGER
   }, {
@@ -74,7 +74,7 @@ export default (sequelize, DataTypes) => {
         User.find({ where: { id: document.userId }, paranoid: false })
         .then((user) => {
           if (!user) {
-            document.userRole = 6;
+            document.userRole = 4;
             return next(null, options);
           }
           document.userRole = user.roleId;
