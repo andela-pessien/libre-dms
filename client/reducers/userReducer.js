@@ -26,6 +26,7 @@ export default function userReducer(state = {}, action) {
         success: null
       };
     case user.GET_SUCCESS:
+    case user.UPDATE_SUCCESS:
       return {
         ...state,
         [action.user.id]: {
@@ -34,6 +35,8 @@ export default function userReducer(state = {}, action) {
         }
       };
     case user.GET_FAILURE:
+    case user.UPDATE_FAILURE:
+    case user.DELETE_FAILURE:
       return {
         ...state,
         [action.id]: {
@@ -82,23 +85,6 @@ export default function userReducer(state = {}, action) {
         },
         success: null
       };
-    case user.UPDATE_SUCCESS:
-      return {
-        ...state,
-        [action.user.id]: {
-          ...state[action.user.id],
-          user: action.user
-        }
-      };
-    case user.UPDATE_FAILURE:
-      return {
-        ...state,
-        [action.id]: {
-          ...state[action.id],
-          error: action.error
-        },
-        success: null
-      };
     case user.DELETE_SUCCESS:
       return Object.keys(state).reduce((result, key) => {
         if (key !== action.id) {
@@ -106,15 +92,6 @@ export default function userReducer(state = {}, action) {
         }
         return result;
       }, {});
-    case user.DELETE_FAILURE:
-      return {
-        ...state,
-        [action.id]: {
-          ...state[action.id],
-          error: action.error
-        },
-        success: null
-      };
     default:
       return state;
   }

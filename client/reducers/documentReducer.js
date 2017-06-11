@@ -26,6 +26,7 @@ export default function documentReducer(state = { documents: {} }, action) {
         success: null
       };
     case document.GET_SUCCESS:
+    case document.UPDATE_SUCCESS:
       return {
         ...state,
         [action.document.id]: {
@@ -33,6 +34,8 @@ export default function documentReducer(state = { documents: {} }, action) {
         }
       };
     case document.GET_FAILURE:
+    case document.UPDATE_FAILURE:
+    case document.DELETE_FAILURE:
       return {
         ...state,
         [action.id]: {
@@ -76,22 +79,8 @@ export default function documentReducer(state = { documents: {} }, action) {
         },
         success: null
       };
-    case document.UPDATE_SUCCESS:
-      return {
-        ...state,
-        [action.document.id]: {
-          document: action.document
-        }
-      };
-    case document.UPDATE_FAILURE:
-      return {
-        ...state,
-        [action.id]: {
-          ...state[action.id],
-          error: action.error
-        },
-        success: null
-      };
+
+
     case document.DELETE_SUCCESS:
       return Object.keys(state).reduce((result, key) => {
         if (key !== action.id) {
@@ -99,15 +88,6 @@ export default function documentReducer(state = { documents: {} }, action) {
         }
         return result;
       }, {});
-    case document.DELETE_FAILURE:
-      return {
-        ...state,
-        [action.id]: {
-          ...state[action.id],
-          error: action.error
-        },
-        success: null
-      };
     default:
       return state;
   }

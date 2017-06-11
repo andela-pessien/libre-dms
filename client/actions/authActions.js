@@ -21,7 +21,6 @@ export function signUp(userData) {
           userId: res.data.id
         });
       }, (err) => {
-        console.log(err.response.data);
         dispatch({
           type: auth.SIGNUP_FAILURE,
           error: (typeof err.response.data === 'object')

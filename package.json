@@ -20,8 +20,9 @@
     "start:api": "nodemon --exec 'node -r dotenv/config -r babel-register' server/server.js",
     "start:dev": "cross-env NODE_ENV=development npm-run-all --parallel start:api start:web",
     "start:web": "webpack-dev-server --config webpack.config.dev.babel.js --progress --colors",
-    "test": "cross-env NODE_ENV=test node -r dotenv/config ./node_modules/.bin/jasmine --config=jasmine.json",
-    "test:cover": "cross-env NODE_ENV=test nyc node -r dotenv/config ./node_modules/.bin/jasmine --config=jasmine.json"
+    "test": "cross-env NODE_ENV=test node -r dotenv/config $(npm bin)/jasmine --config=jasmine.server.json",
+    "test:cover": "cross-env NODE_ENV=test nyc node -r dotenv/config $(npm bin)/jasmine --config=jasmine.server.json",
+    "test:client": "cross-env NODE_ENV=test nyc node -r dotenv/config $(npm bin)/jasmine --config=jasmine.client.json"
   },
   "repository": {
     "type": "git",
@@ -49,7 +50,6 @@
     "babel-register": "6.24.1",
     "bcryptjs": "2.4.3",
     "body-parser": "1.17.1",
-    "btoa": "1.1.2",
     "cors": "2.8.3",
     "cross-env": "4.0.0",
     "css-loader": "0.28.0",
@@ -67,7 +67,6 @@
     "json-loader": "0.5.4",
     "jsonwebtoken": "7.4.0",
     "jwt-decode": "2.2.0",
-    "keymirror": "0.1.1",
     "materialize-css": "0.98.2",
     "morgan": "1.8.1",
     "node-sass": "4.5.2",
@@ -103,12 +102,15 @@
     "eslint-plugin-react": "6.10.3",
     "jasmine": "2.6.0",
     "jasmine-spec-reporter": "4.1.0",
+    "jsdom": "8.5.0",
+    "moxios": "0.4.0",
     "nock": "9.0.13",
     "nodemon": "1.11.0",
     "nyc": "10.3.2",
     "redux-devtools-extension": "2.13.2",
     "redux-immutable-state-invariant": "2.0.0",
-    "redux-mock-store": "1.2.3",
+    "redux-mock-store": "1.0.2",
+    "redux-promise": "0.5.3",
     "sass-lint": "1.10.2",
     "supertest": "3.0.0",
     "webpack-dev-server": "2.4.5"
@@ -128,6 +130,8 @@
     "exclude": [
       "**/*.spec.js",
       "**/*-helper.js",
+      "scripts",
+      "client/utils",
       "server/server.js",
       "dist"
     ],

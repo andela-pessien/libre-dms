@@ -9,6 +9,7 @@ import { auth } from '../actions/actionTypes';
 export default function authReducer(state = {}, action) {
   switch (action.type) {
     case auth.SIGNUP_SUCCESS:
+    case auth.SIGNIN_SUCCESS:
       return {
         ...state,
         isAuthenticated: true,
@@ -22,13 +23,6 @@ export default function authReducer(state = {}, action) {
         currentUser: null,
         signUpError: action.error,
         success: null
-      };
-    case auth.SIGNIN_SUCCESS:
-      return {
-        ...state,
-        isAuthenticated: true,
-        currentUser: action.userId,
-        signInError: null
       };
     case auth.SIGNIN_FAILURE:
       return {
