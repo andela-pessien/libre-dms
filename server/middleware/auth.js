@@ -1,15 +1,14 @@
 import jwt from 'jsonwebtoken';
 import {
   isSuperAdmin,
+  isAdminOrHigher,
   isOwner,
-  hasRetrieveAccess,
-  hasEditAccess
+  hasRetrieveAccess
 } from '../helpers';
 
 export default {
   /**
    * Middleware that checks and verifies the requester's access token.
-   * It also refreshes the access token if it is nearing expiry.
    * @param {Object} req The request from the client
    * @param {Object} res The response from the server
    * @param {Function} next The next handler for the route
@@ -28,12 +27,29 @@ export default {
             });
           }
           req.decoded = decoded;
-          next();
+          return next();
         }
       );
     }
     return res.status(401).json({
       message: 'You need to be logged in to perform that action'
+    });
+  },
+
+  /**
+   * Middleware that checks if the requester is an administrator or
+   * superadministrator.
+   * @param {Object} req The request from the client
+   * @param {Object} res The response from the server
+   * @param {Function} next The next handler for the route
+   * @returns {void}
+   */
+  adminAccess(req, res, next) {
+    if (isAdminOrHigher(req)) {
+      return next();
+    }
+    return res.status(403).json({
+      message: 'Only an administrator or higher can perform that action'
     });
   },
 
@@ -56,7 +72,8 @@ export default {
 
   /**
    * Middleware that checks if the requester has access to the resource.
-   * This means they are either the owner or a (super)admin.
+   * This means that either they are the owner/a (super)admin or the resource
+   * is publicly/role listed.
    * @param {Object} req The request from the client
    * @param {Object} res The response from the server
    * @param {Function} next The next handler for the route
@@ -68,11 +85,8 @@ export default {
       case 'DELETE':
         shouldProceed = isSuperAdmin(req) || isOwner(req);
         break;
-      case 'PUT':
-        shouldProceed = isOwner(req) || hasEditAccess(req);
-        break;
       default:
-        shouldProceed = isSuperAdmin(req) || isOwner(req) ||
+        shouldProceed = isAdminOrHigher(req) || isOwner(req) ||
           hasRetrieveAccess(req);
     }
     if (shouldProceed) {

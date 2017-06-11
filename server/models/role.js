@@ -21,7 +21,7 @@ export default (sequelize, DataTypes) => {
         Role.hasMany(models.User, {
           foreignKey: {
             name: 'roleId',
-            defaultValue: 3
+            defaultValue: 4
           },
           as: 'users'
         });

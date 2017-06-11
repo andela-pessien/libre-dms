@@ -6,12 +6,10 @@ export const getModel = (route) => {
   switch (true) {
     case (/\/api\/users/.test(route)):
       return model.User;
-    case (/\/api\/roles/.test(route)):
-      return model.Role;
     case (/\/api\/documents/.test(route)):
       return model.Document;
     default:
-      return null;
+      return model.Role;
   }
 };
 
@@ -72,6 +70,8 @@ export const dbErrorHandler = (err, res) => {
 
 export const isSuperAdmin = req => (req.decoded.roleId === 1);
 
+export const isAdminOrHigher = req => (req.decoded.roleId <= 2);
+
 export const isOwner = req => (
   req.decoded.id === req.params.id ||
   (req.retrievedRecord &&
@@ -83,11 +83,6 @@ export const hasRetrieveAccess = req => (
   req.retrievedRecord.access === 'public' ||
   (req.retrievedRecord.access === 'role' &&
     req.decoded.roleId <= req.retrievedRecord.userRole)
-);
-
-export const hasEditAccess = req => (
-  hasRetrieveAccess(req) &&
-  req.retrievedRecord.accesslevel === 'edit'
 );
 
 export const getMetadata = (results, limit, offset) => {

@@ -57,6 +57,16 @@ const routes = (app) => {
       auth.hasAccess,
       userController.destroy
     );
+  /**
+   * Route for setting a user's role
+   */
+  app.put(
+    '/api/users/:id/set-role',
+    auth.checkToken,
+    auth.adminAccess,
+    database.retrieveRecord,
+    userController.setRole
+  );
 
   /**
    * CRUD routes for documents
@@ -76,7 +86,7 @@ const routes = (app) => {
     .put(
       auth.checkToken,
       database.retrieveRecord,
-      auth.hasAccess,
+      auth.ownerAccess,
       database.noIDChange,
       documentController.update
     )

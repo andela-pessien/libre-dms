@@ -1,4 +1,9 @@
-import { isSuperAdmin, isOwner, dbErrorHandler, getMetadata } from '../helpers';
+import {
+  isAdminOrHigher,
+  isOwner,
+  dbErrorHandler,
+  getMetadata
+} from '../helpers';
 import model from '../models';
 
 const { Document, User } = model;
@@ -31,7 +36,7 @@ export default {
    * @returns {void}
    */
   list(req, res) {
-    const dbQuery = isSuperAdmin(req) ? {} : {
+    const dbQuery = isAdminOrHigher(req) ? {} : {
       $or: [
         { access: 'public' },
         {
@@ -85,7 +90,7 @@ export default {
    */
   listByUser(req, res) {
     const dbQuery = { userId: req.params.id };
-    if (!isSuperAdmin(req) && !isOwner(req)) {
+    if (!isAdminOrHigher(req) && !isOwner(req)) {
       dbQuery.$or = [
         { access: 'public' },
         {
@@ -141,13 +146,6 @@ export default {
    * @returns {void}
    */
   update(req, res) {
-    if (!isOwner(req)) {
-      if (req.body.access || req.body.accesslevel) {
-        return res.status(403).json({
-          message: "You can't change the share settings of this document"
-        });
-      }
-    }
     req.retrievedRecord.update(req.body)
     .then(document => res.status(200).json(document))
     .catch(err => (dbErrorHandler(err, res)));
@@ -175,7 +173,7 @@ export default {
    * @returns {void}
    */
   search(req, res) {
-    const dbQuery = isSuperAdmin(req) ? {} : {
+    const dbQuery = isAdminOrHigher(req) ? {} : {
       $or: [
         { access: 'public' },
         {

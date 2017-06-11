@@ -36,9 +36,9 @@ describe('User Model', () => {
       expect(/^\$2a\$10/.test(newUser.password)).toBeTruthy();
     });
 
-    it('that has a default roleId of 3', () => {
+    it('that has a default roleId of 4', () => {
       expect(newUser.roleId).toExist();
-      expect(newUser.roleId).toEqual(3);
+      expect(newUser.roleId).toEqual(4);
     });
 
     it('that is private by default', () => {

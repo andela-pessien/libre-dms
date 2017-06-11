@@ -2,6 +2,7 @@ import axios from 'axios';
 import { auth, user } from './actionTypes';
 import decodeMetadata from '../utils/decodeMetadata';
 import setAuthentication from '../utils/setAuthentication';
+import { getRole } from '../utils/roles';
 
 /**
  * Requests for all accessible users (paginated) from the API
@@ -104,6 +105,34 @@ export function updateUser(id, patch) {
           type: user.UPDATE_SUCCESS,
           user: res.data,
         });
+      }, (err) => {
+        dispatch({
+          type: user.UPDATE_FAILURE,
+          id,
+          error: (typeof err.response.data === 'object')
+            ? err.response.data
+            : { message: 'Connection failed' }
+        });
+      }));
+}
+
+/**
+ * Requests the API to promote or demote a user's role
+ * @param {String} id The ID of the user to be promoted/demoted
+ * @param {Object} roleId The target role for the user
+ * @returns {Function} A thunk that asynchronously makes the request/dispatch
+ */
+export function setUserRole(id, roleId) {
+  return dispatch => (
+    axios.put(`/api/users/${id}/set-role`, { roleId })
+      .then((res) => {
+        setAuthentication(res.headers['x-access-token']);
+        dispatch({
+          type: user.UPDATE_SUCCESS,
+          user: res.data,
+        });
+        Materialize.toast(`User's role set to ${getRole(roleId)}`, 3000,
+          'indigo darken-4 white-text rounded');
       }, (err) => {
         dispatch({
           type: user.UPDATE_FAILURE,

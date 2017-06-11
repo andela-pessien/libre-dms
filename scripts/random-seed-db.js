@@ -12,6 +12,13 @@ import {
 
 const users = Array(...(new Array(50))).map(() => (Math.random() > 0.5 ? getValidUser() : getValidPublicUser()));
 let documents = [];
+const userDocuments = userId => ([
+  ...Array(...(new Array(3))).map(() => getValidDoc(userId)),
+  ...Array(...(new Array(3))).map(() => getValidDoc(userId, 'role', 'view')),
+  ...Array(...(new Array(3))).map(() => getValidDoc(userId, 'role', 'comment')),
+  ...Array(...(new Array(3))).map(() => getValidDoc(userId, 'public', 'view')),
+  ...Array(...(new Array(3))).map(() => getValidDoc(userId, 'public', 'comment'))
+]);
 
 console.log('Creating tables...');
 db.sequelize.sync({ force: true })
@@ -24,11 +31,7 @@ db.sequelize.sync({ force: true })
     .then((createdSuperAdmin) => {
       documents = [
         ...documents,
-        ...Array(...(new Array(3))).map(() => getValidDoc(createdSuperAdmin.id)),
-        ...Array(...(new Array(3))).map(() => getValidDoc(createdSuperAdmin.id, 'role', 'view')),
-        ...Array(...(new Array(3))).map(() => getValidDoc(createdSuperAdmin.id, 'role', 'edit')),
-        ...Array(...(new Array(3))).map(() => getValidDoc(createdSuperAdmin.id, 'public', 'view')),
-        ...Array(...(new Array(3))).map(() => getValidDoc(createdSuperAdmin.id, 'public', 'edit')),
+        ...userDocuments(createdSuperAdmin.id)
       ];
       console.log('Adding users...');
       db.User.bulkCreate(users, { individualHooks: true, validate: true })
@@ -36,11 +39,7 @@ db.sequelize.sync({ force: true })
         createdUsers.forEach((user) => {
           documents = [
             ...documents,
-            ...Array(...(new Array(3))).map(() => getValidDoc(user.id)),
-            ...Array(...(new Array(3))).map(() => getValidDoc(user.id, 'role', 'view')),
-            ...Array(...(new Array(3))).map(() => getValidDoc(user.id, 'role', 'edit')),
-            ...Array(...(new Array(3))).map(() => getValidDoc(user.id, 'public', 'view')),
-            ...Array(...(new Array(3))).map(() => getValidDoc(user.id, 'public', 'edit')),
+            ...userDocuments(user.id)
           ];
         });
         console.log('Adding documents...');

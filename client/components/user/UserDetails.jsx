@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { updateUser, deleteUser } from '../../actions/userActions';
+import ConfirmDialog from '../common/ConfirmDialog';
+import { updateUser, deleteUser, setUserRole } from '../../actions/userActions';
 import parseDate from '../../utils/chronology';
 import {
   isSuperAdmin,
   isAdminOrHigher,
+  roles,
   getRole
 } from '../../utils/roles';
 
@@ -24,13 +26,17 @@ class UserDetails extends Component {
     this.state = {
       name: this.user.name,
       email: this.user.email,
-      isPrivate: this.user.isPrivate
+      isPrivate: this.user.isPrivate,
+      userRole: this.user.roleId
     };
     this.onChange = this.onChange.bind(this);
-    this.onEditClick = this.onEditClick.bind(this);
+    this.onRoleChange = this.onRoleChange.bind(this);
     this.onClearClick = this.onClearClick.bind(this);
+    this.onRoleClearClick = this.onRoleClearClick.bind(this);
     this.onSaveClick = this.onSaveClick.bind(this);
-    this.onDeleteClick = this.onDeleteClick.bind(this);
+    this.setUserRole = this.setUserRole.bind(this);
+    this.deleteSelf = this.deleteSelf.bind(this);
+    this.deleteUser = this.deleteUser.bind(this);
   }
 
   /**
@@ -59,7 +65,8 @@ class UserDetails extends Component {
       this.setState({
         name: userContainer.user.name,
         email: userContainer.user.email,
-        isPrivate: userContainer.user.isPrivate
+        isPrivate: userContainer.user.isPrivate,
+        userRole: userContainer.user.roleId
       });
       this.user = nextProps.users[this.props.id].user;
     }
@@ -78,6 +85,16 @@ class UserDetails extends Component {
   }
 
   /**
+   * Change event handler for editing user role
+   * @param {Object} event The change event
+   * @returns {undefined}
+   */
+  onRoleChange(event) {
+    this.setState({ [event.target.id]: event.target.value });
+    $('#confirm-change-role').modal('open');
+  }
+
+  /**
    * Click event handler for editing user details
    * @param {Object} e The click event
    * @returns {undefined}
@@ -87,7 +104,18 @@ class UserDetails extends Component {
     $('#profile-clear-button').removeClass('disabled');
     $('#profile-save-button').removeClass('disabled');
     $('td > input').prop('disabled', false);
-    $('select').prop('disabled', false);
+    $('td > select').prop('disabled', false);
+  }
+
+  /**
+   * Click event handler for editing user role
+   * @param {Object} event The click event
+   * @returns {undefined}
+   */
+  onRoleEditClick(event) {
+    $('#role-edit-button').addClass('disabled');
+    $('#role-clear-button').removeClass('disabled');
+    $('td > select').prop('disabled', false);
   }
 
   /**
@@ -103,6 +131,21 @@ class UserDetails extends Component {
       isPrivate: this.user.isPrivate
     });
     this.setReadonly();
+  }
+
+  /**
+   * Click event handler for clearing role changes
+   * @param {Object} event The click event
+   * @returns {undefined}
+   */
+  onRoleClearClick() {
+    $('td > select').prop('disabled', true);
+    $('#role-edit-button').removeClass('disabled');
+    $('#role-clear-button').addClass('disabled');
+    $('.user-details > .fixed-action-btn').closeFAB();
+    this.setState({
+      userRole: this.user.roleId
+    });
   }
 
   /**
@@ -132,20 +175,6 @@ class UserDetails extends Component {
   }
 
   /**
-   * Click event handler for deleting a user
-   * @param {Object} e The click event
-   * @returns {undefined}
-   */
-  onDeleteClick(e) {
-    $('.user-details > .fixed-action-btn').closeFAB();
-    if (e.target.name === 'self') {
-      this.props.deleteUser(this.user.id, true);
-    } else {
-      this.props.deleteUser(this.user.id);
-    }
-  }
-
-  /**
    * Method that sets read only element visibility
    * @returns {undefined}
    */
@@ -154,7 +183,37 @@ class UserDetails extends Component {
     $('#profile-clear-button').addClass('disabled');
     $('#profile-save-button').addClass('disabled');
     $('td > input').prop('disabled', true);
-    $('select').prop('disabled', true);
+    $('td > select').prop('disabled', true);
+  }
+
+  /**
+   * Method that dispatches request to change a user's role
+   * @returns {undefined}
+   */
+  setUserRole() {
+    $('td > select').prop('disabled', true);
+    $('#role-edit-button').removeClass('disabled');
+    $('#role-clear-button').addClass('disabled');
+    $('.user-details > .fixed-action-btn').closeFAB();
+    this.props.setUserRole(this.props.id, this.state.userRole);
+  }
+
+  /**
+   * Deletes own account and signs out user
+   * @returns {undefined}
+   */
+  deleteSelf() {
+    $('.user-details > .fixed-action-btn').closeFAB();
+    this.props.deleteUser(this.user.id, true);
+  }
+
+  /**
+   * Deletes own account and signs out user
+   * @returns {undefined}
+   */
+  deleteUser() {
+    $('.user-details > .fixed-action-btn').closeFAB();
+    this.props.deleteUser(this.user.id);
   }
 
   /**
@@ -200,8 +259,7 @@ class UserDetails extends Component {
               <li>
                 <a
                   className="btn-floating indigo darken-4"
-                  name="self"
-                  onClick={this.onDeleteClick}
+                  onClick={() => { $('#confirm-delete-self').modal('open'); }}
                 >
                   <i className="material-icons">delete</i>
                 </a>
@@ -216,12 +274,31 @@ class UserDetails extends Component {
               <ul>
                 <li>
                   <a
+                    id="role-edit-button"
                     className="btn-floating indigo darken-4"
-                    onClick={this.onDeleteClick}
+                    onClick={this.onRoleEditClick}
+                  >
+                    <i className="material-icons">swap_vert</i>
+                  </a>
+                </li>
+                <li>
+                  <a
+                    id="role-clear-button"
+                    className="btn-floating indigo darken-4 disabled"
+                    onClick={this.onRoleClearClick}
+                  >
+                    <i className="material-icons">close</i>
+                  </a>
+                </li>
+                {(isSuperAdmin(this.props.users[this.props.ownId].user)) &&
+                <li>
+                  <a
+                    className="btn-floating indigo darken-4"
+                    onClick={() => { $('#confirm-delete-user').modal('open'); }}
                   >
                     <i className="material-icons">delete</i>
                   </a>
-                </li>
+                </li>}
               </ul>
             </div>}
         <div className="header-photo">
@@ -233,47 +310,70 @@ class UserDetails extends Component {
               <tr>
                 <td className="center">Name</td>
                 <td>
-                  <input
-                    id="name"
-                    className="user-detail"
-                    type="text"
-                    value={this.state.name}
-                    onChange={this.onChange}
-                    disabled
-                  />
+                  {(this.props.id === this.props.ownId)
+                    ? <input
+                      id="name"
+                      className="user-detail"
+                      type="text"
+                      value={this.state.name}
+                      onChange={this.onChange}
+                      disabled
+                    />
+                    : this.state.name}
                 </td>
               </tr>
               <tr>
                 <td className="center">Email</td>
                 <td>
-                  <input
-                    id="email"
-                    className="user-detail validate"
-                    type="email"
-                    value={this.state.email}
-                    onChange={this.onChange}
-                    disabled
-                  />
+                  {(this.props.id === this.props.ownId)
+                    ? <input
+                      id="email"
+                      className="user-detail validate"
+                      type="email"
+                      value={this.state.email}
+                      onChange={this.onChange}
+                      disabled
+                    />
+                    : this.state.email}
                 </td>
               </tr>
               <tr>
                 <td className="center">Public profile</td>
                 <td>
-                  <select
-                    id="isPrivate"
-                    className="user-detail"
-                    value={this.state.isPrivate ? '' : 'yes'}
-                    onChange={this.onChange}
-                    disabled
-                  >
-                    <option value="yes">Yes</option>
-                    <option value="">No</option>
-                  </select>
+                  {(this.props.id === this.props.ownId)
+                    ? <select
+                      id="isPrivate"
+                      className="user-detail"
+                      value={this.state.isPrivate ? '' : 'yes'}
+                      onChange={this.onChange}
+                      disabled
+                    >
+                      <option value="yes">Yes</option>
+                      <option value="">No</option>
+                    </select>
+                    : this.state.isPrivate ? 'No' : 'Yes'}
                 </td>
               </tr>
               <tr>
                 <td className="center">Role</td>
-                <td>{getRole(this.user.roleId)}</td>
+                <td>
+                  {(this.props.id === this.props.ownId ||
+                  !isAdminOrHigher(this.props.users[this.props.ownId].user) ||
+                  (isAdminOrHigher(this.user) &&
+                    !isSuperAdmin(this.props.users[this.props.ownId].user)))
+                    ? getRole(this.user.roleId)
+                    : <select
+                      id="userRole"
+                      className="user-detail"
+                      value={this.state.userRole}
+                      onChange={this.onRoleChange}
+                      disabled
+                    >
+                      {roles.slice(1).map((role, index) =>
+                        <option value={index + 2}>{role}</option>)}
+                    </select>
+                  }
+                </td>
               </tr>
               <tr>
                 <td className="center">User since</td>
@@ -282,6 +382,25 @@ class UserDetails extends Component {
             </tbody>
           </table>
         </div>
+        <ConfirmDialog
+          id="confirm-delete-user"
+          message="Are you sure you want to delete this user's account?"
+          onYesClick={this.deleteUser}
+          onNoClick={() => {}}
+        />
+        <ConfirmDialog
+          id="confirm-delete-self"
+          message="Are you sure you want to delete your account?"
+          onYesClick={this.deleteSelf}
+          onNoClick={() => {}}
+        />
+        <ConfirmDialog
+          id="confirm-change-role"
+          message={
+            `Are you sure you want to change this user's role to ${getRole(this.state.userRole)}?`}
+          onYesClick={this.setUserRole}
+          onNoClick={this.onRoleClearClick}
+        />
       </div>
     );
   }
@@ -294,12 +413,14 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   updateUser: (id, patch) => dispatch(updateUser(id, patch)),
-  deleteUser: (id, isSelf) => dispatch(deleteUser(id, isSelf))
+  deleteUser: (id, isSelf) => dispatch(deleteUser(id, isSelf)),
+  setUserRole: (id, roleId) => dispatch(setUserRole(id, roleId))
 });
 
 UserDetails.propTypes = {
   deleteUser: PropTypes.func.isRequired,
   updateUser: PropTypes.func.isRequired,
+  setUserRole: PropTypes.func.isRequired,
   ownId: PropTypes.string.isRequired,
   id: PropTypes.string.isRequired,
   users: PropTypes.object.isRequired

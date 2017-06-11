@@ -8,6 +8,8 @@ export const defaultRoles = [
   }, {
     label: 'Administrator'
   }, {
+    label: 'Reviewer'
+  }, {
     label: 'Regular'
   }
 ];
