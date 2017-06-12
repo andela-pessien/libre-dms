@@ -225,8 +225,8 @@ class DocumentEditor extends Component {
    * @returns {undefined}
    */
   saveChanges() {
-    if (!isEqual(this.state.attributes, this.initialState) ||
-    this.contentChanges.length() > 0) {
+    if (this.state.attributes.title && (!isEqual(this.state.attributes, this.initialState) ||
+    this.contentChanges.length() > 0)) {
       this.setState({ status: 'Saving changes...' });
       if (!this.id) {
         this.props.createDocument({

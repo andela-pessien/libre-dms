@@ -2,10 +2,10 @@
 import request from 'supertest';
 import expect from 'expect';
 import server from '../../server';
-import { getValidId, getValidUser, getValidDoc, getWord } from '../helpers/data-helper';
+import { getValidId, getValidUser, getValidDoc, getWord } from '../../../scripts/data-generator';
 import { checkDocumentList } from '../helpers/response-helper';
 
-describe('Documents API', () => {
+describe('Documents API:', () => {
   const app = request(server);
   let docOwner, docOwnerToken, superAdminToken, adminToken, regularUser,
     regularUserToken, reviewer, reviewerToken, testDocument;
@@ -110,12 +110,7 @@ describe('Documents API', () => {
         .expect(401)
         .end((err, res) => {
           if (err) throw err;
-          if (!res.body) {
-            throw new Error('Expected error to be returned');
-          }
-          if (res.body.message !== 'You need to be logged in to perform that action') {
-            throw new Error(`Expected ${res.body.message} to equal 'You need to be logged in to perform that action'`);
-          }
+          expect(res.body.message).toEqual('You need to be logged in to perform that action');
           done();
         });
     });
@@ -131,14 +126,7 @@ describe('Documents API', () => {
         .expect(400)
         .end((err, res) => {
           if (err) throw err;
-          if (!res.body) {
-            throw new Error('Expected error to be returned');
-          }
-          if (res.body.message !== 'Please confirm that all fields are valid') {
-            throw new Error(
-              `Expected ${res.body.message} to equal 'Please confirm that all fields are valid'`
-            );
-          }
+          expect(res.body.message).toEqual('Please confirm that all fields are valid');
           done();
         });
     });
@@ -155,14 +143,7 @@ describe('Documents API', () => {
         .expect(400)
         .end((err, res) => {
           if (err) throw err;
-          if (!res.body) {
-            throw new Error('Expected error to be returned');
-          }
-          if (res.body.message !== 'Please confirm that all fields are valid') {
-            throw new Error(
-              `Expected ${res.body.message} to equal 'Please confirm that all fields are valid'`
-            );
-          }
+          expect(res.body.message).toEqual('Please confirm that all fields are valid');
           done();
         });
     });
@@ -179,14 +160,7 @@ describe('Documents API', () => {
         .expect(400)
         .end((err, res) => {
           if (err) throw err;
-          if (!res.body) {
-            throw new Error('Expected error to be returned');
-          }
-          if (res.body.message !== 'Please confirm that all fields are valid') {
-            throw new Error(
-              `Expected ${res.body.message} to equal 'Please confirm that all fields are valid'`
-            );
-          }
+          expect(res.body.message).toEqual('Please confirm that all fields are valid');
           done();
         });
     });
@@ -200,21 +174,13 @@ describe('Documents API', () => {
         .expect(201)
         .end((err, res) => {
           if (err) throw err;
-          if (!res.body) {
-            throw new Error('Expected created document to be returned');
-          }
-          if (
-          !res.body.id ||
-          (!res.body.title && res.body.title !== '') ||
-          !res.body.content ||
-          !res.body.type ||
-          !res.body.access ||
-          !res.body.accesslevel) {
-            throw new Error('Document not created properly');
-          }
-          if (res.body.userId !== docOwner.id) {
-            throw new Error('Document not assigned to the right owner');
-          }
+          expect(res.body.id).toExist();
+          expect(res.body.title).toExist();
+          expect(res.body.content).toExist();
+          expect(res.body.type).toExist();
+          expect(res.body.access).toExist();
+          expect(res.body.accesslevel).toExist();
+          expect(res.body.userId).toEqual(docOwner.id);
           testDocument = res.body;
           done();
         });
@@ -251,52 +217,46 @@ describe('Documents API', () => {
         .expect(401)
         .end((err, res) => {
           if (err) throw err;
-          if (!res.body) {
-            throw new Error('Expected error to be returned');
-          }
-          if (res.body.message !== 'You need to be logged in to perform that action') {
-            throw new Error(`Expected ${res.body.message} to equal 'You need to be logged in to perform that action'`);
-          }
-          done();
-        });
-    });
-
-    it('should return error if limit or offset provided are negative', (done) => {
-      app
-        .get('/api/documents?limit=-10&offset=-50')
-        .set('x-access-token', superAdminToken)
-        .expect('Content-Type', /json/)
-        .expect(400)
-        .end((err, res) => {
-          if (err) throw err;
-          try {
-            expect(res.body.message).toEqual('Offset and limit can only be positive integers.');
-          } catch (err) {
-            if (err) throw err;
-          }
+          expect(res.body.message).toEqual('You need to be logged in to perform that action');
           done();
         });
     });
 
     it('should return any and all documents on superadministrator request', (done) => {
       app
-        .get('/api/documents')
+        .get('/api/documents?limit=100')
         .set('x-access-token', superAdminToken)
         .expect('Content-Type', /json/)
         .expect(200)
         .end((err, res) => {
+          if (err) throw err;
           checkDocumentList(res);
+          done();
+        });
+    });
+
+    it('should use default values if limit or offset provided are negative', (done) => {
+      app
+        .get('/api/documents?limit=-10&offset=-50')
+        .set('x-access-token', superAdminToken)
+        .expect('Content-Type', /json/)
+        .expect(200)
+        .end((err, res) => {
+          if (err) throw err;
+          checkDocumentList(res);
+          expect(res.body.list.length).toEqual(10);
           done();
         });
     });
 
     it('should return any and all documents on administrator request', (done) => {
       app
-        .get('/api/documents')
+        .get('/api/documents?limit=100')
         .set('x-access-token', adminToken)
         .expect('Content-Type', /json/)
         .expect(200)
         .end((err, res) => {
+          if (err) throw err;
           checkDocumentList(res);
           done();
         });
@@ -310,7 +270,7 @@ describe('Documents API', () => {
         .expect(200)
         .end((err, res) => {
           checkDocumentList(res);
-          res.body.forEach((document) => {
+          res.body.list.forEach((document) => {
             if (
             (document.access === 'private' && document.userId !== docOwner.id) ||
             (document.access === 'role' && document.userRole < 6)) {
@@ -330,9 +290,7 @@ describe('Documents API', () => {
         .end((err, res) => {
           if (err) throw err;
           checkDocumentList(res);
-          if (res.body.length !== 3) {
-            throw new Error('Did not retrieve all documents');
-          }
+          expect(res.body.list.length).toEqual(3);
           done();
         });
     });
@@ -346,9 +304,7 @@ describe('Documents API', () => {
         .end((err, res) => {
           if (err) throw err;
           checkDocumentList(res);
-          if (res.body.length !== 3) {
-            throw new Error('Did not retrieve all documents');
-          }
+          expect(res.body.list.length).toEqual(3);
           done();
         });
     });
@@ -362,9 +318,7 @@ describe('Documents API', () => {
         .end((err, res) => {
           if (err) throw err;
           checkDocumentList(res);
-          if (res.body.length !== 3) {
-            throw new Error('Did not retrieve all documents');
-          }
+          expect(res.body.list.length).toEqual(3);
           done();
         });
     });
@@ -378,7 +332,7 @@ describe('Documents API', () => {
         .end((err, res) => {
           if (err) throw err;
           checkDocumentList(res);
-          if (res.body[0].access !== 'public' || res.body.length !== 1) {
+          if (res.body.list[0].access !== 'public' || res.body.list.length !== 1) {
             throw new Error('Retrieved a document this user does not have access to');
           }
           done();
@@ -395,12 +349,7 @@ describe('Documents API', () => {
         .expect(401)
         .end((err, res) => {
           if (err) throw err;
-          if (!res.body) {
-            throw new Error('Expected error to be returned');
-          }
-          if (res.body.message !== 'You need to be logged in to perform that action') {
-            throw new Error(`Expected ${res.body.message} to equal 'You need to be logged in to perform that action'`);
-          }
+          expect(res.body.message).toEqual('You need to be logged in to perform that action');
           done();
         });
     });
@@ -413,12 +362,8 @@ describe('Documents API', () => {
         .expect(400)
         .end((err, res) => {
           if (err) throw err;
-          try {
-            expect(res.body).toExist();
-            expect(res.body.message).toEqual('Please provide a valid query string for the search');
-          } catch (err) {
-            if (err) throw err;
-          }
+          expect(res.body).toExist();
+          expect(res.body.message).toEqual('Please provide a valid query string for the search');
           done();
         });
     });
@@ -433,14 +378,12 @@ describe('Documents API', () => {
         .end((err, res) => {
           checkDocumentList(res);
           let found = false;
-          res.body.forEach((result) => {
+          res.body.list.forEach((result) => {
             if (result.title === testDocument.title) {
               found = true;
             }
           });
-          if (!found) {
-            throw new Error('Did not find the test document');
-          }
+          expect(found).toBeTruthy();
           done();
         });
     });
@@ -455,14 +398,12 @@ describe('Documents API', () => {
         .end((err, res) => {
           checkDocumentList(res);
           let found = false;
-          res.body.forEach((result) => {
+          res.body.list.forEach((result) => {
             if (result.title === testDocument.title) {
               found = true;
             }
           });
-          if (!found) {
-            throw new Error('Did not find the test document');
-          }
+          expect(found).toBeTruthy();
           done();
         });
     });
@@ -477,7 +418,7 @@ describe('Documents API', () => {
         .end((err, res) => {
           checkDocumentList(res);
           let found = false;
-          res.body.forEach((result) => {
+          res.body.list.forEach((result) => {
             if (result.title === testDocument.title) {
               found = true;
             }
@@ -487,9 +428,7 @@ describe('Documents API', () => {
               throw new Error('Returned a document this user does not have access to');
             }
           });
-          if (!found) {
-            throw new Error('Did not find the test document');
-          }
+          expect(found).toBeTruthy();
           done();
         });
     });
@@ -502,7 +441,7 @@ describe('Documents API', () => {
         .expect('Content-Type', /json/)
         .expect(200)
         .end((err, res) => {
-          res.body.forEach((result) => {
+          res.body.list.forEach((result) => {
             if (
             result.access === 'private' ||
             (result.access === 'role' && result.userRole < regularUser.roleId)) {
@@ -545,12 +484,7 @@ describe('Documents API', () => {
         .expect(401)
         .end((err, res) => {
           if (err) throw err;
-          if (!res.body) {
-            throw new Error('Expected error to be returned');
-          }
-          if (res.body.message !== 'You need to be logged in to perform that action') {
-            throw new Error(`Expected ${res.body.message} to equal 'You need to be logged in to perform that action'`);
-          }
+          expect(res.body.message).toEqual('You need to be logged in to perform that action');
           done();
         });
     });
@@ -563,17 +497,10 @@ describe('Documents API', () => {
         .expect(200)
         .end((err, res) => {
           if (err) throw err;
-          if (!res.body) {
-            throw new Error('Expected document to be returned');
-          }
-          if (
-            res.body.id !== testDocument.id ||
-            res.body.title !== testDocument.title ||
-            res.body.content !== testDocument.content ||
-            res.body.userId !== testDocument.userId
-          ) {
-            throw new Error('Did not retrieve the right document');
-          }
+          expect(res.body.id).toEqual(testDocument.id);
+          expect(res.body.title).toEqual(testDocument.title);
+          expect(res.body.content).toEqual(testDocument.content);
+          expect(res.body.userId).toEqual(testDocument.userId);
           done();
         });
     });
@@ -586,17 +513,10 @@ describe('Documents API', () => {
         .expect(200)
         .end((err, res) => {
           if (err) throw err;
-          if (!res.body) {
-            throw new Error('Expected document to be returned');
-          }
-          if (
-            res.body.id !== testDocument.id ||
-            res.body.title !== testDocument.title ||
-            res.body.content !== testDocument.content ||
-            res.body.userId !== testDocument.userId
-          ) {
-            throw new Error('Did not retrieve the right document');
-          }
+          expect(res.body.id).toEqual(testDocument.id);
+          expect(res.body.title).toEqual(testDocument.title);
+          expect(res.body.content).toEqual(testDocument.content);
+          expect(res.body.userId).toEqual(testDocument.userId);
           done();
         });
     });
@@ -609,17 +529,10 @@ describe('Documents API', () => {
         .expect(200)
         .end((err, res) => {
           if (err) throw err;
-          if (!res.body) {
-            throw new Error('Expected document to be returned');
-          }
-          if (
-            res.body.id !== testDocument.id ||
-            res.body.title !== testDocument.title ||
-            res.body.content !== testDocument.content ||
-            res.body.userId !== testDocument.userId
-          ) {
-            throw new Error('Did not retrieve the right document');
-          }
+          expect(res.body.id).toEqual(testDocument.id);
+          expect(res.body.title).toEqual(testDocument.title);
+          expect(res.body.content).toEqual(testDocument.content);
+          expect(res.body.userId).toEqual(testDocument.userId);
           done();
         });
     });
@@ -632,12 +545,7 @@ describe('Documents API', () => {
         .expect(403)
         .end((err, res) => {
           if (err) throw err;
-          if (!res.body) {
-            throw new Error('Expected error to be returned');
-          }
-          if (res.body.message !== "You don't have permission to perform that action") {
-            throw new Error(`Expected ${res.body.message} to equal "You don't have permission to perform that action"`);
-          }
+          expect(res.body.message).toEqual("You don't have permission to perform that action");
           done();
         });
     });
@@ -650,12 +558,7 @@ describe('Documents API', () => {
         .expect(403)
         .end((err, res) => {
           if (err) throw err;
-          if (!res.body) {
-            throw new Error('Expected error to be returned');
-          }
-          if (res.body.message !== "You don't have permission to perform that action") {
-            throw new Error(`Expected ${res.body.message} to equal "You don't have permission to perform that action"`);
-          }
+          expect(res.body.message).toEqual("You don't have permission to perform that action");
           done();
         });
     });
@@ -668,12 +571,7 @@ describe('Documents API', () => {
         .expect(403)
         .end((err, res) => {
           if (err) throw err;
-          if (!res.body) {
-            throw new Error('Expected error to be returned');
-          }
-          if (res.body.message !== "You don't have permission to perform that action") {
-            throw new Error(`Expected ${res.body.message} to equal "You don't have permission to perform that action"`);
-          }
+          expect(res.body.message).toEqual("You don't have permission to perform that action");
           done();
         });
     });
@@ -686,17 +584,10 @@ describe('Documents API', () => {
         .expect(200)
         .end((err, res) => {
           if (err) throw err;
-          if (!res.body) {
-            throw new Error('Expected document to be returned');
-          }
-          if (
-            res.body.id !== roleDocument.id ||
-            res.body.title !== roleDocument.title ||
-            res.body.content !== roleDocument.content ||
-            res.body.userId !== roleDocument.userId
-          ) {
-            throw new Error('Did not retrieve the right document');
-          }
+          expect(res.body.id).toEqual(roleDocument.id);
+          expect(res.body.title).toEqual(roleDocument.title);
+          expect(res.body.content).toEqual(roleDocument.content);
+          expect(res.body.userId).toEqual(roleDocument.userId);
           done();
         });
     });
@@ -709,12 +600,7 @@ describe('Documents API', () => {
         .expect(404)
         .end((err, res) => {
           if (err) throw err;
-          if (!res.body) {
-            throw new Error('Expected error to be returned');
-          }
-          if (res.body.message !== 'Resource not found') {
-            throw new Error(`Expected ${res.body.message} to equal 'Resource not found'"`);
-          }
+          expect(res.body.message).toEqual('Resource not found');
           done();
         });
     });
@@ -733,12 +619,7 @@ describe('Documents API', () => {
         .expect(401)
         .end((err, res) => {
           if (err) throw err;
-          if (!res.body) {
-            throw new Error('Expected error to be returned');
-          }
-          if (res.body.message !== 'You need to be logged in to perform that action') {
-            throw new Error(`Expected ${res.body.message} to equal 'You need to be logged in to perform that action'`);
-          }
+          expect(res.body.message).toEqual('You need to be logged in to perform that action');
           done();
         });
     });
@@ -810,15 +691,8 @@ describe('Documents API', () => {
         .expect(200)
         .end((err, res) => {
           if (err) throw err;
-          if (!res.body) {
-            throw new Error('Expected updated document to be returned');
-          }
-          if (
-            res.body.title !== updatedDocData.title ||
-            res.body.content !== updatedDocData.content
-          ) {
-            throw new Error('Document not updated properly');
-          }
+          expect(res.body.title).toEqual(updatedDocData.title);
+          expect(res.body.content).toEqual(updatedDocData.content);
           testDocument = res.body;
           done();
         });
@@ -833,11 +707,7 @@ describe('Documents API', () => {
         .expect(403)
         .end((err, res) => {
           if (err) throw err;
-          try {
-            expect(res.body.message).toEqual("You're not permitted to change identifier fields");
-          } catch (err) {
-            if (err) throw err;
-          }
+          expect(res.body.message).toEqual("You're not permitted to change identifier fields");
           done();
         });
     });
@@ -851,11 +721,7 @@ describe('Documents API', () => {
         .expect(403)
         .end((err, res) => {
           if (err) throw err;
-          try {
-            expect(res.body.message).toEqual("You're not permitted to change identifier fields");
-          } catch (err) {
-            if (err) throw err;
-          }
+          expect(res.body.message).toEqual("You're not permitted to change identifier fields");
           done();
         });
     });
@@ -868,12 +734,7 @@ describe('Documents API', () => {
         .expect(404)
         .end((err, res) => {
           if (err) throw err;
-          if (!res.body) {
-            throw new Error('Expected error to be returned');
-          }
-          if (res.body.message !== 'Resource not found') {
-            throw new Error(`Expected ${res.body.message} to equal 'Resource not found'"`);
-          }
+          expect(res.body.message).toEqual('Resource not found');
           done();
         });
     });
@@ -902,12 +763,7 @@ describe('Documents API', () => {
         .expect(401)
         .end((err, res) => {
           if (err) throw err;
-          if (!res.body) {
-            throw new Error('Expected error to be returned');
-          }
-          if (res.body.message !== 'You need to be logged in to perform that action') {
-            throw new Error(`Expected ${res.body.message} to equal 'You need to be logged in to perform that action'`);
-          }
+          expect(res.body.message).toEqual('You need to be logged in to perform that action');
           done();
         });
     });
@@ -942,9 +798,10 @@ describe('Documents API', () => {
       app
         .delete(`/api/documents/${testDocument.id}`)
         .set('x-access-token', superAdminToken)
-        .expect(204)
-        .end((err) => {
+        .expect(200)
+        .end((err, res) => {
           if (err) throw err;
+          expect(res.body.message).toEqual('Document deleted successfully');
           app
             .get(`/api/documents/${testDocument.id}`)
             .set('x-access-token', docOwnerToken)
@@ -956,9 +813,10 @@ describe('Documents API', () => {
       app
         .delete(`/api/documents/${secondTestDocument.id}`)
         .set('x-access-token', docOwnerToken)
-        .expect(204)
-        .end((err) => {
+        .expect(200)
+        .end((err, res) => {
           if (err) throw err;
+          expect(res.body.message).toEqual('Document deleted successfully');
           app
             .get(`/api/documents/${secondTestDocument.id}`)
             .set('x-access-token', docOwnerToken)

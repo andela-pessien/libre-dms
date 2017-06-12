@@ -71,15 +71,14 @@ export default {
       offset: req.listOptions.offset
     })
     .then((users) => {
-      res.set(
-        'x-list-metadata',
-        getMetadata(
+      res.status(200).json({
+        list: users.rows,
+        metadata: getMetadata(
           users,
           req.listOptions.limit,
           req.listOptions.offset
         )
-      );
-      res.status(200).json(users.rows);
+      });
     })
     .catch(err => (dbErrorHandler(err, res)));
   },
@@ -161,7 +160,9 @@ export default {
         // TODO: Implement old token blacklisting/invalidation
         res.set('x-access-token', '');
       }
-      res.sendStatus(204);
+      res.status(200).json({
+        message: 'User deleted successfully'
+      });
     })
     .catch(err => (dbErrorHandler(err, res)));
   },
@@ -187,15 +188,14 @@ export default {
       offset: req.listOptions.offset
     })
     .then((users) => {
-      res.set(
-        'x-list-metadata',
-        getMetadata(
+      res.status(200).json({
+        list: users.rows,
+        metadata: getMetadata(
           users,
           req.listOptions.limit,
           req.listOptions.offset
         )
-      );
-      res.status(200).json(users.rows);
+      });
     })
     .catch(err => (dbErrorHandler(err, res)));
   },

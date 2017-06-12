@@ -3,7 +3,7 @@ import request from 'supertest';
 import expect from 'expect';
 import server from '../../server';
 
-describe('API', () => {
+describe('API:', () => {
   const app = request(server);
   let superAdminToken;
 
@@ -22,7 +22,7 @@ describe('API', () => {
       });
   });
 
-  it('should return appropriate stock phrase on /api access', (done) => {
+  it('GET /api should return stock phrase', (done) => {
     app
       .get('/api')
       .expect('Content-Type', /text/)
@@ -33,7 +33,7 @@ describe('API', () => {
       });
   });
 
-  it('should return error if access token is invalid', (done) => {
+  it('Requests should return error if access token is invalid', (done) => {
     app
       .get('/api/users')
       .set('x-access-token', (Math.random() * 100).toString())
@@ -46,7 +46,7 @@ describe('API', () => {
       });
   });
 
-  it('should return error if resource identifier is invalid', (done) => {
+  it('Requests should return error if resource identifier is invalid', (done) => {
     app
       .get(`/api/users/${Math.floor(Math.random() * 100)}`)
       .set('x-access-token', superAdminToken)

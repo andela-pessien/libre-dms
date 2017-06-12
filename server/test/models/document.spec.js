@@ -5,7 +5,7 @@ import {
   getValidDoc,
   getValidQuillDoc,
   invalidDocs
-} from '../helpers/data-helper';
+} from '../../../scripts/data-generator';
 
 const { User, Document } = model;
 
@@ -125,10 +125,10 @@ describe('Document Model', () => {
       });
     });
 
-    it('that is blank', (done) => {
+    it('that has blank content', (done) => {
       Document.create({
         userId: docOwner.id,
-        title: '',
+        title: 'Blank Document',
         content: ''
       })
       .then((document) => {
@@ -143,6 +143,14 @@ describe('Document Model', () => {
       Document.create(invalidDocs.noTitle(docOwner.id))
       .catch((err) => {
         expect(/notNull Violation/.test(err.message)).toBeTruthy();
+        done();
+      });
+    });
+
+    it('that has empty title', (done) => {
+      Document.create(invalidDocs.emptyTitle(docOwner.id))
+      .catch((err) => {
+        expect(/Validation notEmpty failed/.test(err.message)).toBeTruthy();
         done();
       });
     });

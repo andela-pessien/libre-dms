@@ -12,7 +12,10 @@ export default (sequelize, DataTypes) => {
     },
     title: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: false,
+      validate: {
+        notEmpty: true
+      }
     },
     content: DataTypes.TEXT,
     type: DataTypes.ENUM('text', 'quill'),

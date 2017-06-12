@@ -1,6 +1,6 @@
 import expect from 'expect';
 import model from '../../models';
-import { getValidRole, invalidRoles } from '../helpers/data-helper';
+import { getValidRole, invalidRoles } from '../../../scripts/data-generator';
 
 const Role = model.Role;
 

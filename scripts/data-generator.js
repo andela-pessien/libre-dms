@@ -127,6 +127,13 @@ export const invalidDocs = {
       userId
     };
   },
+  emptyTitle(userId) {
+    return {
+      title: '',
+      content: faker.lorem.paragraphs(),
+      userId
+    };
+  },
   noOwner() {
     return {
       title: faker.company.catchPhrase(),

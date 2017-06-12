@@ -1,6 +1,6 @@
 import expect from 'expect';
 import model from '../../models';
-import { getValidOrg, getValidDep, invalidDeps } from '../helpers/data-helper';
+import { getValidOrg, getValidDep, invalidDeps } from '../../../scripts/data-generator';
 
 const { Organisation, Department } = model;
 

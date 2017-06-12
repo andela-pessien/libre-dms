@@ -16,11 +16,10 @@ export function getAllDocuments(limit, offset) {
     axios.get(`/api/documents?limit=${limit}&offset=${offset}`)
       .then((res) => {
         setAuthentication(res.headers['x-access-token']);
-        const metadata = decodeMetadata(res.headers['x-list-metadata']);
         dispatch({
           type: document.GET_ALL_SUCCESS,
-          documents: res.data,
-          metadata
+          documents: res.data.list,
+          metadata: res.data.metadata
         });
       }, (err) => {
         dispatch({
@@ -75,8 +74,8 @@ export function searchDocuments(query, limit, offset) {
         const metadata = decodeMetadata(res.headers['x-list-metadata']);
         dispatch({
           type: document.SEARCH_SUCCESS,
-          results: res.data,
-          metadata
+          results: res.data.list,
+          metadata: res.data.message
         });
       }, (err) => {
         dispatch({

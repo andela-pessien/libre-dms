@@ -1,6 +1,6 @@
 import expect from 'expect';
 import model from '../../models';
-import { getValidUser, invalidUsers } from '../helpers/data-helper';
+import { getValidUser, invalidUsers } from '../../../scripts/data-generator';
 
 const { User } = model;
 

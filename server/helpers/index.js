@@ -53,8 +53,7 @@ export const dbErrorHandler = (err, res) => {
     case (/Validation isUniqueWithinOrg failed/.test(err.message)):
     case (/operator does not exist/.test(err.message)):
       return res.status(400).json({
-        message: 'Please confirm that all fields are valid',
-        error: err
+        message: 'Please confirm that all fields are valid'
       });
     case (/noUpdate/.test(err.message)):
       return res.status(403).json({
@@ -62,8 +61,7 @@ export const dbErrorHandler = (err, res) => {
       });
     default:
       return res.status(500).json({
-        message: 'Oops! Something went wrong on our end',
-        error: err
+        message: 'Oops! Something went wrong on our end'
       });
   }
 };
@@ -85,15 +83,12 @@ export const hasRetrieveAccess = req => (
     req.decoded.roleId <= req.retrievedRecord.userRole)
 );
 
-export const getMetadata = (results, limit, offset) => {
-  const metadata = JSON.stringify({
-    total: results.count,
-    pages: Math.ceil(results.count / limit),
-    currentPage: (Math.floor(offset / limit) + 1),
-    pageSize: limit
-  });
-  return Buffer.from(metadata, 'utf8').toString('base64');
-};
+export const getMetadata = (results, limit, offset) => ({
+  total: results.count,
+  pages: Math.ceil(results.count / limit),
+  currentPage: (Math.floor(offset / limit) + 1),
+  pageSize: limit
+});
 
 export const isQuillDocument = (content) => {
   let delta;
