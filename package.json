@@ -13,7 +13,7 @@
     "db:seed:random": "node -r dotenv/config -r babel-register scripts/random-seed-db.js",
     "db:sync": "node -r dotenv/config -r babel-register scripts/sync-db.js",
     "prebuild": "npm run clean:build",
-    "posttest:client": "npm run clean:coverage",
+    "posttest:client:cover": "npm run clean:coverage",
     "posttest:cover": "nyc report --reporter=text-lcov | coveralls && npm run clean:coverage",
     "prestart": "cross-env NODE_ENV=production npm run db:seed:random && npm run build",
     "pretest": "cross-env NODE_ENV=test npm run db:seed:random",
@@ -24,7 +24,8 @@
     "start:dev": "cross-env NODE_ENV=development npm-run-all --parallel start:api start:web",
     "start:web": "webpack-dev-server --config webpack.config.dev.babel.js --progress --colors",
     "test": "cross-env NODE_ENV=test node -r dotenv/config $(npm bin)/jasmine --config=jasmine.json",
-    "test:client": "jest && codecov -t efb004e7-7502-486e-83f4-e8fe05510673",
+    "test:client": "jest",
+    "test:client:cover": "jest && codecov -t efb004e7-7502-486e-83f4-e8fe05510673",
     "test:cover": "cross-env NODE_ENV=test nyc node -r dotenv/config $(npm bin)/jasmine --config=jasmine.json",
     "test:e2e": "nightwatch"
   },
