@@ -40,7 +40,7 @@ describe('Role Model', () => {
     it('that has no label', (done) => {
       Role.create(invalidRoles.noLabel())
       .catch((err) => {
-        expect(/notNull Violation/.test(err.message)).toBeTruthy();
+        expect(/label cannot be null/.test(err.message)).toBeTruthy();
         done();
       });
     });
@@ -48,7 +48,7 @@ describe('Role Model', () => {
     it('that has an empty label', (done) => {
       Role.create(invalidRoles.emptyLabel())
       .catch((err) => {
-        expect(/Validation notEmpty failed/.test(err.message)).toBeTruthy();
+        expect(/Please provide a label for this role/.test(err.message)).toBeTruthy();
         done();
       });
     });
@@ -56,7 +56,7 @@ describe('Role Model', () => {
     it('that is not unique', (done) => {
       Role.create(validRole)
       .catch((err) => {
-        expect(/SequelizeUniqueConstraintError/.test(err.name)).toBeTruthy();
+        expect(/Roles must be unique/.test(err.message)).toBeTruthy();
         done();
       });
     });

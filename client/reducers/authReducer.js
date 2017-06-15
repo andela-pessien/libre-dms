@@ -6,7 +6,7 @@ import { auth } from '../actions/actionTypes';
  * @param {Object} action The dispatched action
  * @returns {Object} The new application state
  */
-export default function authReducer(state = {}, action) {
+export default function authReducer(state = {}, action = {}) {
   switch (action.type) {
     case auth.SIGNUP_SUCCESS:
     case auth.SIGNIN_SUCCESS:
@@ -14,7 +14,8 @@ export default function authReducer(state = {}, action) {
         ...state,
         isAuthenticated: true,
         currentUser: action.userId,
-        signUpError: null
+        signUpError: null,
+        signInError: null
       };
     case auth.SIGNUP_FAILURE:
       return {
@@ -22,7 +23,6 @@ export default function authReducer(state = {}, action) {
         isAuthenticated: false,
         currentUser: null,
         signUpError: action.error,
-        success: null
       };
     case auth.SIGNIN_FAILURE:
       return {
@@ -30,7 +30,6 @@ export default function authReducer(state = {}, action) {
         isAuthenticated: false,
         currentUser: null,
         signInError: action.error,
-        success: null
       };
     case auth.SIGNOUT_SUCCESS:
       return {
@@ -44,7 +43,6 @@ export default function authReducer(state = {}, action) {
         ...state,
         isAuthenticated: true,
         signOutError: action.error,
-        success: null
       };
     default:
       return {

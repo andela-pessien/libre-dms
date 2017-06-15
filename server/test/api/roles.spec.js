@@ -48,7 +48,7 @@ describe('Roles API', () => {
         .expect(404)
         .end((err, res) => {
           if (err) throw err;
-          expect(res.body.message).toEqual('Resource not found');
+          expect(res.body.message).toEqual('Role not found');
           done();
         });
     });

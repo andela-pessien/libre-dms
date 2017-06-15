@@ -142,7 +142,7 @@ describe('Document Model', () => {
     it('that has no title', (done) => {
       Document.create(invalidDocs.noTitle(docOwner.id))
       .catch((err) => {
-        expect(/notNull Violation/.test(err.message)).toBeTruthy();
+        expect(/title cannot be null/.test(err.message)).toBeTruthy();
         done();
       });
     });
@@ -150,7 +150,7 @@ describe('Document Model', () => {
     it('that has empty title', (done) => {
       Document.create(invalidDocs.emptyTitle(docOwner.id))
       .catch((err) => {
-        expect(/Validation notEmpty failed/.test(err.message)).toBeTruthy();
+        expect(/Please provide a title/.test(err.message)).toBeTruthy();
         done();
       });
     });
@@ -183,7 +183,7 @@ describe('Document Model', () => {
     it('that has an invalid access', (done) => {
       Document.create(invalidDocs.invalidAccess(docOwner.id))
       .catch((err) => {
-        expect(/invalid input value/.test(err.message)).toBeTruthy();
+        expect(/Access can only be private, public or role/.test(err.message)).toBeTruthy();
         done();
       });
     });
@@ -191,7 +191,7 @@ describe('Document Model', () => {
     it('that has an invalid access level', (done) => {
       Document.create(invalidDocs.invalidAccessLevel(docOwner.id))
       .catch((err) => {
-        expect(/invalid input value/.test(err.message)).toBeTruthy();
+        expect(/Access level can only be view or comment/.test(err.message)).toBeTruthy();
         done();
       });
     });

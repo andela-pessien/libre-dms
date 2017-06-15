@@ -10,14 +10,19 @@ export default {
    */
   retrieveRecord(req, res, next) {
     const Model = getModel(req.url);
-    Model.findOne({ where: { id: req.params.id } })
+    Model.findOne({ where: { id: req.params.id }, paranoid: false })
     .then((record) => {
       if (record) {
+        if (record.deletedAt) {
+          return res.status(404).json({
+            message: `This ${Model.name.toLowerCase()} has been deleted`
+          });
+        }
         req.retrievedRecord = record;
         return next();
       }
       return res.status(404).json({
-        message: 'Resource not found'
+        message: `${Model.name} not found`
       });
     })
     .catch(() => res.status(400).json({

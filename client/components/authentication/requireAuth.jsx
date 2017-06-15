@@ -24,9 +24,13 @@ function requireAuth(RestrictedComponent, FallbackComponent, wait) {
       if (this.props.isAuthenticated && this.props.ownId) {
         return (<RestrictedComponent {...this.props} />);
       } else if (wait && this.props.isAuthenticated) {
-        return (<div className="logo-image center" style={{ width: '50%' }}>
-          <img src={logo} alt="logo" />
-        </div>);
+        return (
+          <div className="logo-image-wrapper center" style={{ width: '50%' }}>
+            <div className="logo-image">
+              <img src={logo} alt="logo" />
+            </div>
+          </div>
+        );
       } else if (FallbackComponent) {
         return (<FallbackComponent {...this.props} />);
       }

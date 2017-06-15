@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
  * @param {Object} props The props for the component.
  * @returns {String} The HTML markup for the Preloader component
  */
-function Preloader(props) {
+const Preloader = (props) => {
   return (
     <div
       className={`preloader-wrapper ${props.size} ${props.className} active`}

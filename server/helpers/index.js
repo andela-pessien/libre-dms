@@ -45,15 +45,23 @@ export const signToken = (user) => {
 export const dbErrorHandler = (err, res) => {
   switch (true) {
     case (/notNull Violation/.test(err.message)):
-    case (/invalid input syntax/.test(err.message)):
-    case (/invalid input value/.test(err.message)):
-    case (/Validation notEmpty failed/.test(err.message)):
-    case (/Validation isEmail failed/.test(err.message)):
-    case (/Validation isDomain failed/.test(err.message)):
-    case (/Validation isUniqueWithinOrg failed/.test(err.message)):
+      return res.status(400).json({
+        message: err.message.replace('notNull Violation: ', '')
+      });
+    case (/Please provide/.test(err.message)):
+    case (/Passwords must be at least 8 characters/.test(err.message)):
+    case (/Passwords cannot be just whitespace/.test(err.message)):
+    case (/can only be/.test(err.message)):
+      return res.status(400).json({
+        message: err.message.replace(/(Validation error: )|(,(\n|\\n)[\s\S]*$)/g, '')
+      });
     case (/operator does not exist/.test(err.message)):
       return res.status(400).json({
         message: 'Please confirm that all fields are valid'
+      });
+    case (/Someone has already signed up with that email/.test(err.message)):
+      return res.status(403).json({
+        message: err.message
       });
     case (/noUpdate/.test(err.message)):
       return res.status(403).json({

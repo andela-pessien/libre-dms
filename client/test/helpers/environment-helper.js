@@ -1,21 +1,10 @@
 /* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable no-unused-vars */
-import { SpecReporter } from 'jasmine-spec-reporter';
 import { jsdom } from 'jsdom';
 
 require.extensions['.css'] = () => (null);
 require.extensions['.png'] = () => (null);
 require.extensions['.jpg'] = () => (null);
-
-const specReporter = new SpecReporter({
-  spec: {
-    displayPending: true
-  }
-});
-
-jasmine.getEnv().clearReporters();
-jasmine.getEnv().addReporter(specReporter);
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 60000;
 
 const exposedProperties = ['window', 'navigator', 'document'];
 
@@ -33,8 +22,13 @@ global.navigator = {
 };
 global.Materialize = { toast: () => {} };
 global.localStorage = {
+  getItem: () => {},
   setItem: () => {},
   removeItem: () => {},
 };
+// global.localStorage = {};
+// global.localStorage.getItem = key => global.localStorage[key];
+// global.localStorage.setItem = (key, value) => { global.localStorage[key] = value; };
+// global.localStorage.removeItem = (key) => { delete global.localStorage[key]; };
 
 const documentRef = document;  // eslint-disable-line no-undef

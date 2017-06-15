@@ -3,8 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import Preloader from '../common/Preloader';
 import UserDetails from './UserDetails';
-import DocumentFeed from '../document/DocumentFeed';
-import { getUser, getUserDocuments } from '../../actions/userActions';
+import { getUser } from '../../actions/userActions';
 
 /**
  * Component that displays a user's profile.
@@ -19,23 +18,20 @@ class ProfileView extends Component {
    */
   componentWillMount() {
     this.props.getUser(this.props.id);
-    if (this.props.full) {
-      this.props.getUserDocuments(this.props.id);
-    }
   }
 
   /**
    * Runs when the ProfileView's props have changed.
-   * Redirects to the specified target if user has been deleted.
+   * Closes the view if user has been deleted.
    * @param {Object} nextProps The props to be received
    * @returns {undefined}
    */
   componentWillReceiveProps(nextProps) {
+    if (nextProps.id === this.props.id && $.isEmptyObject(nextProps.container)) {
+      this.props.close();
+    }
     if (nextProps.id && nextProps.id !== this.props.id) {
       this.props.getUser(nextProps.id);
-      if (this.props.full) {
-        this.props.getUserDocuments(nextProps.id);
-      }
     }
   }
 
@@ -46,20 +42,13 @@ class ProfileView extends Component {
   render() {
     return (
       <div className="view-wrapper profile-wrapper z-index-3">
-        {(this.props.container.user)
-          ? (this.props.full)
-            ? <div className="row user-details-side">
-              <div className="col l5">
-                <UserDetails id={this.props.id} />
-              </div>
-              <div className="col l7">
-                {(this.props.container.documents)
-                  ? <DocumentFeed documents={this.props.container.documents} />
-                  : <Preloader className="middle" />}
-              </div>
-            </div>
-            : <UserDetails id={this.props.id} />
-          : <Preloader className="middle" />}
+        {(this.props.container.user) && <UserDetails id={this.props.id} />}
+        {(!this.props.container.user &&
+          !this.props.container.error) &&
+          <Preloader className="middle" />}
+        {(!this.props.container.user &&
+          this.props.container.error) &&
+          <h5 className="middle">{this.props.container.error.message}</h5>}
       </div>
     );
   }
@@ -70,13 +59,12 @@ const mapStateToProps = (state, ownProps) => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  getUser: id => dispatch(getUser(id)),
-  getUserDocuments: id => dispatch(getUserDocuments(id))
+  getUser: id => dispatch(getUser(id))
 });
 
 ProfileView.propTypes = {
   id: PropTypes.string.isRequired,
-  full: PropTypes.bool,
+  close: PropTypes.func.isRequired,
   container: PropTypes.shape({
     user: PropTypes.object,
     error: PropTypes.shape({
@@ -84,14 +72,11 @@ ProfileView.propTypes = {
     }),
     documents: PropTypes.object
   }),
-  getUser: PropTypes.func.isRequired,
-  getUserDocuments: PropTypes.func.isRequired
+  getUser: PropTypes.func.isRequired
 };
 
 ProfileView.defaultProps = {
-  deleteTarget: '/',
-  container: {},
-  full: false
+  container: {}
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ProfileView);

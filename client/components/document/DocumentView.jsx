@@ -12,14 +12,25 @@ import { getDocument } from '../../actions/documentActions';
  */
 class DocumentView extends Component {
   /**
+   * @param {Object} props The props for the component
+   * @constructor
+   */
+  constructor(props) {
+    super(props);
+    this.state = {
+      id: this.props.id
+    };
+  }
+
+  /**
    * Runs when the DocumentView component is about to mount.
    * Dispatches an action to get the document that corresponds to the passed ID
    * prop.
    * @returns {undefined}
    */
   componentWillMount() {
-    if (this.props.id !== 'new') {
-      this.props.getDocument(this.props.id);
+    if (this.state.id !== 'new') {
+      this.props.getDocument(this.state.id);
     }
   }
 
@@ -30,12 +41,16 @@ class DocumentView extends Component {
    * @returns {undefined}
    */
   componentWillReceiveProps(nextProps) {
+    const { id, documents } = nextProps;
     if (
-    nextProps.id &&
-    nextProps.id !== this.props.id &&
-    nextProps.id !== 'new') {
+    (id === this.state.id && !documents[id]) ||
+    (id === 'new' && !documents[documents.new.id])) {
+      this.props.close();
+    }
+    if (id && id !== this.state.id && id !== 'new') {
       this.props.getDocument(nextProps.id);
     }
+    this.setState({ id });
   }
 
   /**
@@ -45,17 +60,24 @@ class DocumentView extends Component {
   render() {
     return (
       <div className="view-wrapper">
-        {(this.props.id === 'new')
-          ? <DocumentEditor />
-          : (this.props.container.document)
-            ? <DocumentEditor id={this.props.id} />
-            : <Preloader className="middle" />}
+        {(this.state.id === 'new') && <DocumentEditor />}
+        {(this.state.id !== 'new' && this.props.container.document) &&
+          <DocumentEditor id={this.state.id} />}
+        {(this.state.id !== 'new' &&
+        !this.props.container.document &&
+        !this.props.container.error) &&
+          <Preloader className="middle" />}
+        {(this.state.id !== 'new' &&
+        !this.props.container.document &&
+        this.props.container.error) &&
+          <h5 className="middle">{this.props.container.error.message}</h5>}
       </div>
     );
   }
 }
 
 const mapStateToProps = (state, ownProps) => ({
+  documents: state.documentReducer,
   container: state.documentReducer[ownProps.id]
 });
 
@@ -65,17 +87,18 @@ const mapDispatchToProps = dispatch => ({
 
 DocumentView.propTypes = {
   id: PropTypes.string.isRequired,
+  close: PropTypes.func.isRequired,
   container: PropTypes.shape({
     document: PropTypes.object,
     error: PropTypes.shape({
       message: PropTypes.string
     })
   }),
+  documents: PropTypes.object.isRequired,
   getDocument: PropTypes.func.isRequired
 };
 
 DocumentView.defaultProps = {
-  deleteTarget: '/',
   container: {}
 };
 

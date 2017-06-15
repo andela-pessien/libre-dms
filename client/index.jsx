@@ -14,11 +14,6 @@ import 'quill/dist/quill.snow.css';
 /** Favicon **/
 import './images/favicon.ico';
 /** Fonts **/
-import './fonts/Roboto-Bold.woff2';
-import './fonts/Roboto-Light.woff2';
-import './fonts/Roboto-Medium.woff2';
-import './fonts/Roboto-Regular.woff2';
-import './fonts/Roboto-Thin.woff2';
 import './fonts/MaterialIcons.woff2';
 /** Own Styles **/
 import './styles/common.scss';

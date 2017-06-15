@@ -2,7 +2,7 @@
 import request from 'supertest';
 import expect from 'expect';
 import server from '../../server';
-import { getValidId, getValidUser, getValidDoc, getWord } from '../../../scripts/data-generator';
+import { getValidId, getValidUser, getValidDoc, invalidDocs, getWord } from '../../../scripts/data-generator';
 import { checkDocumentList } from '../helpers/response-helper';
 
 describe('Documents API:', () => {
@@ -51,7 +51,7 @@ describe('Documents API:', () => {
                         roleId: 2
                       })
                       .expect(200)
-                      .end((err, res) => {
+                      .end((err) => {
                         if (err) throw err;
                         app
                           .post('/api/auth/login')
@@ -116,51 +116,53 @@ describe('Documents API:', () => {
     });
 
     it('should return error if new document has no title', (done) => {
-      const document = getValidDoc();
       app.post('/api/documents')
         .set('x-access-token', docOwnerToken)
-        .send({
-          content: document.content
-        })
+        .send(invalidDocs.noTitle())
         .expect('Content-Type', /json/)
         .expect(400)
         .end((err, res) => {
           if (err) throw err;
-          expect(res.body.message).toEqual('Please confirm that all fields are valid');
+          expect(res.body.message).toEqual('title cannot be null');
+          done();
+        });
+    });
+
+    it('should return error if new document has empty title', (done) => {
+      app.post('/api/documents')
+        .set('x-access-token', docOwnerToken)
+        .send(invalidDocs.emptyTitle())
+        .expect('Content-Type', /json/)
+        .expect(400)
+        .end((err, res) => {
+          if (err) throw err;
+          expect(res.body.message).toEqual('Please provide a title');
           done();
         });
     });
 
     it('should return error if new document has invalid access', (done) => {
-      const document = getValidDoc();
       app.post('/api/documents')
         .set('x-access-token', docOwnerToken)
-        .send({
-          ...document,
-          access: 'wrongaccess'
-        })
+        .send(invalidDocs.invalidAccess())
         .expect('Content-Type', /json/)
         .expect(400)
         .end((err, res) => {
           if (err) throw err;
-          expect(res.body.message).toEqual('Please confirm that all fields are valid');
+          expect(res.body.message).toEqual('Access can only be private, public or role');
           done();
         });
     });
 
     it('should return error if new document has invalid access level', (done) => {
-      const document = getValidDoc();
       app.post('/api/documents')
         .set('x-access-token', docOwnerToken)
-        .send({
-          ...document,
-          accesslevel: 'wrongaccesslevel'
-        })
+        .send(invalidDocs.invalidAccessLevel())
         .expect('Content-Type', /json/)
         .expect(400)
         .end((err, res) => {
           if (err) throw err;
-          expect(res.body.message).toEqual('Please confirm that all fields are valid');
+          expect(res.body.message).toEqual('Access level can only be view or comment');
           done();
         });
     });
@@ -600,7 +602,7 @@ describe('Documents API:', () => {
         .expect(404)
         .end((err, res) => {
           if (err) throw err;
-          expect(res.body.message).toEqual('Resource not found');
+          expect(res.body.message).toEqual('Document not found');
           done();
         });
     });
@@ -734,7 +736,7 @@ describe('Documents API:', () => {
         .expect(404)
         .end((err, res) => {
           if (err) throw err;
-          expect(res.body.message).toEqual('Resource not found');
+          expect(res.body.message).toEqual('Document not found');
           done();
         });
     });
@@ -805,7 +807,13 @@ describe('Documents API:', () => {
           app
             .get(`/api/documents/${testDocument.id}`)
             .set('x-access-token', docOwnerToken)
-            .expect(404, done());
+            .expect('Content-Type', /json/)
+            .expect(404)
+            .end((err, res) => {
+              if (err) throw err;
+              expect(res.body.message).toEqual('This document has been deleted');
+              done();
+            });
         });
     });
 
@@ -820,7 +828,26 @@ describe('Documents API:', () => {
           app
             .get(`/api/documents/${secondTestDocument.id}`)
             .set('x-access-token', docOwnerToken)
-            .expect(404, done());
+            .expect('Content-Type', /json/)
+            .expect(404)
+            .end((err, res) => {
+              if (err) throw err;
+              expect(res.body.message).toEqual('This document has been deleted');
+              done();
+            });
+        });
+    });
+
+    it('should return an error if document does not exist', (done) => {
+      app
+        .delete(`/api/documents/${getValidId()}`)
+        .set('x-access-token', superAdminToken)
+        .expect('Content-Type', /json/)
+        .expect(404)
+        .end((err, res) => {
+          if (err) throw err;
+          expect(res.body.message).toEqual('Document not found');
+          done();
         });
     });
   });

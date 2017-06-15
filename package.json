@@ -7,12 +7,15 @@
     "build": "npm-run-all build:server build:client",
     "build:client": "webpack --config webpack.config.prod.babel.js --progress --colors",
     "build:server": "babel server -d dist --copy-files --ignore spec.js,helper.js",
-    "clean": "rimraf ./dist && mkdir dist",
+    "clean:build": "rimraf dist && mkdir dist",
+    "clean:coverage": "rimraf coverage",
     "db:seed": "node -r dotenv/config -r babel-register scripts/seed-db.js",
     "db:seed:random": "node -r dotenv/config -r babel-register scripts/random-seed-db.js",
     "db:sync": "node -r dotenv/config -r babel-register scripts/sync-db.js",
-    "postinstall": "npm run db:seed:random && npm run build",
-    "prebuild": "npm run clean",
+    "prebuild": "npm run clean:build",
+    "posttest:client": "npm run clean:coverage",
+    "posttest:cover": "nyc report --reporter=text-lcov | coveralls && npm run clean:coverage",
+    "prestart": "cross-env NODE_ENV=production npm run db:seed:random && npm run build",
     "pretest": "cross-env NODE_ENV=test npm run db:seed:random",
     "pretest:cover": "npm run pretest",
     "sequelize": "node -r dotenv/config ./node_modules/.bin/sequelize",
@@ -20,9 +23,10 @@
     "start:api": "nodemon --exec 'node -r dotenv/config -r babel-register' server/server.js",
     "start:dev": "cross-env NODE_ENV=development npm-run-all --parallel start:api start:web",
     "start:web": "webpack-dev-server --config webpack.config.dev.babel.js --progress --colors",
-    "test": "cross-env NODE_ENV=test node -r dotenv/config $(npm bin)/jasmine --config=jasmine.server.json",
-    "test:cover": "cross-env NODE_ENV=test nyc node -r dotenv/config $(npm bin)/jasmine --config=jasmine.server.json",
-    "test:client": "cross-env NODE_ENV=test nyc node -r dotenv/config $(npm bin)/jasmine --config=jasmine.client.json"
+    "test": "cross-env NODE_ENV=test node -r dotenv/config $(npm bin)/jasmine --config=jasmine.json",
+    "test:client": "jest && codecov -t efb004e7-7502-486e-83f4-e8fe05510673",
+    "test:cover": "cross-env NODE_ENV=test nyc node -r dotenv/config $(npm bin)/jasmine --config=jasmine.json",
+    "test:e2e": "nightwatch"
   },
   "repository": {
     "type": "git",
@@ -95,6 +99,8 @@
   },
   "devDependencies": {
     "babel-plugin-istanbul": "4.1.4",
+    "coveralls": "2.13.1",
+    "enzyme": "2.8.2",
     "eslint": "3.19.0",
     "eslint-config-airbnb": "14.1.0",
     "eslint-plugin-import": "2.2.0",
@@ -104,6 +110,7 @@
     "jasmine-spec-reporter": "4.1.0",
     "jsdom": "8.5.0",
     "moxios": "0.4.0",
+    "nightwatch": "0.9.16",
     "nock": "9.0.13",
     "nodemon": "1.11.0",
     "nyc": "10.3.2",
@@ -118,6 +125,36 @@
   "engines": {
     "node": "7.7.1",
     "npm": "4.1.2"
+  },
+  "jest": {
+    "transform": {
+      ".*": "<rootDir>/node_modules/babel-jest"
+    },
+    "moduleFileExtensions": [
+      "js",
+      "jsx"
+    ],
+    "setupFiles": [
+      "<rootDir>/client/test/helpers/environment-helper.js"
+    ],
+    "collectCoverage": true,
+    "coverageDirectory": "<rootDir>/coverage/",
+    "coveragePathIgnorePatterns": [
+      "<rootDir>/client/test/",
+      "<rootDir>/client/utils/",
+      "utils/",
+      "<rootDir>/node_modules/",
+      "<rootDir>/scripts/"
+    ],
+    "unmockedModulePathPatterns": [
+      "react",
+      "enzyme"
+    ],
+    "bail": true,
+    "verbose": true,
+    "roots": [
+      "client/test/"
+    ]
   },
   "nyc": {
     "require": [

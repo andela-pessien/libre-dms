@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { signUp } from '../../actions/authActions';
+import { isValidEmail, isValidName } from '../../utils/validate';
 
 /**
  * Signup form component
@@ -41,21 +42,21 @@ class SignUpForm extends Component {
 
   /**
    * Event listener for changes to form input
-   * @param {Object} e The form change event
+   * @param {Object} event The form change event
    * @returns {undefined}
    */
-  onChange(e) {
-    this.setState({ [e.target.name]: e.target.value });
+  onChange(event) {
+    this.setState({ [event.target.name]: event.target.value });
   }
 
   /**
    * Event listener for form submission
    * Performs validations before submission
-   * @param {Object} e The form submission event
+   * @param {Object} event The form submission event
    * @returns {undefined}
    */
-  onSubmit(e) {
-    e.preventDefault();
+  onSubmit(event) {
+    event.preventDefault();
     try {
       if (
       this.state.name.replace(/\s+/g, '') === '' ||
@@ -63,8 +64,11 @@ class SignUpForm extends Component {
       this.state.password.replace(/\s+/g, '') === '') {
         throw new Error('No field should be left blank');
       }
-      if (!$('#signup-email').hasClass('valid')) {
+      if (!isValidEmail($('#signup-email').val())) {
         throw new Error('Please provide a valid email');
+      }
+      if (!isValidName($('#signup-name').val())) {
+        throw new Error('Please provide a valid first and last name');
       }
       if (this.state.password.length < 8) {
         throw new Error('Please choose a longer password');
@@ -93,8 +97,6 @@ class SignUpForm extends Component {
             id="signup-name"
             name="name"
             type="text"
-            className="validate"
-            required
           />
           <label htmlFor="signup-name" className="form-label">Name</label>
         </div>
@@ -104,9 +106,7 @@ class SignUpForm extends Component {
             onChange={this.onChange}
             id="signup-email"
             name="email"
-            type="email"
-            className="validate"
-            required
+            type="text"
           />
           <label htmlFor="signup-email" className="form-label">Email</label>
         </div>
@@ -117,26 +117,24 @@ class SignUpForm extends Component {
             id="signup-password"
             name="password"
             type="password"
-            className="validate"
-            placeholder="At least 8 characters"
-            required
           />
-          <label htmlFor="signup-password" className="form-label">Password</label>
+          <label
+            htmlFor="signup-password"
+            className="form-label"
+          >Password (at least 8 characters)</label>
         </div>
         <div className="input-field form-field left-align">
           <input
             value={this.state.confirmPassword}
             onChange={this.onChange}
-            id="confirm-password"
+            id="signup-confirm-password"
             name="confirmPassword"
             type="password"
-            className="validate"
-            required
           />
           <label htmlFor="confirm-password" className="form-label">Confirm password</label>
         </div>
         <div className="center">
-          <button className="btn indigo darken-4" type="submit">Sign Up</button>
+          <button className="btn indigo darken-4 submit-signup" type="submit">Sign Up</button>
         </div>
       </form>
     );

@@ -1,0 +1,35 @@
+{
+  "src_folders" : [
+    "client/e2e/authentication",
+    "client/e2e/document",
+    "client/e2e/search"
+  ],
+  "output_folder" : "reports",
+  "globals_path": "client/e2e/globals.js",
+  "custom_commands_path": "client/e2e/commands",
+
+  "selenium" : {
+    "start_process" : true,
+    "server_path" : "./bin/selenium-server-standalone-3.4.0.jar",
+    "log_path" : "",
+    "host": "127.0.0.1",
+    "port" : 4444,
+    "cli_args" : {
+      "webdriver.chrome.driver" : "./bin/chromedriver"
+    }
+  },
+
+  "test_settings" : {
+    "default" : {
+      "launch_url" : "http://localhost:5000",
+      "selenium_port"  : 4444,
+      "selenium_host"  : "localhost",
+      "persist_globals": true,
+      "desiredCapabilities": {
+        "browserName": "chrome",
+        "javascriptEnabled": true,
+        "acceptSslCerts": true
+      }
+    }
+  }
+}

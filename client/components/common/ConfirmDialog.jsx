@@ -28,12 +28,14 @@ class ConfirmDialog extends Component {
         </div>
         <div className="modal-footer">
           <a
-            className="modal-action modal-close btn indigo darken-4"
+            className="modal-action modal-close no-btn btn indigo darken-4"
             onClick={this.props.onNoClick}
+            roleitem="button"
           >No</a>
           <a
-            className="modal-action modal-close btn indigo darken-4"
+            className="modal-action modal-close yes-btn btn indigo darken-4"
             onClick={this.props.onYesClick}
+            roleitem="button"
           >Yes</a>
         </div>
       </div>

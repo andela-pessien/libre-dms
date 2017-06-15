@@ -6,7 +6,7 @@ import { document } from '../actions/actionTypes';
  * @param {Object} action The dispatched action
  * @returns {Object} The new application state
  */
-export default function documentReducer(state = { documents: {} }, action) {
+export default function documentReducer(state = {}, action = {}) {
   switch (action.type) {
     case document.GET_ALL_SUCCESS:
       return {
@@ -23,7 +23,6 @@ export default function documentReducer(state = { documents: {} }, action) {
           ...state.allDocuments,
           error: action.error
         },
-        success: null
       };
     case document.GET_SUCCESS:
     case document.UPDATE_SUCCESS:
@@ -42,7 +41,6 @@ export default function documentReducer(state = { documents: {} }, action) {
           ...state[action.id],
           error: action.error
         },
-        success: null
       };
     case document.SEARCH_SUCCESS:
       return {
@@ -59,7 +57,6 @@ export default function documentReducer(state = { documents: {} }, action) {
           ...state.search,
           error: action.error
         },
-        success: null
       };
     case document.CREATE_SUCCESS:
       return {
@@ -77,10 +74,7 @@ export default function documentReducer(state = { documents: {} }, action) {
         new: {
           error: action.error
         },
-        success: null
       };
-
-
     case document.DELETE_SUCCESS:
       return Object.keys(state).reduce((result, key) => {
         if (key !== action.id) {

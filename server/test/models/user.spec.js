@@ -48,7 +48,7 @@ describe('User Model', () => {
     it('that has a unique email', (done) => {
       User.create(validUser)
       .catch((err) => {
-        expect(/SequelizeUniqueConstraintError/.test(err.name)).toBeTruthy();
+        expect(/Someone has already signed up with that email/.test(err.message)).toBeTruthy();
         done();
       });
     });
@@ -76,7 +76,7 @@ describe('User Model', () => {
     it('that has no name', (done) => {
       User.create(invalidUsers.noName())
       .catch((err) => {
-        expect(/notNull Violation/.test(err.message)).toBeTruthy();
+        expect(/name cannot be null/.test(err.message)).toBeTruthy();
         done();
       });
     });
@@ -84,7 +84,15 @@ describe('User Model', () => {
     it('that has an empty name', (done) => {
       User.create(invalidUsers.emptyName())
       .catch((err) => {
-        expect(/Validation notEmpty failed/.test(err.message)).toBeTruthy();
+        expect(/Please provide a name/.test(err.message)).toBeTruthy();
+        done();
+      });
+    });
+
+    it('that has an invalid name', (done) => {
+      User.create(invalidUsers.invalidName())
+      .catch((err) => {
+        expect(/Please provide a valid first and last name/.test(err.message)).toBeTruthy();
         done();
       });
     });
@@ -92,7 +100,7 @@ describe('User Model', () => {
     it('that has no email', (done) => {
       User.create(invalidUsers.noEmail())
       .catch((err) => {
-        expect(/notNull Violation/.test(err.message)).toBeTruthy();
+        expect(/email cannot be null/.test(err.message)).toBeTruthy();
         done();
       });
     });
@@ -100,7 +108,7 @@ describe('User Model', () => {
     it('that has an empty email', (done) => {
       User.create(invalidUsers.emptyEmail())
       .catch((err) => {
-        expect(/Validation notEmpty failed/.test(err.message)).toBeTruthy();
+        expect(/Please provide an email/.test(err.message)).toBeTruthy();
         done();
       });
     });
@@ -108,7 +116,7 @@ describe('User Model', () => {
     it('that has an invalid email', (done) => {
       User.create(invalidUsers.invalidEmail())
       .catch((err) => {
-        expect(/Validation isEmail failed/.test(err.message)).toBeTruthy();
+        expect(/Please provide a valid email/.test(err.message)).toBeTruthy();
         done();
       });
     });
@@ -116,7 +124,7 @@ describe('User Model', () => {
     it('that has no password', (done) => {
       User.create(invalidUsers.noPassword())
       .catch((err) => {
-        expect(/notNull Violation/.test(err.message)).toBeTruthy();
+        expect(/password cannot be null/.test(err.message)).toBeTruthy();
         done();
       });
     });
@@ -124,7 +132,15 @@ describe('User Model', () => {
     it('that has an empty password', (done) => {
       User.create(invalidUsers.emptyPassword())
       .catch((err) => {
-        expect(/Validation notEmpty failed/.test(err.message)).toBeTruthy();
+        expect(/Please provide a password/.test(err.message)).toBeTruthy();
+        done();
+      });
+    });
+
+    it('that has a password that is less than 8 characters', (done) => {
+      User.create(invalidUsers.shortPassword())
+      .catch((err) => {
+        expect(/Passwords must be at least 8 characters/.test(err.message)).toBeTruthy();
         done();
       });
     });

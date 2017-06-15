@@ -1,6 +1,5 @@
 import axios from 'axios';
 import { document } from './actionTypes';
-import decodeMetadata from '../utils/decodeMetadata';
 import setAuthentication from '../utils/setAuthentication';
 
 /**
@@ -10,8 +9,6 @@ import setAuthentication from '../utils/setAuthentication';
  * @returns {Function} A thunk that asynchronously makes the request/dispatch
  */
 export function getAllDocuments(limit, offset) {
-  limit = limit || 10;
-  offset = offset || 0;
   return dispatch => (
     axios.get(`/api/documents?limit=${limit}&offset=${offset}`)
       .then((res) => {
@@ -64,18 +61,15 @@ export function getDocument(id) {
  * @returns {Function} A thunk that asynchronously makes the request/dispatch
  */
 export function searchDocuments(query, limit, offset) {
-  limit = limit || 10;
-  offset = offset || 0;
   return dispatch => (
     axios.get(
       `/api/search/documents?q=${query}&limit=${limit}&offset=${offset}`)
       .then((res) => {
         setAuthentication(res.headers['x-access-token']);
-        const metadata = decodeMetadata(res.headers['x-list-metadata']);
         dispatch({
           type: document.SEARCH_SUCCESS,
           results: res.data.list,
-          metadata: res.data.message
+          metadata: res.data.metadata
         });
       }, (err) => {
         dispatch({

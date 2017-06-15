@@ -31,9 +31,11 @@ class AuthPanel extends Component {
           <div className="card-tabs">
             <ul className="tabs tabs-fixed-width">
               <li className="tab">
-                <a className="active" href="#signup">Sign Up</a>
+                <a className="signup-tab active" href="#signup">Sign Up</a>
               </li>
-              <li className="tab"><a href="#signin">Sign In</a></li>
+              <li className="tab">
+                <a className="signin-tab" href="#signin">Sign In</a>
+              </li>
             </ul>
           </div>
           <div className="card-content">

@@ -1,5 +1,6 @@
 $black-100: #000;
 $indigo: #3f51b5;
+$indigo-lighten-4: #c5cae9;
 $indigo-darken-4: #1a237e;
 $white-100: #fff;
 $large-and-up: 'screen and (min-width : 993px)';
@@ -10,6 +11,25 @@ $large-and-up: 'screen and (min-width : 993px)';
   font-style: normal;
   font-weight: 400;
   src: local('Material Icons'), local('MaterialIcons-Regular'), url('../fonts/MaterialIcons.woff2') format('woff2');
+}
+
+@mixin list {
+  li {
+    a {
+      color: $indigo-darken-4;
+      cursor: pointer;
+
+      &:hover,
+      &:focus,
+      .active {
+        color: $indigo;
+      }
+    }
+  }
+}
+
+* {
+  @include list;
 }
 
 // Material Icons font styling
@@ -27,13 +47,16 @@ $large-and-up: 'screen and (min-width : 993px)';
   text-transform: none;
   white-space: nowrap;
   word-wrap: normal;
+
+  &.large {
+    font-size: 36px;
+  }
 }
 
 html,
 #app,
 body,
-.app-wrapper,
-.main-wrapper {
+.app-wrapper {
   @media #{$large-and-up} {
     min-height: 560px;
   }
@@ -44,23 +67,8 @@ body,
 
 body {
   background: $black-100;
-  color: $white-100;
   font-family: 'Roboto', sans-serif;
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  position: fixed;
-  width: 100%;
-}
-
-.body-background {
-  bottom: 0;
-  left: 0;
-  opacity: 0;
-  position: absolute;
-  right: 0;
-  top: 0;
-  z-index: -1;
+  font-weight: 300;
 }
 
 .app-wrapper {
@@ -72,13 +80,27 @@ body {
     box-shadow: none;
     transform: translate(0, -25%);
     z-index: 1001;
+
+    ul {
+      height: 64px;
+
+      li {
+        line-height: 3rem;
+      }
+    }
+  }
+
+  .main-wrapper {
+    box-sizing: border-box;
+    height: 90%;
+    width: 100%;
   }
 
   .app-background {
     bottom: 0;
     left: 0;
     opacity: 0;
-    position: absolute;
+    position: fixed;
     right: 0;
     top: 0;
     z-index: -1;
@@ -87,6 +109,7 @@ body {
 
 .avatar {
   background-color: $indigo-darken-4;
+  border: 1px solid $white-100;
   border-radius: 50%;
   cursor: pointer;
   display: inline-block;
@@ -96,53 +119,48 @@ body {
 }
 
 .avatar-small {
-  font-size: 3rem;
-  height: 4rem;
-  width: 4rem;
+  height: 3.5rem;
+  width: 3.5rem;
+
+  i {
+    line-height: 3.5rem !important;
+  }
 }
 
 .account-menu {
-  z-index: 1001 !important;
+  @include list;
+
   width: auto !important;
+  z-index: 1001 !important;
 }
 
-li {
-  a {
-    color: $indigo-darken-4 !important;
-    cursor: pointer;
+.auth-page-wrapper {
+  height: 100%;
+}
 
-    &:hover,
-    &:focus,
-    .active {
-      color: $indigo !important;
+.col {
+  height: 100%;
+}
+
+.logo-image-wrapper {
+  position: relative;
+
+  .logo-image {
+    height: 100%;
+    position: absolute;
+    width: 100%;
+
+    img {
+      margin-left: 20%;
+      position: absolute;
+      top: 20%;
+      width: 50%;
     }
   }
 }
 
-.auth-page-wrapper {
-  display: flex;
-  flex-grow: 1;
-  height: 100%;
-
-  .col {
-    height: 100%;
-  }
-}
-
-.logo-image {
-  height: 100%;
-  position: relative;
-
-  img {
-    margin-left: 20%;
-    position: absolute;
-    top: 20%;
-    width: 50%;
-  }
-}
-
 .auth-panel {
-  margin: 20% 10%;
+  margin: 25% 10%;
   width: 80%;
 
   .card-content {
@@ -183,23 +201,18 @@ li {
 }
 
 .dashboard-wrapper {
-  display: flex;
-  flex-grow: 1;
   height: 100%;
 
   .row {
-    flex-grow: 1;
-    padding-bottom: 1.5%;
-
-    .col {
-      display: flex;
-      height: 100%;
-    }
+    height: 100%;
   }
 }
 
 .fixed-side-menu {
+  float: left;
+
   .fixed-side-menu-item {
+    color: $white-100;
     cursor: pointer;
     padding: 10px;
 
@@ -218,18 +231,36 @@ li {
   }
 }
 
-.dashboard-panel {
-  flex-grow: 1;
-  overflow-y: auto;
+.side-panel {
+  height: 100%;
+  position: relative;
 }
 
-.side-panel {
-  color: $black-100;
-  font-family: 'Roboto-Thin';
-  margin-left: 10%;
-  margin-right: 10%;
+.main-panel {
+  height: 100%;
   position: relative;
-  width: 80%;
+}
+
+.main-close {
+  border: 1px solid $white-100;
+  position: absolute;
+  right: 0;
+  top: 0;
+  transform: translate(20%, -20%);
+}
+
+.side-view {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  .own-feed,
+  .public-feed,
+  .people-feed {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+  }
 }
 
 .main-view {
@@ -238,9 +269,9 @@ li {
 
 .new-doc {
   background-color: $indigo-darken-4;
-  bottom: 20%;
-  position: fixed;
-  left: 3%;
+  bottom: 3%;
+  position: absolute;
+  right: 5%;
 }
 
 .hidden {
@@ -260,17 +291,19 @@ li {
 }
 
 .view-wrapper {
-  background-color: $white-100;
   border: 2px solid $indigo-darken-4;
   border-radius: 2px;
-  color: $black-100;
-  display: flex;
-  flex-direction: column;
   height: 100%;
 
   .middle {
     margin-top: 40vh;
   }
+}
+
+.document-editor {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .ql-container.ql-snow {
@@ -286,18 +319,8 @@ li {
 
 .menu-bar {
   background: $indigo-darken-4;
-  height: 7vh;
+  height: 56px;
   position: relative;
-
-  a {
-    span {
-      margin-top: 2px;
-    }
-
-    i {
-      font-size: 36px;
-    }
-  }
 
   .menu-button {
     background-color: transparent;
@@ -307,7 +330,7 @@ li {
     display: flex;
     height: 7vh;
     line-height: 7vh;
-    padding: 0 5px;
+    padding: 0 10px;
 
     &:hover,
     &:focus {
@@ -326,22 +349,18 @@ li {
       width: auto !important;
     }
 
-    &.nested {
-      overflow-y: visible;
+    @include list;
 
-      .dropdown-content {
-        left: 100% !important;
-        position: absolute !important;
-        top: 0 !important;
+    li {
+      &:not(.clickable) {
+        pointer-events: none;
+      }
 
-        li {
-          a {
-            &.active {
-              background-color: $indigo-darken-4;
-              border: 1px solid $white-100;
-              color: $white-100 !important;
-            }
-          }
+      a {
+        &.active {
+          background-color: $indigo-darken-4;
+          border: 1px solid $white-100;
+          color: $white-100 !important;
         }
       }
     }
@@ -374,10 +393,12 @@ li {
 
 input.title-editor {
   border-bottom: 0;
-  font-size: 5vh;
-  height: 7vh;
+  box-sizing: border-box;
+  font-size: 32px;
+  height: 56px;
+  line-height: 56px;
   margin: 0;
-  padding-left: 10px;
+  padding: 0 10px;
   width: 100%;
 
   &:focus:not([readonly]) {
@@ -388,8 +409,8 @@ input.title-editor {
 
 .user-details {
   border-right: 2px solid $indigo-darken-4;
-  display: flex;
-  flex-direction: column;
+  // display: flex;
+  // flex-direction: column;
   height: 100%;
   overflow: scroll;
   position: relative;
@@ -402,7 +423,6 @@ input.title-editor {
 
   .header-photo {
     background-color: $indigo-darken-4;
-    flex-shrink: 0;
     position: relative;
 
     .profile-photo {
@@ -418,40 +438,19 @@ input.title-editor {
     }
   }
 
-  .details-body {
-    flex-grow: 1;
-  }
-}
-
-.profile-action-bar {
-  background-color: $indigo-darken-4;
-  flex-shrink: 0;
-  height: 50px;
-  position: relative;
-
-  .action-items {
-    left: 50%;
-    position: absolute;
-    top: 50%;
-    transform: translate(-50%, -50%);
-
-    a {
-      color: $white-100;
-      padding: 0 10%;
-
-      i {
-        font-size: 36px;
-      }
-    }
-  }
+  // .details-body {
+  //   flex-grow: 1;
+  // }
 }
 
 .user-detail {
   display: block;
+  font-size: 1.3rem;
 
   &[type='text'],
   &[type='email'] {
     color: $black-100 !important;
+    font-size: 1.3rem;
     margin: 0 !important;
 
     &[disabled] {
@@ -462,10 +461,10 @@ input.title-editor {
 
 .search {
   height: 50px;
-  left: -10%;
+  left: -12.5%;
   opacity: .99;
   position: relative;
-  width: 120%;
+  width: 125%;
 }
 
 .search-input {
@@ -482,13 +481,25 @@ input.title-editor {
 }
 
 .pagination {
+  // margin-left: -5%;
+  // margin-right: 56px;
+  margin: 5px 56px 0 -5%;
+
   li {
+    &.disabled {
+      pointer-events: none;
+    }
+
     &.active {
       background-color: $indigo-darken-4;
 
       a {
         color: $white-100 !important;
       }
+    }
+
+    .no-padding {
+      padding: 0;
     }
   }
 }
@@ -499,8 +510,39 @@ input.title-editor {
   }
 }
 
-.modal-footer {
-  .btn {
-    margin: 6px;
+.modal {
+  .modal-footer {
+    .btn {
+      margin: 6px;
+    }
+  }
+}
+
+h5 {
+  font-size: 1.3rem;
+  font-weight: 300;
+}
+
+.feed {
+  flex-grow: 1;
+  overflow-y: auto;
+}
+
+table {
+  font-size: 1.3rem;
+}
+
+.security {
+  padding: 3%;
+}
+
+.password-change {
+  padding: 2.5%;
+
+  form {
+    .input-field {
+      min-width: 300px;
+      width: 50%;
+    }
   }
 }

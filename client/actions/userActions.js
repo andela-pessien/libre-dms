@@ -10,8 +10,6 @@ import { getRole } from '../utils/roles';
  * @returns {Function} A thunk that asynchronously makes the request/dispatch
  */
 export function getAllUsers(limit, offset) {
-  limit = limit || 10;
-  offset = offset || 0;
   return dispatch => (
     axios.get(`/api/users?limit=${limit}&offset=${offset}`)
       .then((res) => {
@@ -65,8 +63,6 @@ export function getUser(id) {
  * @returns {Function} A thunk that asynchronously makes the request/dispatch
  */
 export function searchUsers(query, limit, offset) {
-  limit = limit || 10;
-  offset = offset || 0;
   return dispatch => (
     axios.get(
       `/api/search/users?q=${query}&limit=${limit}&offset=${offset}`)
@@ -182,8 +178,6 @@ export function deleteUser(id, isSelf) {
  * @returns {Function} A thunk that asynchronously makes the request/dispatch
  */
 export function getUserDocuments(id, limit, offset) {
-  limit = limit || 10;
-  offset = offset || 0;
   return dispatch => (
     axios.get(`/api/users/${id}/documents?limit=${limit}&offset=${offset}`)
       .then((res) => {

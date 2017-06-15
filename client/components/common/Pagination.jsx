@@ -47,8 +47,16 @@ class Pagination extends Component {
    * @returns {undefined}
    */
   setPages({ metadata }) {
-    this.pages = Array.from(Array(metadata.pages).keys())
-      .slice(metadata.currentPage - 1, metadata.currentPage + 3);
+    this.pages = Array.from(Array(metadata.pages).keys());
+    if (metadata.pages > 5) {
+      if (metadata.currentPage < 3) {
+        this.pages = this.pages.slice(0, 5);
+      } else if (metadata.currentPage > metadata.pages - 3) {
+        this.pages = this.pages.slice(metadata.pages - 5);
+      } else {
+        this.pages = this.pages.slice(metadata.currentPage - 3, metadata.currentPage + 2);
+      }
+    }
   }
 
   /**
@@ -79,29 +87,33 @@ class Pagination extends Component {
    * @returns {String} JSX markup for the Pagination component
    */
   render() {
-    return (
-      <ul className="pagination">
-        <li id="page-left" onClick={this.props.onLeftClick}>
-          <a>
-            <i className="material-icons">chevron_left</i>
-          </a>
-        </li>
-        {this.pages.map(page =>
-          <li key={page + 1} name={page + 1} onClick={this.props.onPageClick}>
-            <a name={page + 1} onClick={this.props.onPageClick}>{page + 1}</a>
-          </li>)}
-        <li id="page-right" onClick={this.props.onRightClick}>
-          <a>
-            <i className="material-icons">chevron_right</i>
-          </a>
-        </li>
-      </ul>
-    );
+    return (this.props.metadata.total > 0) && (<ul className="pagination">
+      <li id="page-left" onClick={this.props.onLeftClick} role="button">
+        <a className="no-padding">
+          <i className="material-icons">chevron_left</i>
+        </a>
+      </li>
+      {this.pages.map(page =>
+        <li key={page + 1} name={page + 1} onClick={this.props.onPageClick} role="button">
+          <a name={page + 1} onClick={this.props.onPageClick} role="button">{page + 1}</a>
+        </li>)}
+      <li id="page-right" onClick={this.props.onRightClick} role="button">
+        <a className="no-padding">
+          <i className="material-icons">chevron_right</i>
+        </a>
+      </li>
+    </ul>);
   }
 }
 
 Pagination.propTypes = {
   className: PropTypes.string.isRequired,
+  metadata: PropTypes.shape({
+    total: PropTypes.number.isRequired,
+    pages: PropTypes.number.isRequired,
+    currentPage: PropTypes.number.isRequired,
+    pageSize: PropTypes.number.isRequired,
+  }).isRequired,
   onLeftClick: PropTypes.func.isRequired,
   onPageClick: PropTypes.func.isRequired,
   onRightClick: PropTypes.func.isRequired

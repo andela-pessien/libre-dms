@@ -41,14 +41,14 @@ export const invalidRoles = {
 };
 
 export const getValidUser = roleId => ({
-  name: faker.name.findName(),
+  name: `${faker.name.firstName()} ${faker.name.lastName()}`,
   email: faker.internet.email(),
   password: faker.internet.password(),
   roleId
 });
 
 export const getValidPublicUser = roleId => ({
-  name: faker.name.findName(),
+  name: `${faker.name.firstName()} ${faker.name.lastName()}`,
   email: faker.internet.email(),
   password: faker.internet.password(),
   roleId,
@@ -64,13 +64,13 @@ export const invalidUsers = {
   },
   noEmail() {
     return {
-      name: faker.name.findName(),
+      name: `${faker.name.firstName()} ${faker.name.lastName()}`,
       password: faker.internet.password()
     };
   },
   noPassword() {
     return {
-      name: faker.name.findName(),
+      name: `${faker.name.firstName()} ${faker.name.lastName()}`,
       email: faker.internet.email()
     };
   },
@@ -83,21 +83,35 @@ export const invalidUsers = {
   },
   emptyEmail() {
     return {
-      name: faker.name.findName(),
+      name: `${faker.name.firstName()} ${faker.name.lastName()}`,
       email: '',
       password: faker.internet.password()
     };
   },
   emptyPassword() {
     return {
-      name: faker.name.findName(),
+      name: `${faker.name.firstName()} ${faker.name.lastName()}`,
       email: faker.internet.email(),
       password: ''
     };
   },
+  shortPassword() {
+    return {
+      name: `${faker.name.firstName()} ${faker.name.lastName()}`,
+      email: faker.internet.email(),
+      password: faker.internet.password().substr(0, 5)
+    };
+  },
+  invalidName() {
+    return {
+      name: faker.name.lastName(),
+      email: faker.internet.email(),
+      password: faker.internet.password()
+    };
+  },
   invalidEmail() {
     return {
-      name: faker.name.findName(),
+      name: `${faker.name.firstName()} ${faker.name.lastName()}`,
       email: faker.name.findName(),
       password: faker.internet.password()
     };

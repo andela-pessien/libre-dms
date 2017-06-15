@@ -18,37 +18,22 @@ export default {
    * @returns {void}
    */
   create(req, res) {
-    if (req.body.name && req.body.email && req.body.password) {
-      if (req.body.roleId) {
-        return res.status(403).json({
-          message: "You're not permitted to specify your own role."
-        });
-      }
-      User.findOne({ where: { email: req.body.email }, paranoid: false })
-      .then((user) => {
-        if (user) {
-          return res.status(403).json({
-            message: 'A user with that email already exists'
-          });
-        }
-        User.create({
-          name: req.body.name,
-          email: req.body.email,
-          password: req.body.password,
-          isPrivate: req.body.isPrivate
-        })
-        .then((newUser) => {
-          res.set('x-access-token', signToken(newUser));
-          return res.status(201).json(formatUser(newUser));
-        })
-        .catch(err => (dbErrorHandler(err, res)));
-      })
-      .catch(err => (dbErrorHandler(err, res)));
-    } else {
-      return res.status(400).json({
-        message: 'Please provide a name, email and password'
+    if (req.body.roleId) {
+      return res.status(403).json({
+        message: "You're not permitted to specify your own role."
       });
     }
+    User.create({
+      name: req.body.name,
+      email: req.body.email,
+      password: req.body.password,
+      isPrivate: req.body.isPrivate
+    })
+    .then((newUser) => {
+      res.set('x-access-token', signToken(newUser));
+      return res.status(201).json(formatUser(newUser));
+    })
+    .catch(err => (dbErrorHandler(err, res)));
   },
 
   /**
@@ -99,20 +84,25 @@ export default {
         'isPrivate',
         'organisationId',
         'departmentId',
-        'createdAt'
+        'createdAt',
+        'deletedAt'
       ],
-      where: { id: req.params.id }
+      where: { id: req.params.id },
+      paranoid: false
     })
     .then((user) => {
       if (!user) {
         return res.status(404).json({ message: 'Could not find that user' });
+      }
+      if (user.deletedAt) {
+        return res.status(404).json({ message: 'This user has been deleted' });
       }
       if (user.isPrivate && (!isAdminOrHigher(req) && !isOwner(req))) {
         return res.status(403).json({
           message: "You don't have access to this resource"
         });
       }
-      return res.status(200).json(user);
+      return res.status(200).json(formatUser(user));
     })
     .catch(() => res.status(400).json({
       message: 'Invalid resource identifier'
@@ -131,6 +121,13 @@ export default {
         message: "You're not permitted to specify your own role."
       });
     }
+    try {
+      if (req.retrievedRecord.verifyPassword(req.body.password)) {
+        return res.status(409).json({
+          message: "Please choose a password that's different from your last one."
+        });
+      }
+    } catch (err) { /* Do nothing */ }
     req.retrievedRecord.update(req.body)
     .then((user) => {
       if (req.body.password) {

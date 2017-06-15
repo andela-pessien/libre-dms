@@ -44,7 +44,33 @@ describe('Users API:', () => {
         .expect(400)
         .end((err, res) => {
           if (err) throw err;
-          expect(res.body.message).toEqual('Please provide a name, email and password');
+          expect(res.body.message).toEqual('name cannot be null');
+          done();
+        });
+    });
+
+    it('should fail if name is blank', (done) => {
+      app
+        .post('/api/users')
+        .send(invalidUsers.emptyName())
+        .expect('Content-Type', /json/)
+        .expect(400)
+        .end((err, res) => {
+          if (err) throw err;
+          expect(res.body.message).toEqual('Please provide a name');
+          done();
+        });
+    });
+
+    it('should fail if name is invalid', (done) => {
+      app
+        .post('/api/users')
+        .send(invalidUsers.invalidName())
+        .expect('Content-Type', /json/)
+        .expect(400)
+        .end((err, res) => {
+          if (err) throw err;
+          expect(res.body.message).toEqual('Please provide a valid first and last name');
           done();
         });
     });
@@ -57,20 +83,20 @@ describe('Users API:', () => {
         .expect(400)
         .end((err, res) => {
           if (err) throw err;
-          expect(res.body.message).toEqual('Please provide a name, email and password');
+          expect(res.body.message).toEqual('email cannot be null');
           done();
         });
     });
 
-    it('should fail if password is not provided', (done) => {
+    it('should fail if email is blank', (done) => {
       app
         .post('/api/users')
-        .send(invalidUsers.noPassword())
+        .send(invalidUsers.emptyEmail())
         .expect('Content-Type', /json/)
         .expect(400)
         .end((err, res) => {
           if (err) throw err;
-          expect(res.body.message).toEqual('Please provide a name, email and password');
+          expect(res.body.message).toEqual('Please provide an email');
           done();
         });
     });
@@ -83,7 +109,33 @@ describe('Users API:', () => {
         .expect(400)
         .end((err, res) => {
           if (err) throw err;
-          expect(res.body.message).toEqual('Please confirm that all fields are valid');
+          expect(res.body.message).toEqual('Please provide a valid email');
+          done();
+        });
+    });
+
+    it('should fail if password is not provided', (done) => {
+      app
+        .post('/api/users')
+        .send(invalidUsers.noPassword())
+        .expect('Content-Type', /json/)
+        .expect(400)
+        .end((err, res) => {
+          if (err) throw err;
+          expect(res.body.message).toEqual('password cannot be null');
+          done();
+        });
+    });
+
+    it('should fail if password is shorter than 8 characters', (done) => {
+      app
+        .post('/api/users')
+        .send(invalidUsers.shortPassword())
+        .expect('Content-Type', /json/)
+        .expect(400)
+        .end((err, res) => {
+          if (err) throw err;
+          expect(res.body.message).toEqual('Passwords must be at least 8 characters');
           done();
         });
     });
@@ -97,19 +149,6 @@ describe('Users API:', () => {
         .end((err, res) => {
           if (err) throw err;
           expect(res.body.message).toEqual("You're not permitted to specify your own role.");
-          done();
-        });
-    });
-
-    it('should fail if invalid email is provided', (done) => {
-      app
-        .post('/api/users')
-        .send(invalidUsers.invalidEmail())
-        .expect('Content-Type', /json/)
-        .expect(400)
-        .end((err, res) => {
-          if (err) throw err;
-          expect(res.body.message).toEqual('Please confirm that all fields are valid');
           done();
         });
     });
@@ -145,7 +184,7 @@ describe('Users API:', () => {
         .expect(403)
         .end((err, res) => {
           if (err) throw err;
-          expect(res.body.message).toEqual('A user with that email already exists');
+          expect(res.body.message).toEqual('Someone has already signed up with that email');
           done();
         });
     });
@@ -434,7 +473,7 @@ describe('Users API:', () => {
         .expect(404)
         .end((err, res) => {
           if (err) throw err;
-          expect(res.body.message).toEqual('Resource not found');
+          expect(res.body.message).toEqual('User not found');
           done();
         });
     });
@@ -788,6 +827,34 @@ describe('Users API:', () => {
         });
     });
 
+    it('should fail if user tries to update password with old password', (done) => {
+      app
+        .put(`/api/users/${testUser.id}`)
+        .send({ password: newUserData.password })
+        .set('x-access-token', testUserToken)
+        .expect('Content-Type', /json/)
+        .expect(409)
+        .end((err, res) => {
+          if (err) throw err;
+          expect(res.body.message).toEqual("Please choose a password that's different from your last one.");
+          done();
+        });
+    });
+
+    it('should fail if user tries to update with invalid data', (done) => {
+      app
+        .put(`/api/users/${testUser.id}`)
+        .send({ name: '' })
+        .set('x-access-token', testUserToken)
+        .expect('Content-Type', /json/)
+        .expect(400)
+        .end((err, res) => {
+          if (err) throw err;
+          expect(res.body.message).toEqual('Please provide a name');
+          done();
+        });
+    });
+
     it('should change the access token for a user if the password was changed', (done) => {
       const updatedUserData = getValidUser();
       app
@@ -819,7 +886,7 @@ describe('Users API:', () => {
         .expect(404)
         .end((err, res) => {
           if (err) throw err;
-          expect(res.body.message).toEqual('Resource not found');
+          expect(res.body.message).toEqual('User not found');
           done();
         });
     });
@@ -873,7 +940,13 @@ describe('Users API:', () => {
           app
             .get(`/api/users/${regularUser.id}`)
             .set('x-access-token', superAdminToken)
-            .expect(404, done());
+            .expect('Content-Type', /json/)
+            .expect(404)
+            .end((err, res) => {
+              if (err) throw err;
+              expect(res.body.message).toEqual('This user has been deleted');
+              done();
+            });
         });
     });
 
@@ -889,7 +962,13 @@ describe('Users API:', () => {
           app
             .get(`/api/users/${testUser.id}`)
             .set('x-access-token', superAdminToken)
-            .expect(404, done());
+            .expect('Content-Type', /json/)
+            .expect(404)
+            .end((err, res) => {
+              if (err) throw err;
+              expect(res.body.message).toEqual('This user has been deleted');
+              done();
+            });
         });
     });
 
@@ -913,7 +992,7 @@ describe('Users API:', () => {
         .expect(404)
         .end((err, res) => {
           if (err) throw err;
-          expect(res.body.message).toEqual('Resource not found');
+          expect(res.body.message).toEqual('User not found');
           done();
         });
     });
