@@ -1,7 +1,7 @@
 import expect from 'expect';
 import model from '../../models';
 import { getValidOrg, getValidDomainOrg, invalidOrgs }
-  from '../helpers/data-helper';
+  from '../../../scripts/data-generator';
 
 const { Organisation } = model;
 

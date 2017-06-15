@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import ConfirmDialog from '../common/ConfirmDialog';
+import { isSuperAdmin } from '../../utils/roles';
 
 /**
  * Menu bar component for the DocumentEditor
@@ -14,7 +17,6 @@ class EditorMenuBar extends Component {
   constructor(props) {
     super(props);
     this.onAccessClick = this.onAccessClick.bind(this);
-    this.onAccessLevelClick = this.onAccessLevelClick.bind(this);
   }
 
   /**
@@ -27,113 +29,89 @@ class EditorMenuBar extends Component {
   }
 
   /**
-   * Event listener/handler for changing document access level
-   * @param {Object} e The click event
-   * @returns {undefined}
-   */
-  onAccessLevelClick(e) {
-    this.props.updateAttribute('accesslevel', e.target.name);
-  }
-
-  /**
    * Renders the EditorMenuBar component
    * @returns {String} The JSX markup for the component
    */
   render() {
     return (
       <div className="menu-bar">
-        <a
-          className="dropdown-button btn left menu-button"
-          data-activates="file-dropdown"
-          data-beloworigin="true"
-        >
-          <span>File</span>
-        </a>
-        <a
+        {(this.props.full || isSuperAdmin(this.props.users[this.props.ownId].user)) &&
+          <a
+            className="btn right delete-button menu-button"
+            onClick={() => { $('#confirm-document-delete').modal('open'); }}
+            role="menuitem"
+          >
+            <i className="material-icons large">delete</i>
+          </a>}
+        {(this.props.full) && <a
           className="dropdown-button btn left menu-button"
           data-activates="share-dropdown"
           data-beloworigin="true"
+          data-hover="hover"
         >
-          <span>Sharing</span>
-        </a>
-        <a className="status-container menu-button">
+          {this.props.access.toUpperCase()}&nbsp;<i className="material-icons">share</i>
+        </a>}
+        {(!this.props.full) &&
+          <a className="menu-button left">{this.props.access.toUpperCase()}</a>}
+        {(this.props.full) && <a className="status-container menu-button">
           <span className="status-span">{this.props.status}</span>
-        </a>
-        <ul id="file-dropdown" className="dropdown-content menu-dropdown">
-          <li>
-            <a onClick={this.props.onDeleteClick} role="menuitem">Delete</a>
-          </li>
-        </ul>
-        <ul
+        </a>}
+        {(this.props.full) && <ul
           id="share-dropdown"
-          className="dropdown-content nested menu-dropdown"
+          className="dropdown-content menu-dropdown"
         >
-          <li>
-            <a
-              className="dropdown-button"
-              data-activates="access-dropdown"
-              data-hover="hover"
-            >Share with...</a>
-          </li>
-          <li>
-            <a
-              className="dropdown-button"
-              data-activates="accesslevel-dropdown"
-              data-hover="hover"
-            >Access control...</a>
-          </li>
-        </ul>
-        <ul id="access-dropdown" className="dropdown-content menu-dropdown">
-          <li>
+          <li><a>Share with...</a></li>
+          <li className="divider" />
+          <li className="clickable">
             <a
               id="private"
               name="private"
               role="menuitem"
               onClick={this.onAccessClick}
             >Yourself only</a></li>
-          <li>
+          <li className="clickable">
+            <a
+              id="role"
+              name="role"
+              role="menuitem"
+              onClick={this.onAccessClick}
+            >People on the same role</a></li>
+          <li className="clickable">
             <a
               id="public"
               name="public"
               role="menuitem"
               onClick={this.onAccessClick}
             >Everyone</a></li>
-        </ul>
-        <ul
-          id="accesslevel-dropdown"
-          className="dropdown-content menu-dropdown"
-        >
-          <li>
-            <a
-              id="view"
-              name="view"
-              role="menuitem"
-              onClick={this.onAccessLevelClick}
-            >View only</a></li>
-          <li>
-            <a
-              id="comment"
-              name="comment"
-              role="menuitem"
-              onClick={this.onAccessLevelClick}
-            >Comment but not edit</a></li>
-          <li>
-            <a
-              id="edit"
-              name="edit"
-              role="menuitem"
-              onClick={this.onAccessLevelClick}
-            >Edit and comment</a></li>
-        </ul>
+        </ul>}
+        <ConfirmDialog
+          id="confirm-document-delete"
+          message="Are you sure you want to delete this document?"
+          onYesClick={this.props.onDeleteClick}
+          onNoClick={() => {}}
+        />
       </div>
     );
   }
 }
 
+const mapStateToProps = state => ({
+  ownId: state.authReducer.currentUser,
+  users: state.userReducer
+});
+
 EditorMenuBar.propTypes = {
+  access: PropTypes.string.isRequired,
+  full: PropTypes.bool,
   status: PropTypes.string.isRequired,
   onDeleteClick: PropTypes.func.isRequired,
-  updateAttribute: PropTypes.func.isRequired
+  updateAttribute: PropTypes.func.isRequired,
+  ownId: PropTypes.string.isRequired,
+  users: PropTypes.object.isRequired
 };
 
-export default EditorMenuBar;
+EditorMenuBar.defaultProps = {
+  full: false
+};
+
+export default connect(mapStateToProps)(EditorMenuBar);

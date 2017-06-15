@@ -9,10 +9,16 @@ export default (sequelize, DataTypes) => {
     },
     label: {
       type: DataTypes.STRING,
-      unique: true,
+      unique: {
+        args: true,
+        msg: 'Roles must be unique'
+      },
       allowNull: false,
       validate: {
-        notEmpty: true
+        notEmpty: {
+          args: true,
+          msg: 'Please provide a label for this role'
+        }
       }
     }
   }, {

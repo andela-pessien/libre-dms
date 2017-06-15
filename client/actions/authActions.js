@@ -21,7 +21,6 @@ export function signUp(userData) {
           userId: res.data.id
         });
       }, (err) => {
-        console.log(err.response.data);
         dispatch({
           type: auth.SIGNUP_FAILURE,
           error: (typeof err.response.data === 'object')
@@ -74,6 +73,8 @@ export function signOut() {
           type: auth.SIGNOUT_SUCCESS
         });
       }, (err) => {
+        Materialize.toast('An error occurred signing out', 3000,
+          'indigo darken-4 white-text rounded');
         dispatch({
           type: auth.SIGNOUT_FAILURE,
           error: (typeof err.response.data === 'object')

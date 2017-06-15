@@ -7,13 +7,14 @@ export default {
    * @returns {void}
    */
   setOptions(req, res, next) {
-    const limit = Math.floor(Number(req.query.limit)) || 50;
-    const offset = Math.floor(Number(req.query.offset)) || 0;
+    let limit = Math.floor(Number(req.query.limit)) || 10;
+    let offset = Math.floor(Number(req.query.offset)) || 0;
     let query;
-    if (limit < 1 || offset < 0) {
-      return res.status(400).json({
-        message: 'Offset and limit can only be positive integers.'
-      });
+    if (limit < 1) {
+      limit = 10;
+    }
+    if (offset < 0) {
+      offset = 0;
     }
     if (/\/api\/search/.test(req.route.path)) {
       query = req.query.q || req.query.query;

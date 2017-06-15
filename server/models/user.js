@@ -15,23 +15,46 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
-        notEmpty: true
+        notEmpty: {
+          args: true,
+          msg: 'Please provide a name'
+        },
+        is: {
+          args: /^([A-z][A-Za-z-']*\s+[A-z][A-Za-z-']*)$/,
+          msg: 'Please provide a valid first and last name'
+        }
       }
     },
     email: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: true,
+      unique: {
+        args: true,
+        msg: 'Someone has already signed up with that email'
+      },
       validate: {
-        isEmail: true,
-        notEmpty: true,
+        notEmpty: {
+          args: true,
+          msg: 'Please provide an email'
+        },
+        isEmail: {
+          args: true,
+          msg: 'Please provide a valid email'
+        },
       }
     },
     password: {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
-        notEmpty: true
+        notEmpty: {
+          args: true,
+          msg: 'Please provide a password'
+        },
+        len: {
+          args: [8],
+          msg: 'Passwords must be at least 8 characters'
+        }
       }
     },
     isPrivate: {

@@ -12,17 +12,35 @@ export default (sequelize, DataTypes) => {
     },
     title: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: false,
+      validate: {
+        notEmpty: {
+          args: true,
+          msg: 'Please provide a title'
+        }
+      }
     },
     content: DataTypes.TEXT,
     type: DataTypes.ENUM('text', 'quill'),
     access: {
       defaultValue: 'private',
-      type: DataTypes.ENUM('public', 'role', 'private')
+      type: DataTypes.STRING,
+      validate: {
+        is: {
+          args: /(private)|(role)|(public)/,
+          msg: 'Access can only be private, public or role'
+        }
+      }
     },
     accesslevel: {
       defaultValue: 'view',
-      type: DataTypes.ENUM('view', 'comment')
+      type: DataTypes.STRING,
+      validate: {
+        is: {
+          args: /(view)|(comment)/,
+          msg: 'Access level can only be view or comment'
+        }
+      }
     },
     userRole: DataTypes.INTEGER
   }, {
@@ -74,7 +92,8 @@ export default (sequelize, DataTypes) => {
         User.find({ where: { id: document.userId }, paranoid: false })
         .then((user) => {
           if (!user) {
-            document.userRole = 4;
+            document.userRole = 1;
+            document.access = 'role';
             return next(null, options);
           }
           document.userRole = user.roleId;
@@ -82,7 +101,8 @@ export default (sequelize, DataTypes) => {
         })
         .catch(err => next(err));
       }
-    }
+    },
+    paranoid: true
   });
   return Document;
 };

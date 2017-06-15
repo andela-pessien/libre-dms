@@ -68,15 +68,14 @@ export default {
       offset: req.listOptions.offset
     })
     .then((documents) => {
-      res.set(
-        'x-list-metadata',
-        getMetadata(
+      res.status(200).json({
+        list: documents.rows,
+        metadata: getMetadata(
           documents,
           req.listOptions.limit,
           req.listOptions.offset
         )
-      );
-      res.status(200).json(documents.rows);
+      });
     })
     .catch(err => (dbErrorHandler(err, res)));
   },
@@ -116,15 +115,14 @@ export default {
       offset: req.listOptions.offset
     })
     .then((documents) => {
-      res.set(
-        'x-list-metadata',
-        getMetadata(
+      res.status(200).json({
+        list: documents.rows,
+        metadata: getMetadata(
           documents,
           req.listOptions.limit,
           req.listOptions.offset
         )
-      );
-      res.status(200).json(documents.rows);
+      });
     })
     .catch(err => (dbErrorHandler(err, res)));
   },
@@ -160,7 +158,9 @@ export default {
   destroy(req, res) {
     req.retrievedRecord.destroy()
     .then(() => {
-      res.sendStatus(204);
+      res.status(200).json({
+        message: 'Document deleted successfully'
+      });
     })
     .catch(err => (dbErrorHandler(err, res)));
   },
@@ -206,15 +206,14 @@ export default {
       offset: req.listOptions.offset
     })
     .then((documents) => {
-      res.set(
-        'x-list-metadata',
-        getMetadata(
+      res.status(200).json({
+        list: documents.rows,
+        metadata: getMetadata(
           documents,
           req.listOptions.limit,
           req.listOptions.offset
         )
-      );
-      res.status(200).json(documents.rows);
+      });
     })
     .catch(err => (dbErrorHandler(err, res)));
   }

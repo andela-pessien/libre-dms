@@ -3,7 +3,7 @@ import request from 'supertest';
 import expect from 'expect';
 import jwtDecode from 'jwt-decode';
 import server from '../../server';
-import { getValidUser, invalidUsers, getWord, getValidId } from '../helpers/data-helper';
+import { getValidUser, invalidUsers, getWord, getValidId } from '../../../scripts/data-generator';
 import { checkUserList } from '../helpers/response-helper';
 
 describe('Users API:', () => {
@@ -44,12 +44,33 @@ describe('Users API:', () => {
         .expect(400)
         .end((err, res) => {
           if (err) throw err;
-          if (!res.body) {
-            throw new Error('Expected error to be returned');
-          }
-          if (res.body.message !== 'Please provide a name, email and password') {
-            throw new Error(`Expected ${res.body.message} to equal 'Please provide a name, email and password'`);
-          }
+          expect(res.body.message).toEqual('name cannot be null');
+          done();
+        });
+    });
+
+    it('should fail if name is blank', (done) => {
+      app
+        .post('/api/users')
+        .send(invalidUsers.emptyName())
+        .expect('Content-Type', /json/)
+        .expect(400)
+        .end((err, res) => {
+          if (err) throw err;
+          expect(res.body.message).toEqual('Please provide a name');
+          done();
+        });
+    });
+
+    it('should fail if name is invalid', (done) => {
+      app
+        .post('/api/users')
+        .send(invalidUsers.invalidName())
+        .expect('Content-Type', /json/)
+        .expect(400)
+        .end((err, res) => {
+          if (err) throw err;
+          expect(res.body.message).toEqual('Please provide a valid first and last name');
           done();
         });
     });
@@ -62,12 +83,33 @@ describe('Users API:', () => {
         .expect(400)
         .end((err, res) => {
           if (err) throw err;
-          if (!res.body) {
-            throw new Error('Expected error to be returned');
-          }
-          if (res.body.message !== 'Please provide a name, email and password') {
-            throw new Error(`Expected ${res.body.message} to equal 'Please provide a name, email and password'`);
-          }
+          expect(res.body.message).toEqual('email cannot be null');
+          done();
+        });
+    });
+
+    it('should fail if email is blank', (done) => {
+      app
+        .post('/api/users')
+        .send(invalidUsers.emptyEmail())
+        .expect('Content-Type', /json/)
+        .expect(400)
+        .end((err, res) => {
+          if (err) throw err;
+          expect(res.body.message).toEqual('Please provide an email');
+          done();
+        });
+    });
+
+    it('should fail if invalid email is provided', (done) => {
+      app
+        .post('/api/users')
+        .send(invalidUsers.invalidEmail())
+        .expect('Content-Type', /json/)
+        .expect(400)
+        .end((err, res) => {
+          if (err) throw err;
+          expect(res.body.message).toEqual('Please provide a valid email');
           done();
         });
     });
@@ -80,30 +122,20 @@ describe('Users API:', () => {
         .expect(400)
         .end((err, res) => {
           if (err) throw err;
-          if (!res.body) {
-            throw new Error('Expected error to be returned');
-          }
-          if (res.body.message !== 'Please provide a name, email and password') {
-            throw new Error(`Expected ${res.body.message} to equal 'Please provide a name, email and password'`);
-          }
+          expect(res.body.message).toEqual('password cannot be null');
           done();
         });
     });
 
-    it('should fail if invalid email is provided', (done) => {
+    it('should fail if password is shorter than 8 characters', (done) => {
       app
         .post('/api/users')
-        .send(invalidUsers.invalidEmail())
+        .send(invalidUsers.shortPassword())
         .expect('Content-Type', /json/)
         .expect(400)
         .end((err, res) => {
           if (err) throw err;
-          if (!res.body) {
-            throw new Error('Expected error to be returned');
-          }
-          if (res.body.message !== 'Please confirm that all fields are valid') {
-            throw new Error(`Expected ${res.body.message} to equal 'Please confirm that all fields are valid'`);
-          }
+          expect(res.body.message).toEqual('Passwords must be at least 8 characters');
           done();
         });
     });
@@ -116,30 +148,7 @@ describe('Users API:', () => {
         .expect(403)
         .end((err, res) => {
           if (err) throw err;
-          if (!res.body) {
-            throw new Error('Expected error to be returned');
-          }
-          if (res.body.message !== "You're not permitted to specify your own role.") {
-            throw new Error(`Expected ${res.body.message} to equal "You're not permitted to specify your own role."`);
-          }
-          done();
-        });
-    });
-
-    it('should fail if invalid email is provided', (done) => {
-      app
-        .post('/api/users')
-        .send(invalidUsers.invalidEmail())
-        .expect('Content-Type', /json/)
-        .expect(400)
-        .end((err, res) => {
-          if (err) throw err;
-          if (!res.body) {
-            throw new Error('Expected error to be returned');
-          }
-          if (res.body.message !== 'Please confirm that all fields are valid') {
-            throw new Error(`Expected ${res.body.message} to equal 'Please confirm that all fields are valid'`);
-          }
+          expect(res.body.message).toEqual("You're not permitted to specify your own role.");
           done();
         });
     });
@@ -152,23 +161,15 @@ describe('Users API:', () => {
         .expect(201)
         .end((err, res) => {
           if (err) throw err;
-          if (!res.body) {
-            throw new Error('Expected created user to be returned');
-          }
-          if (
-            !res.body.id ||
-            !res.body.name ||
-            !res.body.email ||
-            !res.body.roleId ||
-            res.body.password) {
-            throw new Error('User not formatted properly');
-          }
-          if (!res.headers['x-access-token']) {
-            throw new Error('Expected x-access-token header to exist');
-          }
-          if (jwtDecode(res.headers['x-access-token']).id !== res.body.id) {
-            throw new Error('Access token does not correspond to user');
-          }
+          expect(res.body.id).toExist();
+          expect(res.body.name).toExist();
+          expect(res.body.email).toExist();
+          expect(res.body.roleId).toEqual(4);
+          expect(res.body.password).toBe(undefined);
+          expect(res.headers['x-access-token']).toExist();
+          const claims = jwtDecode(res.headers['x-access-token']);
+          expect(claims.id).toExist(res.body.id);
+          expect(claims.roleId).toEqual(4);
           testUser = res.body;
           testUserToken = res.headers['x-access-token'];
           done();
@@ -183,12 +184,7 @@ describe('Users API:', () => {
         .expect(403)
         .end((err, res) => {
           if (err) throw err;
-          if (!res.body) {
-            throw new Error('Expected error to be returned');
-          }
-          if (res.body.message !== 'A user with that email already exists') {
-            throw new Error(`Expected ${res.body.message} to equal 'A user with that email already exists'`);
-          }
+          expect(res.body.message).toEqual('Someone has already signed up with that email');
           done();
         });
     });
@@ -477,14 +473,7 @@ describe('Users API:', () => {
         .expect(404)
         .end((err, res) => {
           if (err) throw err;
-          if (!res.body) {
-            throw new Error('Expected error to be returned');
-          }
-          try {
-            expect(res.body.message).toEqual('Resource not found');
-          } catch (err) {
-            if (err) throw err;
-          }
+          expect(res.body.message).toEqual('User not found');
           done();
         });
     });
@@ -497,29 +486,7 @@ describe('Users API:', () => {
         .expect(401)
         .end((err, res) => {
           if (err) throw err;
-          if (!res.body) {
-            throw new Error('Expected error to be returned');
-          }
-          if (res.body.message !== 'You need to be logged in to perform that action') {
-            throw new Error(`Expected ${res.body.message} to equal 'You need to be logged in to perform that action'`);
-          }
-          done();
-        });
-    });
-
-    it('should return error if limit or offset provided are negative', (done) => {
-      app
-        .get('/api/users?limit=-10&offset=-50')
-        .set('x-access-token', superAdminToken)
-        .expect('Content-Type', /json/)
-        .expect(400)
-        .end((err, res) => {
-          if (err) throw err;
-          try {
-            expect(res.body.message).toEqual('Offset and limit can only be positive integers.');
-          } catch (err) {
-            if (err) throw err;
-          }
+          expect(res.body.message).toEqual('You need to be logged in to perform that action');
           done();
         });
     });
@@ -527,6 +494,19 @@ describe('Users API:', () => {
     it('should return any and all users when requested by the superadmin', (done) => {
       app
         .get('/api/users')
+        .set('x-access-token', superAdminToken)
+        .expect('Content-Type', /json/)
+        .expect(200)
+        .end((err, res) => {
+          if (err) throw err;
+          checkUserList(res);
+          done();
+        });
+    });
+
+    it('should use default values if limit or offset provided are negative', (done) => {
+      app
+        .get('/api/users?limit=-10&offset=-50')
         .set('x-access-token', superAdminToken)
         .expect('Content-Type', /json/)
         .expect(200)
@@ -559,7 +539,7 @@ describe('Users API:', () => {
         .end((err, res) => {
           if (err) throw err;
           checkUserList(res);
-          res.body.forEach((user) => {
+          res.body.list.forEach((user) => {
             if (user.isPrivate && user.id !== testUser.id) {
               throw new Error('Retrieved a private user');
             }
@@ -578,12 +558,7 @@ describe('Users API:', () => {
         .expect(401)
         .end((err, res) => {
           if (err) throw err;
-          if (!res.body) {
-            throw new Error('Expected error to be returned');
-          }
-          if (res.body.message !== 'You need to be logged in to perform that action') {
-            throw new Error(`Expected ${res.body.message} to equal 'You need to be logged in to perform that action'`);
-          }
+          expect(res.body.message).toEqual('You need to be logged in to perform that action');
           done();
         });
     });
@@ -596,12 +571,8 @@ describe('Users API:', () => {
         .expect(400)
         .end((err, res) => {
           if (err) throw err;
-          try {
-            expect(res.body).toExist();
-            expect(res.body.message).toEqual('Please provide a valid query string for the search');
-          } catch (err) {
-            if (err) throw err;
-          }
+          expect(res.body).toExist();
+          expect(res.body.message).toEqual('Please provide a valid query string for the search');
           done();
         });
     });
@@ -616,14 +587,12 @@ describe('Users API:', () => {
         .end((err, res) => {
           checkUserList(res);
           let found = false;
-          res.body.forEach((result) => {
+          res.body.list.forEach((result) => {
             if (result.name === testUser.name) {
               found = true;
             }
           });
-          if (!found) {
-            throw new Error('Did not find the test user');
-          }
+          expect(found).toBeTruthy();
           done();
         });
     });
@@ -638,14 +607,12 @@ describe('Users API:', () => {
         .end((err, res) => {
           checkUserList(res);
           let found = false;
-          res.body.forEach((result) => {
+          res.body.list.forEach((result) => {
             if (result.name === testUser.name) {
               found = true;
             }
           });
-          if (!found) {
-            throw new Error('Did not find the test user');
-          }
+          expect(found).toBeTruthy();
           done();
         });
     });
@@ -660,7 +627,7 @@ describe('Users API:', () => {
         .end((err, res) => {
           checkUserList(res);
           let found = false;
-          res.body.forEach((result) => {
+          res.body.list.forEach((result) => {
             if (result.name === testUser.name) {
               found = true;
             }
@@ -668,9 +635,7 @@ describe('Users API:', () => {
               throw new Error('Retrieved a private user');
             }
           });
-          if (!found) {
-            throw new Error('Did not find the test user');
-          }
+          expect(found).toBeTruthy();
           done();
         });
     });
@@ -683,12 +648,7 @@ describe('Users API:', () => {
         .expect(401)
         .end((err, res) => {
           if (err) throw err;
-          if (!res.body) {
-            throw new Error('Expected error to be returned');
-          }
-          if (res.body.message !== 'You need to be logged in to perform that action') {
-            throw new Error(`Expected ${res.body.message} to equal 'You need to be logged in to perform that action'`);
-          }
+          expect(res.body.message).toEqual('You need to be logged in to perform that action');
           done();
         });
     });
@@ -701,17 +661,10 @@ describe('Users API:', () => {
         .expect(200)
         .end((err, res) => {
           if (err) throw err;
-          if (!res.body) {
-            throw new Error('Expected user to be retrieved');
-          }
-          if (
-            res.body.id !== testUser.id ||
-            res.body.name !== testUser.name ||
-            res.body.email !== testUser.email ||
-            res.body.roleId !== testUser.roleId
-          ) {
-            throw new Error('Did not retrieve the right user');
-          }
+          expect(res.body.id).toEqual(testUser.id);
+          expect(res.body.name).toEqual(testUser.name);
+          expect(res.body.email).toEqual(testUser.email);
+          expect(res.body.roleId).toEqual(testUser.roleId);
           done();
         });
     });
@@ -724,17 +677,10 @@ describe('Users API:', () => {
         .expect(200)
         .end((err, res) => {
           if (err) throw err;
-          if (!res.body) {
-            throw new Error('Expected user to be retrieved');
-          }
-          if (
-            res.body.id !== testUser.id ||
-            res.body.name !== testUser.name ||
-            res.body.email !== testUser.email ||
-            res.body.roleId !== testUser.roleId
-          ) {
-            throw new Error('Did not retrieve the right user');
-          }
+          expect(res.body.id).toEqual(testUser.id);
+          expect(res.body.name).toEqual(testUser.name);
+          expect(res.body.email).toEqual(testUser.email);
+          expect(res.body.roleId).toEqual(testUser.roleId);
           done();
         });
     });
@@ -747,22 +693,15 @@ describe('Users API:', () => {
         .expect(200)
         .end((err, res) => {
           if (err) throw err;
-          if (!res.body) {
-            throw new Error('Expected user to be retrieved');
-          }
-          if (
-            res.body.id !== testUser.id ||
-            res.body.name !== testUser.name ||
-            res.body.email !== testUser.email ||
-            res.body.roleId !== testUser.roleId
-          ) {
-            throw new Error('Did not retrieve the right user');
-          }
+          expect(res.body.id).toEqual(testUser.id);
+          expect(res.body.name).toEqual(testUser.name);
+          expect(res.body.email).toEqual(testUser.email);
+          expect(res.body.roleId).toEqual(testUser.roleId);
           done();
         });
     });
 
-    it('should return an error if requester does not have access', (done) => {
+    it('should return an error if non-admin requester tries to access a private profile', (done) => {
       app
         .get(`/api/users/${testUser.id}`)
         .set('x-access-token', regularUserToken)
@@ -770,12 +709,7 @@ describe('Users API:', () => {
         .expect(403)
         .end((err, res) => {
           if (err) throw err;
-          if (!res.body) {
-            throw new Error('Expected error to be returned');
-          }
-          if (res.body.message !== "You don't have access to this resource") {
-            throw new Error(`Expected ${res.body.message} to equal "You don't have access to this resource"`);
-          }
+          expect(res.body.message).toEqual("You don't have access to this resource");
           done();
         });
     });
@@ -788,12 +722,7 @@ describe('Users API:', () => {
         .expect(404)
         .end((err, res) => {
           if (err) throw err;
-          if (!res.body) {
-            throw new Error('Expected error to be returned');
-          }
-          if (res.body.message !== 'Could not find that user') {
-            throw new Error(`Expected ${res.body.message} to equal 'Could not find that user'"`);
-          }
+          expect(res.body.message).toEqual('Could not find that user');
           done();
         });
     });
@@ -806,12 +735,7 @@ describe('Users API:', () => {
         .expect(401)
         .end((err, res) => {
           if (err) throw err;
-          if (!res.body) {
-            throw new Error('Expected error to be returned');
-          }
-          if (res.body.message !== 'You need to be logged in to perform that action') {
-            throw new Error(`Expected ${res.body.message} to equal 'You need to be logged in to perform that action'`);
-          }
+          expect(res.body.message).toEqual('You need to be logged in to perform that action');
           done();
         });
     });
@@ -824,12 +748,7 @@ describe('Users API:', () => {
         .expect(403)
         .end((err, res) => {
           if (err) throw err;
-          if (!res.body) {
-            throw new Error('Expected error to be returned');
-          }
-          if (res.body.message !== "Only this resource's owner can perform that action") {
-            throw new Error(`Expected ${res.body.message} to equal "Only this resource's owner can perform that action"`);
-          }
+          expect(res.body.message).toEqual("Only this resource's owner can perform that action");
           done();
         });
     });
@@ -842,12 +761,7 @@ describe('Users API:', () => {
         .expect(403)
         .end((err, res) => {
           if (err) throw err;
-          if (!res.body) {
-            throw new Error('Expected error to be returned');
-          }
-          if (res.body.message !== "Only this resource's owner can perform that action") {
-            throw new Error(`Expected ${res.body.message} to equal "Only this resource's owner can perform that action"`);
-          }
+          expect(res.body.message).toEqual("Only this resource's owner can perform that action");
           done();
         });
     });
@@ -860,12 +774,7 @@ describe('Users API:', () => {
         .expect(403)
         .end((err, res) => {
           if (err) throw err;
-          if (!res.body) {
-            throw new Error('Expected error to be returned');
-          }
-          if (res.body.message !== "Only this resource's owner can perform that action") {
-            throw new Error(`Expected ${res.body.message} to equal "Only this resource's owner can perform that action"`);
-          }
+          expect(res.body.message).toEqual("Only this resource's owner can perform that action");
           done();
         });
     });
@@ -883,15 +792,8 @@ describe('Users API:', () => {
         .expect(200)
         .end((err, res) => {
           if (err) throw err;
-          if (!res.body) {
-            throw new Error('Expected updated user to be returned');
-          }
-          if (
-            res.body.name !== updatedUserData.name ||
-            res.body.email !== updatedUserData.email
-          ) {
-            throw new Error('User not updated properly');
-          }
+          expect(res.body.name).toEqual(updatedUserData.name);
+          expect(res.body.email).toEqual(updatedUserData.email);
           testUser = res.body;
           done();
         });
@@ -906,12 +808,7 @@ describe('Users API:', () => {
         .expect(403)
         .end((err, res) => {
           if (err) throw err;
-          if (!res.body) {
-            throw new Error('Expected error to be returned');
-          }
-          if (res.body.message !== "You're not permitted to specify your own role.") {
-            throw new Error(`Expected ${res.body.message} to equal "You're not permitted to specify your own role."`);
-          }
+          expect(res.body.message).toEqual("You're not permitted to specify your own role.");
           done();
         });
     });
@@ -925,11 +822,35 @@ describe('Users API:', () => {
         .expect(403)
         .end((err, res) => {
           if (err) throw err;
-          try {
-            expect(res.body.message).toEqual("You're not permitted to change identifier fields");
-          } catch (err) {
-            if (err) throw err;
-          }
+          expect(res.body.message).toEqual("You're not permitted to change identifier fields");
+          done();
+        });
+    });
+
+    it('should fail if user tries to update password with old password', (done) => {
+      app
+        .put(`/api/users/${testUser.id}`)
+        .send({ password: newUserData.password })
+        .set('x-access-token', testUserToken)
+        .expect('Content-Type', /json/)
+        .expect(409)
+        .end((err, res) => {
+          if (err) throw err;
+          expect(res.body.message).toEqual("Please choose a password that's different from your last one.");
+          done();
+        });
+    });
+
+    it('should fail if user tries to update with invalid data', (done) => {
+      app
+        .put(`/api/users/${testUser.id}`)
+        .send({ name: '' })
+        .set('x-access-token', testUserToken)
+        .expect('Content-Type', /json/)
+        .expect(400)
+        .end((err, res) => {
+          if (err) throw err;
+          expect(res.body.message).toEqual('Please provide a name');
           done();
         });
     });
@@ -946,18 +867,12 @@ describe('Users API:', () => {
         .expect(200)
         .end((err, res) => {
           if (err) throw err;
-          if (!res.body) {
-            throw new Error('Expected updated user to be returned');
-          }
-          if (!res.headers['x-access-token']) {
-            throw new Error('Expected x-access-token header to exist');
-          }
-          if (res.headers['x-access-token'] === testUserToken) {
-            throw new Error('Expected access token to be refreshed');
-          }
-          if (jwtDecode(res.headers['x-access-token']).id !== testUser.id) {
-            throw new Error('Access token does not correspond to user');
-          }
+          expect(res.body.id).toEqual(testUser.id);
+          expect(res.body.name).toEqual(testUser.name);
+          expect(res.body.email).toEqual(testUser.email);
+          expect(res.body.roleId).toEqual(testUser.roleId);
+          expect(res.headers['x-access-token'] === testUserToken).toBe(false);
+          expect(jwtDecode(res.headers['x-access-token']).id).toEqual(testUser.id);
           testUserToken = res.headers['x-access-token'];
           done();
         });
@@ -971,14 +886,7 @@ describe('Users API:', () => {
         .expect(404)
         .end((err, res) => {
           if (err) throw err;
-          if (!res.body) {
-            throw new Error('Expected error to be returned');
-          }
-          try {
-            expect(res.body.message).toEqual('Resource not found');
-          } catch (err) {
-            if (err) throw err;
-          }
+          expect(res.body.message).toEqual('User not found');
           done();
         });
     });
@@ -991,12 +899,7 @@ describe('Users API:', () => {
         .expect(401)
         .end((err, res) => {
           if (err) throw err;
-          if (!res.body) {
-            throw new Error('Expected error to be returned');
-          }
-          if (res.body.message !== 'You need to be logged in to perform that action') {
-            throw new Error(`Expected ${res.body.message} to equal 'You need to be logged in to perform that action'`);
-          }
+          expect(res.body.message).toEqual('You need to be logged in to perform that action');
           done();
         });
     });
@@ -1008,12 +911,7 @@ describe('Users API:', () => {
         .expect(403)
         .end((err, res) => {
           if (err) throw err;
-          if (!res.body) {
-            throw new Error('Expected error to be returned');
-          }
-          if (res.body.message !== "You don't have permission to perform that action") {
-            throw new Error(`Expected ${res.body.message} to equal "You don't have permission to perform that action"`);
-          }
+          expect(res.body.message).toEqual("You don't have permission to perform that action");
           done();
         });
     });
@@ -1025,12 +923,7 @@ describe('Users API:', () => {
         .expect(403)
         .end((err, res) => {
           if (err) throw err;
-          if (!res.body) {
-            throw new Error('Expected error to be returned');
-          }
-          if (res.body.message !== "You don't have permission to perform that action") {
-            throw new Error(`Expected ${res.body.message} to equal "You don't have permission to perform that action"`);
-          }
+          expect(res.body.message).toEqual("You don't have permission to perform that action");
           done();
         });
     });
@@ -1039,18 +932,21 @@ describe('Users API:', () => {
       app
         .delete(`/api/users/${regularUser.id}`)
         .set('x-access-token', superAdminToken)
-        .expect(204)
+        .expect(200)
         .end((err, res) => {
           if (err) throw err;
-          try {
-            expect(res.headers['x-access-token']).toBe(undefined);
-          } catch (err) {
-            throw err;
-          }
+          expect(res.headers['x-access-token']).toBe(undefined);
+          expect(res.body.message).toEqual('User deleted successfully');
           app
             .get(`/api/users/${regularUser.id}`)
             .set('x-access-token', superAdminToken)
-            .expect(404, done());
+            .expect('Content-Type', /json/)
+            .expect(404)
+            .end((err, res) => {
+              if (err) throw err;
+              expect(res.body.message).toEqual('This user has been deleted');
+              done();
+            });
         });
     });
 
@@ -1058,18 +954,21 @@ describe('Users API:', () => {
       app
         .delete(`/api/users/${testUser.id}`)
         .set('x-access-token', testUserToken)
-        .expect(204)
+        .expect(200)
         .end((err, res) => {
           if (err) throw err;
-          try {
-            expect(res.headers['x-access-token']).toEqual('');
-          } catch (err) {
-            throw err;
-          }
+          expect(res.headers['x-access-token']).toEqual('');
+          expect(res.body.message).toEqual('User deleted successfully');
           app
             .get(`/api/users/${testUser.id}`)
             .set('x-access-token', superAdminToken)
-            .expect(404, done());
+            .expect('Content-Type', /json/)
+            .expect(404)
+            .end((err, res) => {
+              if (err) throw err;
+              expect(res.body.message).toEqual('This user has been deleted');
+              done();
+            });
         });
     });
 
@@ -1080,12 +979,7 @@ describe('Users API:', () => {
         .expect(403)
         .end((err, res) => {
           if (err) throw err;
-          if (!res.body) {
-            throw new Error('Expected error to be returned');
-          }
-          if (res.body.message !== "You can't delete the superadministrator.") {
-            throw new Error(`Expected ${res.body.message} to equal "You can't delete the superadministrator."`);
-          }
+          expect(res.body.message).toEqual("You can't delete the superadministrator.");
           done();
         });
     });
@@ -1098,14 +992,7 @@ describe('Users API:', () => {
         .expect(404)
         .end((err, res) => {
           if (err) throw err;
-          if (!res.body) {
-            throw new Error('Expected error to be returned');
-          }
-          try {
-            expect(res.body.message).toEqual('Resource not found');
-          } catch (err) {
-            if (err) throw err;
-          }
+          expect(res.body.message).toEqual('User not found');
           done();
         });
     });

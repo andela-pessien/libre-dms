@@ -6,7 +6,7 @@ import { user } from '../actions/actionTypes';
  * @param {Object} action The dispatched action
  * @returns {Object} The new application state
  */
-export default function userReducer(state = {}, action) {
+export default function userReducer(state = {}, action = {}) {
   switch (action.type) {
     case user.GET_ALL_SUCCESS:
       return {
@@ -20,27 +20,29 @@ export default function userReducer(state = {}, action) {
       return {
         ...state,
         all: {
-          ...state.allUsers,
+          ...state.all,
           error: action.error
         },
-        success: null
       };
     case user.GET_SUCCESS:
+    case user.UPDATE_SUCCESS:
       return {
         ...state,
         [action.user.id]: {
           ...state[action.user.id],
-          user: action.user
+          user: action.user,
+          error: null
         }
       };
     case user.GET_FAILURE:
+    case user.UPDATE_FAILURE:
+    case user.DELETE_FAILURE:
       return {
         ...state,
         [action.id]: {
           ...state[action.id],
           error: action.error
         },
-        success: null
       };
     case user.GET_DOCS_SUCCESS:
       return {
@@ -63,7 +65,6 @@ export default function userReducer(state = {}, action) {
             error: action.error
           }
         },
-        success: null
       };
     case user.SEARCH_SUCCESS:
       return {
@@ -80,24 +81,6 @@ export default function userReducer(state = {}, action) {
           ...state.userSearch,
           error: action.error
         },
-        success: null
-      };
-    case user.UPDATE_SUCCESS:
-      return {
-        ...state,
-        [action.user.id]: {
-          ...state[action.user.id],
-          user: action.user
-        }
-      };
-    case user.UPDATE_FAILURE:
-      return {
-        ...state,
-        [action.id]: {
-          ...state[action.id],
-          error: action.error
-        },
-        success: null
       };
     case user.DELETE_SUCCESS:
       return Object.keys(state).reduce((result, key) => {
@@ -106,15 +89,6 @@ export default function userReducer(state = {}, action) {
         }
         return result;
       }, {});
-    case user.DELETE_FAILURE:
-      return {
-        ...state,
-        [action.id]: {
-          ...state[action.id],
-          error: action.error
-        },
-        success: null
-      };
     default:
       return state;
   }

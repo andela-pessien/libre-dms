@@ -6,7 +6,7 @@ import { document } from '../actions/actionTypes';
  * @param {Object} action The dispatched action
  * @returns {Object} The new application state
  */
-export default function documentReducer(state = { documents: {} }, action) {
+export default function documentReducer(state = {}, action = {}) {
   switch (action.type) {
     case document.GET_ALL_SUCCESS:
       return {
@@ -23,9 +23,9 @@ export default function documentReducer(state = { documents: {} }, action) {
           ...state.allDocuments,
           error: action.error
         },
-        success: null
       };
     case document.GET_SUCCESS:
+    case document.UPDATE_SUCCESS:
       return {
         ...state,
         [action.document.id]: {
@@ -33,13 +33,14 @@ export default function documentReducer(state = { documents: {} }, action) {
         }
       };
     case document.GET_FAILURE:
+    case document.UPDATE_FAILURE:
+    case document.DELETE_FAILURE:
       return {
         ...state,
         [action.id]: {
           ...state[action.id],
           error: action.error
         },
-        success: null
       };
     case document.SEARCH_SUCCESS:
       return {
@@ -56,7 +57,6 @@ export default function documentReducer(state = { documents: {} }, action) {
           ...state.search,
           error: action.error
         },
-        success: null
       };
     case document.CREATE_SUCCESS:
       return {
@@ -74,23 +74,6 @@ export default function documentReducer(state = { documents: {} }, action) {
         new: {
           error: action.error
         },
-        success: null
-      };
-    case document.UPDATE_SUCCESS:
-      return {
-        ...state,
-        [action.document.id]: {
-          document: action.document
-        }
-      };
-    case document.UPDATE_FAILURE:
-      return {
-        ...state,
-        [action.id]: {
-          ...state[action.id],
-          error: action.error
-        },
-        success: null
       };
     case document.DELETE_SUCCESS:
       return Object.keys(state).reduce((result, key) => {
@@ -99,15 +82,6 @@ export default function documentReducer(state = { documents: {} }, action) {
         }
         return result;
       }, {});
-    case document.DELETE_FAILURE:
-      return {
-        ...state,
-        [action.id]: {
-          ...state[action.id],
-          error: action.error
-        },
-        success: null
-      };
     default:
       return state;
   }

@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
 import Preloader from '../common/Preloader';
 import parseDate from '../../utils/chronology';
 
@@ -12,53 +11,45 @@ import parseDate from '../../utils/chronology';
 function DocumentFeed({ documents, documentClickAction, profileClickAction }) {
   return (
     <div className="feed">
-      {(documents.error)
-        ? <h5 className="middle">{documents.error.message}</h5>
-        : (Array.isArray(documents.list))
-          ? ((documents.list.length > 0)
-            ? <ul>
-              {documents.list.map(document =>
-                <div key={document.id}>
-                  <li>
-                    <h5>
-                      {(documentClickAction)
-                        ? <a
-                          onClick={documentClickAction}
-                          name={document.id}
-                        >
-                          {document.title || 'Untitled Document'}
-                        </a>
-                        : <Link to={`/document/${document.id}`}>
-                          {document.title}
-                        </Link>}
-                    </h5>
-                    {(document.User) &&
-                      ((profileClickAction)
-                        ? <a
-                          onClick={profileClickAction}
-                          name={document.userId}
-                          className="right"
-                        >
-                          {document.User.name}
-                        </a>
-                        : <Link
-                          className="right"
-                          to={`/profile/${document.userId}`}
-                        >
-                          {document.User.name}
-                        </Link>)}
+      {(documents.error) && <h5 className="middle">{documents.error.message}</h5>}
+      {(!documents.error && Array.isArray(documents.list))
+        ? ((documents.list.length > 0)
+          ? <ul>
+            {documents.list.map(document =>
+              <div key={document.id}>
+                <li>
+                  <h5>
+                    <a
+                      onClick={documentClickAction}
+                      name={document.id}
+                      className="truncate"
+                      href="#!"
+                    >
+                      {document.title || 'Untitled Document'}
+                    </a>
+                  </h5>
+                  {(document.User) &&
+                    <a
+                      onClick={profileClickAction}
+                      name={document.userId}
+                      href="#!"
+                    >
+                      {document.User.name}
+                    </a>}
+                  <div>
                     <p>
                       Last edited: {document.updatedAt
                         ? parseDate(document.updatedAt)
                         : parseDate(document.createdAt)}
                     </p>
-                  </li>
-                  <li className="divider" />
-                </div>)}
-            </ul>
-            : <h5 className="middle">No documents to display</h5>)
-          : <Preloader className="middle" />
-      }
+                    <p>{document.access.toUpperCase()}</p>
+                  </div>
+                </li>
+                <li className="divider" />
+              </div>)}
+          </ul>
+          : <h5 className="middle">No documents to display</h5>)
+        : <Preloader className="middle" />}
     </div>
   );
 }

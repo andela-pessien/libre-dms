@@ -32,11 +32,11 @@ class AccountMenu extends Component {
 
   /**
    * Event listener/handler for clicking on the sign out menu option.
-   * @param {Object} e The signout click event
+   * @param {Object} event The signout click event
    * @returns {undefined}
    */
-  onSignOutClick(e) {
-    e.preventDefault();
+  onSignOutClick(event) {
+    event.preventDefault();
     this.props.signOut();
   }
 
@@ -47,18 +47,17 @@ class AccountMenu extends Component {
   render() {
     return (
       <ul id="nav-mobile" className="right hide-on-med-and-down">
+        <li><p>Hi, {this.props.user.name.split(/\s+/)[0]}</p></li>
         <li>
           <div
             className="dropdown-button avatar avatar-small"
             data-activates="account-dropdown"
           >
-            {this.props.user.name[0]}
+            <i className="material-icons">person</i>
           </div>
           <ul id="account-dropdown" className="dropdown-content account-menu">
-            <li><a>Hi, {this.props.user.name.split(/\s+/)[0]}</a></li>
-            <li className="divider" />
             <li>
-              <a href="#!" onClick={this.onSignOutClick}>Sign Out</a>
+              <a className="signout" href="#!" onClick={this.onSignOutClick}>Sign Out</a>
             </li>
           </ul>
         </li>

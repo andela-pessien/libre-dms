@@ -48,25 +48,7 @@ class DocumentEditor extends Component {
     this.updateAttribute = this.updateAttribute.bind(this);
     this.saveChanges = this.saveChanges.bind(this);
     this.onDeleteClick = this.onDeleteClick.bind(this);
-    this.id = props.id;
-    this.container = props.documents[this.id];
-    this.state = {
-      attributes: {
-        title: this.container ? this.container.document.title : '',
-        access: this.container ? this.container.document.access : 'private',
-        accesslevel: this.container ?
-          this.container.document.accesslevel : 'view'
-      },
-      status: ''
-    };
-    this.initialState = { ...this.state.attributes };
-    if (
-    this.container &&
-    props.userId !== this.container.document.userId) {
-      modules.toolbar = false;
-      this.readOnly = true;
-    }
-    this.contentChanges = new Delta();
+    this.setupComponent(this.props);
   }
 
   /**
@@ -88,17 +70,24 @@ class DocumentEditor extends Component {
    * @returns {undefined}
    */
   componentWillReceiveProps(nextProps) {
-    if (nextProps.id !== this.id && nextProps.documents[nextProps.id]) {
-      return undefined;
+    const { id, documents, newDocument } = nextProps;
+    if (id !== this.id && documents[id]) {
+      /** Do nothing */
     } else if (
-    nextProps.documents[this.id] &&
-    nextProps.documents[this.id].document &&
-    !isEqual(nextProps.documents[this.id], this.container.document)) {
+    documents[this.id] &&
+    documents[this.id].error) {
+      this.setState({ status: documents[this.id].error.message });
+    } else if (
+    documents[this.id] &&
+    documents[this.id].document &&
+    !isEqual(documents[this.id].document, this.container.document)) {
       this.setState({ status: 'All changes saved to cloud' });
-    } else if (nextProps.newDocument.id && !this.id) {
-      this.id = nextProps.newDocument.id;
-      this.container = nextProps.documents[this.id];
+    } else if (newDocument && newDocument.id && !this.id) {
+      this.id = newDocument.id;
+      this.container = documents[this.id];
       this.setState({ status: 'All changes saved to cloud' });
+    } else if (newDocument && newDocument.error && !this.id) {
+      this.setState({ status: newDocument.error.message });
     }
   }
 
@@ -107,7 +96,7 @@ class DocumentEditor extends Component {
    * @returns {undefined}
    */
   componentWillUpdate() {
-    if (this.props.id !== this.id && this.props.documents[this.props.id]) {
+    if (this.props.id && this.props.id !== this.id) {
       this.setupComponent(this.props);
       this.setupEditor();
     }
@@ -156,7 +145,9 @@ class DocumentEditor extends Component {
   setupComponent(props) {
     this.id = props.id;
     this.container = props.documents[this.id];
-    this.setState({
+    this.modules = { ...modules };
+    this.readOnly = false;
+    const state = {
       attributes: {
         title: this.container ? this.container.document.title : '',
         access: this.container ? this.container.document.access : 'private',
@@ -164,16 +155,21 @@ class DocumentEditor extends Component {
           this.container.document.accesslevel : 'view'
       },
       status: ''
-    }, () => {
-      this.initialState = Object.assign({}, this.state.attributes);
-    });
+    };
+    if (this.state) {
+      this.setState({ ...state });
+    } else {
+      this.state = { ...state };
+    }
+    this.initialState = Object.assign({}, state.attributes);
     if (
     this.container &&
-    props.userId !== this.container.document.userId) {
-      modules.toolbar = false;
+    props.ownId !== this.container.document.userId) {
+      this.modules.toolbar = false;
       this.readOnly = true;
+    } else {
+      this.contentChanges = new Delta();
     }
-    this.contentChanges = new Delta();
   }
 
   /**
@@ -185,7 +181,7 @@ class DocumentEditor extends Component {
     $(`#${this.state.attributes.accesslevel}`).addClass('active');
     $('.ql-toolbar').remove();
     this.contentEditor = new Quill('.content-editor', {
-      modules,
+      modules: this.modules,
       placeholder: contentPlaceholder,
       theme,
       readOnly: this.readOnly
@@ -198,10 +194,12 @@ class DocumentEditor extends Component {
         this.contentEditor.setText(this.container.document.content, 'silent');
       }
     }
-    this.contentEditor.on('text-change', (delta) => {
-      this.contentChanges = this.contentChanges.compose(delta);
-    });
-    this.saveInterval = setInterval(this.saveChanges, 10000);
+    if (!this.readOnly) {
+      this.contentEditor.on('text-change', (delta) => {
+        this.contentChanges = this.contentChanges.compose(delta);
+      });
+      this.saveInterval = setInterval(this.saveChanges, 5000);
+    }
   }
 
   /**
@@ -225,8 +223,19 @@ class DocumentEditor extends Component {
    * @returns {undefined}
    */
   saveChanges() {
-    if (!isEqual(this.state.attributes, this.initialState) ||
-    this.contentChanges.length() > 0) {
+    if (!this.state.attributes.title) {
+      const autoTitle = this.contentEditor.getText(0, 25).replace(/\s+/g, ' ');
+      if (autoTitle.replace(/\s+/g, '')) {
+        this.setState({
+          attributes: {
+            ...this.state.attributes,
+            title: autoTitle
+          }
+        });
+      }
+    }
+    if ((this.state.attributes.title) && (!isEqual(this.state.attributes, this.initialState) ||
+    this.contentChanges.length() > 0)) {
       this.setState({ status: 'Saving changes...' });
       if (!this.id) {
         this.props.createDocument({
@@ -251,6 +260,7 @@ class DocumentEditor extends Component {
         if (this.contentChanges.length() > 0) {
           patch.content = JSON.stringify(this.contentEditor.getContents());
         }
+        patch.type = 'quill';
         this.props.updateDocument(this.id, patch);
       }
       this.initialState = Object.assign({}, this.state.attributes);
@@ -264,7 +274,7 @@ class DocumentEditor extends Component {
    */
   render() {
     return (
-      <div>
+      <div className="document-editor">
         <input
           type="text"
           className="title-editor"
@@ -273,11 +283,19 @@ class DocumentEditor extends Component {
           onChange={this.onTitleChange}
           readOnly={this.readOnly}
         />
-        {!this.readOnly && <EditorMenuBar
-          status={this.state.status}
-          onDeleteClick={this.onDeleteClick}
-          updateAttribute={this.updateAttribute}
-        />}
+        {(this.readOnly)
+          ? <EditorMenuBar
+            access={this.state.attributes.access}
+            status={this.state.status}
+            onDeleteClick={this.onDeleteClick}
+          />
+          : <EditorMenuBar
+            access={this.state.attributes.access}
+            status={this.state.status}
+            full
+            onDeleteClick={this.onDeleteClick}
+            updateAttribute={this.updateAttribute}
+          />}
         <div className="content-editor" />
       </div>
     );
@@ -285,7 +303,7 @@ class DocumentEditor extends Component {
 }
 
 const mapStateToProps = state => ({
-  userId: state.authReducer.currentUser,
+  ownId: state.authReducer.currentUser,
   newDocument: state.documentReducer.new,
   documents: state.documentReducer
 });
@@ -298,7 +316,7 @@ const mapDispatchToProps = dispatch => ({
 
 DocumentEditor.propTypes = {
   id: PropTypes.string,
-  userId: PropTypes.string.isRequired,
+  ownId: PropTypes.string.isRequired,
   documents: PropTypes.object,
   newDocument: PropTypes.object,
   createDocument: PropTypes.func.isRequired,

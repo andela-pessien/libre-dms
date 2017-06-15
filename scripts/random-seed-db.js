@@ -8,7 +8,7 @@ import {
   getValidUser,
   getValidPublicUser,
   getValidDoc
-} from '../server/test/helpers/data-helper';
+} from './data-generator';
 
 const users = Array(...(new Array(50))).map(() => (Math.random() > 0.5 ? getValidUser() : getValidPublicUser()));
 let documents = [];

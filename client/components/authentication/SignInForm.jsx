@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { signIn } from '../../actions/authActions';
+import { isValidEmail } from '../../utils/validate';
 
 /**
  * Signin form component
@@ -39,28 +40,28 @@ class SignInForm extends Component {
 
   /**
    * Event listener for changes to form input
-   * @param {Object} e The form change event
+   * @param {Object} event The form change event
    * @returns {undefined}
    */
-  onChange(e) {
-    this.setState({ [e.target.name]: e.target.value });
+  onChange(event) {
+    this.setState({ [event.target.name]: event.target.value });
   }
 
   /**
    * Event listener for form submission
    * Performs validations before submission
-   * @param {Object} e The form submission event
+   * @param {Object} event The form submission event
    * @returns {undefined}
    */
-  onSubmit(e) {
-    e.preventDefault();
+  onSubmit(event) {
+    event.preventDefault();
     try {
       if (
       this.state.email.replace(/\s+/g, '') === '' ||
       this.state.password.replace(/\s+/g, '') === '') {
         throw new Error('No field should be left blank');
       }
-      if (!$('#signin-email').hasClass('valid')) {
+      if (!isValidEmail($('#signin-email').val())) {
         throw new Error('Please provide a valid email');
       }
       this.props.signIn(this.state);
@@ -83,11 +84,9 @@ class SignInForm extends Component {
             onChange={this.onChange}
             id="signin-email"
             name="email"
-            type="email"
-            className="validate"
-            required
+            type="text"
           />
-          <label htmlFor="login-email">Email</label>
+          <label htmlFor="signin-email">Email</label>
         </div>
         <div className="input-field left-align">
           <input
@@ -96,13 +95,11 @@ class SignInForm extends Component {
             id="signin-password"
             name="password"
             type="password"
-            className="validate"
-            required
           />
-          <label htmlFor="login-password">Password</label>
+          <label htmlFor="signin-password">Password</label>
         </div>
         <div className="center">
-          <button className="btn indigo darken-4" type="submit">Sign In</button>
+          <button className="btn indigo darken-4 submit-signin" type="submit">Sign In</button>
         </div>
       </form>
     );

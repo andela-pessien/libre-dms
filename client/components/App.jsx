@@ -31,7 +31,8 @@ class App extends Component {
       $('.app-background').css({
         'background-image': `url(data:image/jpeg;base64,${btoa(raw)})`,
         'background-size': 'cover',
-        'background-position': '50% 50%'
+        'background-position': '50% 50%',
+        'background-attachment': 'fixed'
       });
       $('.app-background').animate({ opacity: 0.75 }, 1500);
     };
@@ -53,8 +54,6 @@ class App extends Component {
               path="/"
               component={requireAuth(Dashboard, AuthPage, true)}
             />
-            {/* <Route path="/roster" component={Roster}/>
-            <Route path="/schedule" component={Schedule}/>*/}
           </Switch>
         </div>
         <div className="app-background" />

@@ -1,7 +1,7 @@
 import expect from 'expect';
 import model from '../../models';
 import { getValidUser, getValidDoc, getValidComment, invalidComments }
-  from '../helpers/data-helper';
+  from '../../../scripts/data-generator';
 
 const { User, Document, Comment } = model;
 
