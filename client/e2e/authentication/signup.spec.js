@@ -41,7 +41,7 @@ export default {
       .setValue('#signup-confirm-password', user.password)
       .click('.submit-signup')
       .waitForElementVisible('.toast', config.waitFor)
-      .assert.containsText('.toast', 'A user with that email already exists');
+      .assert.containsText('.toast', 'Someone has already signed up with that email');
   },
 
   'Signup with invalid password should fail': (browser) => {
