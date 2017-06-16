@@ -1,4 +1,4 @@
-import { dbErrorHandler } from '../helpers';
+import { formatRole, dbErrorHandler } from '../helpers';
 import model from '../models';
 
 const { Role } = model;
@@ -12,7 +12,7 @@ export default {
    */
   list(req, res) {
     Role.findAll({})
-    .then(roles => res.status(200).json(roles))
+    .then(roles => res.status(200).json(roles.map(role => formatRole(role))))
     .catch(err => (dbErrorHandler(err, res)));
   },
 
@@ -23,6 +23,6 @@ export default {
    * @returns {void}
    */
   retrieve(req, res) {
-    res.status(200).json(req.retrievedRecord);
+    res.status(200).json(formatRole(req.retrievedRecord));
   }
 };

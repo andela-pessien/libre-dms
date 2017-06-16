@@ -82,8 +82,6 @@ export default {
         'email',
         'roleId',
         'isPrivate',
-        'organisationId',
-        'departmentId',
         'createdAt',
         'deletedAt'
       ],

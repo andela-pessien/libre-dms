@@ -190,7 +190,7 @@ describe('Users API:', () => {
     });
   });
 
-  describe('PUT /api/users/:id/set-role', () => {
+  describe('PUT /api/users/set-role/:id', () => {
     const adminDetails = getValidUser();
     let secondAdmin, reviewer, secondReviewer;
 
@@ -227,7 +227,7 @@ describe('Users API:', () => {
     });
 
     it('should return error if request is not authenticated', (done) => {
-      app.put(`/api/users/${admin.id}/set-role`)
+      app.put(`/api/users/set-role/${admin.id}`)
         .expect('Content-Type', /json/)
         .expect(401)
         .end((err, res) => {
@@ -238,7 +238,7 @@ describe('Users API:', () => {
     });
 
     it('should return error if requester is not an admin or superadmin', (done) => {
-      app.put(`/api/users/${admin.id}/set-role`)
+      app.put(`/api/users/set-role/${admin.id}`)
         .set('x-access-token', testUserToken)
         .expect('Content-Type', /json/)
         .expect(403)
@@ -250,7 +250,7 @@ describe('Users API:', () => {
     });
 
     it('should return error if no target role is provided', (done) => {
-      app.put(`/api/users/${admin.id}/set-role`)
+      app.put(`/api/users/set-role/${admin.id}`)
         .set('x-access-token', superAdminToken)
         .expect('Content-Type', /json/)
         .expect(400)
@@ -262,7 +262,7 @@ describe('Users API:', () => {
     });
 
     it('should return error if requester tries to create a superadministrator', (done) => {
-      app.put(`/api/users/${admin.id}/set-role`)
+      app.put(`/api/users/set-role/${admin.id}`)
         .set('x-access-token', superAdminToken)
         .send({
           roleId: 1
@@ -277,7 +277,7 @@ describe('Users API:', () => {
     });
 
     it('should return error if user is the superadministrator', (done) => {
-      app.put(`/api/users/${superAdmin.id}/set-role`)
+      app.put(`/api/users/set-role/${superAdmin.id}`)
         .set('x-access-token', superAdminToken)
         .send({
           roleId: 2
@@ -292,7 +292,7 @@ describe('Users API:', () => {
     });
 
     it('should return error if user already occupies the target role', (done) => {
-      app.put(`/api/users/${testUser.id}/set-role`)
+      app.put(`/api/users/set-role/${testUser.id}`)
         .set('x-access-token', superAdminToken)
         .send({
           roleId: 4
@@ -307,7 +307,7 @@ describe('Users API:', () => {
     });
 
     it('should promote regular user to administrator on superadministrator request', (done) => {
-      app.put(`/api/users/${admin.id}/set-role`)
+      app.put(`/api/users/set-role/${admin.id}`)
         .set('x-access-token', superAdminToken)
         .send({
           roleId: 2
@@ -335,7 +335,7 @@ describe('Users API:', () => {
     });
 
     it('should promote regular user to administrator on administrator request', (done) => {
-      app.put(`/api/users/${secondAdmin.id}/set-role`)
+      app.put(`/api/users/set-role/${secondAdmin.id}`)
         .set('x-access-token', adminToken)
         .send({
           roleId: 2
@@ -352,7 +352,7 @@ describe('Users API:', () => {
     });
 
     it('should promote regular user to reviewer on superadministrator request', (done) => {
-      app.put(`/api/users/${reviewer.id}/set-role`)
+      app.put(`/api/users/set-role/${reviewer.id}`)
         .set('x-access-token', superAdminToken)
         .send({
           roleId: 3
@@ -369,7 +369,7 @@ describe('Users API:', () => {
     });
 
     it('should promote regular user to reviewer on administrator request', (done) => {
-      app.put(`/api/users/${secondReviewer.id}/set-role`)
+      app.put(`/api/users/set-role/${secondReviewer.id}`)
         .set('x-access-token', adminToken)
         .send({
           roleId: 3
@@ -386,7 +386,7 @@ describe('Users API:', () => {
     });
 
     it('should return error if requester tries to set their own role', (done) => {
-      app.put(`/api/users/${admin.id}/set-role`)
+      app.put(`/api/users/set-role/${admin.id}`)
         .set('x-access-token', adminToken)
         .send({
           roleId: 2
@@ -401,7 +401,7 @@ describe('Users API:', () => {
     });
 
     it('should demote reviewer to regular user on superadministrator request', (done) => {
-      app.put(`/api/users/${reviewer.id}/set-role`)
+      app.put(`/api/users/set-role/${reviewer.id}`)
         .set('x-access-token', superAdminToken)
         .send({
           roleId: 4
@@ -418,7 +418,7 @@ describe('Users API:', () => {
     });
 
     it('should demote reviewer to regular user on administrator request', (done) => {
-      app.put(`/api/users/${secondReviewer.id}/set-role`)
+      app.put(`/api/users/set-role/${secondReviewer.id}`)
         .set('x-access-token', adminToken)
         .send({
           roleId: 4
@@ -435,7 +435,7 @@ describe('Users API:', () => {
     });
 
     it('should return error if administrator tries to demote another administrator', (done) => {
-      app.put(`/api/users/${secondAdmin.id}/set-role`)
+      app.put(`/api/users/set-role/${secondAdmin.id}`)
         .set('x-access-token', adminToken)
         .send({
           roleId: 4
@@ -450,7 +450,7 @@ describe('Users API:', () => {
     });
 
     it('should demote administrator on superadministrator request', (done) => {
-      app.put(`/api/users/${secondAdmin.id}/set-role`)
+      app.put(`/api/users/set-role/${secondAdmin.id}`)
         .set('x-access-token', superAdminToken)
         .send({
           roleId: 4
@@ -467,7 +467,7 @@ describe('Users API:', () => {
     });
 
     it('should return an error if user does not exist', (done) => {
-      app.put(`/api/users/${getValidId()}/set-role`)
+      app.put(`/api/users/set-role/${getValidId()}`)
         .set('x-access-token', superAdminToken)
         .expect('Content-Type', /json/)
         .expect(404)

@@ -286,7 +286,7 @@ describe('User action creators', () => {
       roleId
     };
 
-    moxios.stubRequest(`/api/users/${updatedUser.id}/set-role`, {
+    moxios.stubRequest(`/api/users/set-role/${updatedUser.id}`, {
       status: 200,
       headers: {},
       response: updatedUser
@@ -307,7 +307,7 @@ describe('User action creators', () => {
   it("should dispatch USER_UPDATE_FAILURE on failing to set user's role", () => {
     const id = getValidId();
 
-    moxios.stubRequest(`/api/users/${id}/set-role`, {
+    moxios.stubRequest(`/api/users/set-role/${id}`, {
       status: 500,
       headers: {},
       response: error
@@ -328,7 +328,7 @@ describe('User action creators', () => {
   it('should dispatch USER_UPDATE_FAILURE if connection failed while setting user role', () => {
     const id = getValidId();
 
-    moxios.stubRequest(`/api/users/${id}/set-role`, {
+    moxios.stubRequest(`/api/users/set-role/${id}`, {
       status: 504
     });
 

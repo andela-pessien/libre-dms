@@ -77,7 +77,8 @@ describe('DocumentFeed component', () => {
             title: 'Another Test Document',
             id: '76e75e53-ef30-401b-9a60-d05be8bd4270',
             access: 'public',
-            createdAt: creationDate
+            createdAt: creationDate,
+            updatedAt: creationDate
           }
         ]
       }

@@ -1,18 +1,31 @@
 import React from 'react';
-import { shallow, mount } from 'enzyme';
+import { mount } from 'enzyme';
+import { Provider } from 'react-redux';
+import configureMockStore from 'redux-mock-store';
+import thunk from 'redux-thunk';
 import sinon from 'sinon';
 import { AccountMenu } from '../../../components/common/AccountMenu';
+import AccountMenuComp from '../../../components/common/AccountMenu';
 import { getValidUser } from '../../../../scripts/data-generator';
+
+const mockStore = configureMockStore([thunk]);
 
 describe('AccountMenu component', () => {
   let accountMenu;
+  const user = getValidUser();
+  const store = mockStore({
+    userReducer: {
+      '9e73286e-82ad-433f-9637-71766692dc5d': {
+        user
+      }
+    }
+  });
   const props = {
-    user: getValidUser(),
-    signOut: sinon.spy(() => {})
+    ownId: '9e73286e-82ad-433f-9637-71766692dc5d'
   };
 
   beforeEach(() => {
-    accountMenu = shallow(<AccountMenu {...props} />);
+    accountMenu = mount(<Provider store={store}><AccountMenuComp {...props} /></Provider>);
   });
 
   it('renders without crashing', () => {
@@ -25,7 +38,7 @@ describe('AccountMenu component', () => {
   });
 
   it('should display user\'s name', () => {
-    expect(accountMenu.find('li > p').text()).toEqual(`Hi, ${props.user.name.split(' ')[0]}`);
+    expect(accountMenu.find('li > p').text()).toEqual(`Hi, ${user.name.split(' ')[0]}`);
   });
 
   it('should display avatar icon', () => {
@@ -38,22 +51,16 @@ describe('AccountMenu component', () => {
       .filterWhere(item => (item.prop('data-activates') === 'account-dropdown'))
       .length).toBe(1);
     expect(accountMenu.find('.signout').text()).toEqual('Sign Out');
-  });
-});
-
-describe('AccountMenu component', () => {
-  let accountMenu;
-  const props = {
-    user: getValidUser(),
-    signOut: sinon.spy(() => {})
-  };
-
-  beforeEach(() => {
-    accountMenu = mount(<AccountMenu {...props} />);
+    accountMenu.find('.signout').simulate('click');
   });
 
   it('should call signOut prop from onSignOutClick method on clicking "Sign Out', () => {
+    const shallowProps = {
+      user,
+      signOut: sinon.spy(() => {})
+    };
+    accountMenu = mount(<AccountMenu {...shallowProps} />);
     accountMenu.find('.signout').simulate('click');
-    expect(accountMenu.props().signOut.calledOnce).toBe(true);
+    expect(accountMenu.props().signOut.callCount).toBe(1);
   });
 });

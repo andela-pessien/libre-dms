@@ -1,4 +1,5 @@
 import {
+  formatDoc,
   isAdminOrHigher,
   isOwner,
   dbErrorHandler,
@@ -21,11 +22,9 @@ export default {
       content: req.body.content,
       access: req.body.access,
       accesslevel: req.body.accesslevel,
-      userId: req.decoded.id,
-      organisationId: req.decoded.organisationId,
-      departmentId: req.decoded.departmentId
+      userId: req.decoded.id
     })
-    .then(document => (res.status(201).json(document)))
+    .then(document => (res.status(201).json(formatDoc(document))))
     .catch(err => (dbErrorHandler(err, res)));
   },
 
@@ -134,7 +133,7 @@ export default {
    * @returns {void}
    */
   retrieve(req, res) {
-    res.status(200).json(req.retrievedRecord);
+    res.status(200).json(formatDoc(req.retrievedRecord));
   },
 
   /**
@@ -145,7 +144,7 @@ export default {
    */
   update(req, res) {
     req.retrievedRecord.update(req.body)
-    .then(document => res.status(200).json(document))
+    .then(document => res.status(200).json(formatDoc(document)))
     .catch(err => (dbErrorHandler(err, res)));
   },
 

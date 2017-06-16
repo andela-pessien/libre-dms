@@ -117,7 +117,7 @@ export function updateUser(id, patch) {
  */
 export function setUserRole(id, roleId) {
   return dispatch => (
-    axios.put(`/api/users/${id}/set-role`, { roleId })
+    axios.put(`/api/users/set-role/${id}`, { roleId })
       .then((res) => {
         setAuthentication(res.headers['x-access-token']);
         dispatch({

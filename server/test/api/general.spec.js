@@ -22,13 +22,13 @@ describe('API:', () => {
       });
   });
 
-  it('GET /api should return stock phrase', (done) => {
+  it('GET /api should redirect to documentation', (done) => {
     app
       .get('/api')
       .expect('Content-Type', /text/)
       .expect(200)
       .end((err, res) => {
-        expect(res.text).toEqual('This is where the LibreDMS API is hosted');
+        expect(res.text).toEqual('Found. Redirecting to https://andela-pessien.github.io/libredms-apidocs');
         done();
       });
   });
