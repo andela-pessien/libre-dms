@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Switch, Route } from 'react-router-dom';
 import Navbar from './common/Navbar';
-import requireAuth from './authentication/requireAuth';
+import requireAuth from '../utils/requireAuth';
 import AuthPage from './authentication/AuthPage';
 import Dashboard from './dashboard/Dashboard';
 

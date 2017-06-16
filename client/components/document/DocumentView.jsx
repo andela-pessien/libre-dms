@@ -66,7 +66,7 @@ class DocumentView extends Component {
         {(this.state.id !== 'new' &&
         !this.props.container.document &&
         !this.props.container.error) &&
-          <Preloader className="middle" />}
+          <Preloader classNames="middle" />}
         {(this.state.id !== 'new' &&
         !this.props.container.document &&
         this.props.container.error) &&

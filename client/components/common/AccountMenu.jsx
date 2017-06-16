@@ -80,3 +80,4 @@ AccountMenu.propTypes = {
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(AccountMenu);
+export { AccountMenu };

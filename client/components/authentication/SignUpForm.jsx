@@ -64,10 +64,10 @@ class SignUpForm extends Component {
       this.state.password.replace(/\s+/g, '') === '') {
         throw new Error('No field should be left blank');
       }
-      if (!isValidEmail($('#signup-email').val())) {
+      if (!isValidEmail(this.state.email)) {
         throw new Error('Please provide a valid email');
       }
-      if (!isValidName($('#signup-name').val())) {
+      if (!isValidName(this.state.name)) {
         throw new Error('Please provide a valid first and last name');
       }
       if (this.state.password.length < 8) {
@@ -89,7 +89,7 @@ class SignUpForm extends Component {
    */
   render() {
     return (
-      <form className="auth-form" onSubmit={this.onSubmit}>
+      <form className="auth-form signup-form" onSubmit={this.onSubmit}>
         <div className="input-field form-field left-align">
           <input
             value={this.state.name}
@@ -142,7 +142,6 @@ class SignUpForm extends Component {
 }
 
 const mapStateToProps = state => ({
-  ownId: state.authReducer.currentUser,
   error: state.authReducer.signUpError
 });
 
@@ -162,3 +161,4 @@ SignUpForm.defaultProps = {
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(SignUpForm);
+export { SignUpForm };

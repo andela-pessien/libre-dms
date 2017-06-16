@@ -13,11 +13,7 @@ class AuthPanel extends Component {
    * @returns {undefined}
    */
   componentDidMount() {
-    $('.tabs').tabs({
-      onShow() {
-        $('.carousel').carousel();
-      }
-    });
+    $('.tabs').tabs();
   }
 
   /**
