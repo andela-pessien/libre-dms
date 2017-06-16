@@ -17,11 +17,10 @@ const { auth, database, list } = middleware;
 const routes = (app) => {
   /**
    * Landing page for API users.
-   * Will eventually serve documentation.
+   * Serves documentation.
    */
   app.get('/api', (req, res) => {
-    res.writeHead(200, { 'Content-Type': 'text/plain' });
-    res.end('This is where the LibreDMS API is hosted');
+    res.redirect('https://andela-pessien.github.io/libredms-apidocs');
   });
 
   /**
@@ -61,7 +60,7 @@ const routes = (app) => {
    * Route for setting a user's role
    */
   app.put(
-    '/api/users/:id/set-role',
+    '/api/users/set-role/:id',
     auth.checkToken,
     auth.adminAccess,
     database.retrieveRecord,

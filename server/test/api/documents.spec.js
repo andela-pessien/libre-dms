@@ -45,7 +45,7 @@ describe('Documents API:', () => {
                   .end((err, res) => {
                     if (err) throw err;
                     app
-                      .put(`/api/users/${res.body.id}/set-role`)
+                      .put(`/api/users/set-role/${res.body.id}`)
                       .set('x-access-token', superAdminToken)
                       .send({
                         roleId: 2
@@ -72,7 +72,7 @@ describe('Documents API:', () => {
                                 if (err) throw err;
                                 reviewer = res.body;
                                 app
-                                  .put(`/api/users/${reviewer.id}/set-role`)
+                                  .put(`/api/users/set-role/${reviewer.id}`)
                                   .set('x-access-token', superAdminToken)
                                   .send({
                                     roleId: 3

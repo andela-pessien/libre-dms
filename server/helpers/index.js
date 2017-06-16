@@ -21,8 +21,6 @@ export const formatUser = user => (
     'email',
     'isPrivate',
     'roleId',
-    'organisationId',
-    'departmentId',
     'createdAt'
   )
 );
@@ -36,7 +34,7 @@ export const signToken = (user) => {
   const date = new Date();
   while ((new Date()) - date <= 1000) { /* Wait */ }
   return jwt.sign(
-    _.pick(user, 'id', 'roleId', 'organisationId', 'departmentId'),
+    _.pick(user, 'id', 'roleId'),
     process.env.JWT_SECRET,
     { expiresIn: process.env.JWT_EXPIRATION }
   );

@@ -21,9 +21,7 @@ export default {
       content: req.body.content,
       access: req.body.access,
       accesslevel: req.body.accesslevel,
-      userId: req.decoded.id,
-      organisationId: req.decoded.organisationId,
-      departmentId: req.decoded.departmentId
+      userId: req.decoded.id
     })
     .then(document => (res.status(201).json(document)))
     .catch(err => (dbErrorHandler(err, res)));

@@ -24,18 +24,24 @@ Check it out on [Heroku](https://libre-dms-staging.herokuapp.com))
   Some other technologies used include [Webpack](https://webpack.js.org) to transpile and bundle client code, [Babel](https://babeljs.io) for transpiling ES6 to ES5, [Nodemon](https://nodemon.io/) for hot-reloading the server during development and [NPM scripts](https://docs.npmjs.com/misc/scripts) for running various tasks.
 
 ### How can you get started?
-  Fouille is hosted on [Heroku](https://fouille.herokuapp.com), so you can just visit and
-  use that. However, if you want to get a bit hands-on:
   - Clone the repo with the link Github provides.
-  - Change directory to `inverted-index` and run `npm install` to install the app.
+  - Change directory to `libre-dms` and run `npm install` to install the app.
   - Make sure you have MongoDB installed and an instance of mongod running.
   - Create a .env file in the root of the folder following the format in the provided
   sample.env file.
   - Run `npm start` to launch the app.
   - You can now use Fouille by visiting http://localhost:port (where `port` is the PORT environment variable in your .env file).
   3000 with).
-  - To launch the app in a development-optimized environment, run `npm run start:dev`. Visit http://localhost:port (where `port` is the DEVPORT environment variable) to take advantage of both [nodemon](https://nodemon.io/) and [Browsersync](https://www.browsersync.io/).
-  - You can test the app by running `npm test`.
+  - To launch the app in a development-optimized environment, run `npm run start:dev`. Visit http://localhost:port (where `port` is the WEBPORT environment variable). API is available at http://localhost:port (where `port` is the APIPORT environment variable).
+  - Testing:
+    - Server testing: `npm test`
+    - Server testing (with coverage reporting): `npm run test:cover`
+    - Client testing: `npm run test:client`
+    - Client testing (with coverage reporting): `npm run test:client:cover`
+    - End-to-end testing: Run `npm run start:dev` in another terminal and run tests with `npm run test:e2e`
+
+### Documentation
+API documentation can be found [here](https://andela-pessien.github.io/libredms-apidocs)
 
 ### Limitations
   LibreDMS' current limitations (aka features in development) include:
