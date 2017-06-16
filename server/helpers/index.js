@@ -25,6 +25,26 @@ export const formatUser = user => (
   )
 );
 
+export const formatDoc = document => (
+  _.pick(
+    document,
+    'id',
+    'title',
+    'content',
+    'access',
+    'accesslevel',
+    'type',
+    'userId',
+    'userRole',
+    'createdAt',
+    'updatedAt'
+  )
+);
+
+export const formatRole = role => (
+  _.pick(role, 'id', 'label')
+);
+
 /**
  * Hashes and signs provided data
  * @param {*} user The user to be authenticated

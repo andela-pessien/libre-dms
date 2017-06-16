@@ -37,7 +37,7 @@ function DocumentFeed({ documents, documentClickAction, profileClickAction }) {
                   </a>}
                 <div>
                   <p>
-                    Last edited: {document.updatedAt
+                    Last edited: {(document.updatedAt !== document.createdAt)
                       ? parseDate(document.updatedAt)
                       : parseDate(document.createdAt)}
                   </p>
