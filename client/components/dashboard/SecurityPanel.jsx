@@ -110,7 +110,7 @@ class SecurityPanel extends Component {
         <span className="card-title">Security</span>
         <div className="password-change">
           <h5>Change your password:</h5>
-          <form>
+          <form onSubmit={this.confirmChange}>
             <div className="input-field">
               <input
                 value={this.state.password}
@@ -135,7 +135,7 @@ class SecurityPanel extends Component {
               />
               <label htmlFor="confirm-password">Confirm password</label>
             </div>
-            <a className="btn indigo darken-4" href="#!" onClick={this.confirmChange}>Change</a>
+            <button className="btn indigo darken-4" type="submit">Change</button>
           </form>
         </div>
         <ConfirmDialog

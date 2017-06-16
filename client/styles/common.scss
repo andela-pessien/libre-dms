@@ -142,20 +142,15 @@ body {
   height: 100%;
 }
 
-.logo-image-wrapper {
-  position: relative;
+.logo-image {
+  align-items: center;
+  display: flex;
+  height: 100%;
+  justify-content: center;
+  width: 100%;
 
-  .logo-image {
-    height: 100%;
-    position: absolute;
-    width: 100%;
-
-    img {
-      margin-left: 20%;
-      position: absolute;
-      top: 20%;
-      width: 50%;
-    }
+  img {
+    height: 70%;
   }
 }
 

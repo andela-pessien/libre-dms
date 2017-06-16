@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import logo from '../../images/labeledlogo-white.png';
+import logo from '../images/labeledlogo-white.png';
 
 /**
  * Wrapper that prevents unauthenticated access to resources
@@ -25,10 +25,8 @@ function requireAuth(RestrictedComponent, FallbackComponent, wait) {
         return (<RestrictedComponent {...this.props} />);
       } else if (wait && this.props.isAuthenticated) {
         return (
-          <div className="logo-image-wrapper center" style={{ width: '50%' }}>
-            <div className="logo-image">
-              <img src={logo} alt="logo" />
-            </div>
+          <div className="logo-image">
+            <img src={logo} alt="logo" />
           </div>
         );
       } else if (FallbackComponent) {

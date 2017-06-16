@@ -12,10 +12,10 @@
     "db:seed": "node -r dotenv/config -r babel-register scripts/seed-db.js",
     "db:seed:random": "node -r dotenv/config -r babel-register scripts/random-seed-db.js",
     "db:sync": "node -r dotenv/config -r babel-register scripts/sync-db.js",
-    "prebuild": "npm run clean:build",
+    "postinstall": "cross-env NODE_ENV=production npm run db:seed:random && npm run build",
     "posttest:client:cover": "npm run clean:coverage",
     "posttest:cover": "nyc report --reporter=text-lcov | coveralls && npm run clean:coverage",
-    "prestart": "cross-env NODE_ENV=production npm run db:seed:random && npm run build",
+    "prebuild": "npm run clean:build",
     "pretest": "cross-env NODE_ENV=test npm run db:seed:random",
     "pretest:cover": "npm run pretest",
     "sequelize": "node -r dotenv/config ./node_modules/.bin/sequelize",
@@ -100,6 +100,7 @@
   },
   "devDependencies": {
     "babel-plugin-istanbul": "4.1.4",
+    "codecov": "2.2.0",
     "coveralls": "2.13.1",
     "enzyme": "2.8.2",
     "eslint": "3.19.0",
@@ -116,11 +117,13 @@
     "nock": "9.0.13",
     "nodemon": "1.11.0",
     "nyc": "10.3.2",
+    "react-addons-test-utils": "15.6.0",
     "redux-devtools-extension": "2.13.2",
     "redux-immutable-state-invariant": "2.0.0",
     "redux-mock-store": "1.0.2",
     "redux-promise": "0.5.3",
     "sass-lint": "1.10.2",
+    "sinon": "2.3.4",
     "supertest": "3.0.0",
     "webpack-dev-server": "2.4.5"
   },
@@ -142,9 +145,11 @@
     "collectCoverage": true,
     "coverageDirectory": "<rootDir>/coverage/",
     "coveragePathIgnorePatterns": [
+      "<rootDir>/client/store/",
       "<rootDir>/client/test/",
       "<rootDir>/client/utils/",
-      "utils/",
+      "/store/",
+      "/utils/",
       "<rootDir>/node_modules/",
       "<rootDir>/scripts/"
     ],
@@ -152,6 +157,9 @@
       "react",
       "enzyme"
     ],
+    "moduleNameMapper": {
+      "\\.(png)$": "<rootDir>/client/test/mocks/fileMock.js"
+    },
     "bail": true,
     "verbose": true,
     "roots": [

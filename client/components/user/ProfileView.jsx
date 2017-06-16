@@ -45,7 +45,7 @@ class ProfileView extends Component {
         {(this.props.container.user) && <UserDetails id={this.props.id} />}
         {(!this.props.container.user &&
           !this.props.container.error) &&
-          <Preloader className="middle" />}
+          <Preloader classNames="middle" />}
         {(!this.props.container.user &&
           this.props.container.error) &&
           <h5 className="middle">{this.props.container.error.message}</h5>}

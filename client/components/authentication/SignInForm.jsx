@@ -61,7 +61,7 @@ class SignInForm extends Component {
       this.state.password.replace(/\s+/g, '') === '') {
         throw new Error('No field should be left blank');
       }
-      if (!isValidEmail($('#signin-email').val())) {
+      if (!isValidEmail(this.state.email)) {
         throw new Error('Please provide a valid email');
       }
       this.props.signIn(this.state);
@@ -77,7 +77,7 @@ class SignInForm extends Component {
    */
   render() {
     return (
-      <form className="auth-form" onSubmit={this.onSubmit}>
+      <form className="auth-form signin-form" onSubmit={this.onSubmit}>
         <div className="input-field left-align">
           <input
             value={this.state.email}
@@ -107,7 +107,6 @@ class SignInForm extends Component {
 }
 
 const mapStateToProps = state => ({
-  ownId: state.authReducer.currentUser,
   error: state.authReducer.signInError
 });
 
@@ -127,3 +126,4 @@ SignInForm.defaultProps = {
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(SignInForm);
+export { SignInForm };

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import requireAuth from '../authentication/requireAuth';
+import requireAuth from '../../utils/requireAuth';
 import AccountMenu from './AccountMenu';
 
 /**

@@ -6,34 +6,32 @@ import PropTypes from 'prop-types';
  * @param {Object} props The props for the component.
  * @returns {String} The HTML markup for the Preloader component
  */
-const Preloader = (props) => {
-  return (
-    <div
-      className={`preloader-wrapper ${props.size} ${props.className} active`}
-    >
-      <div className="spinner-layer">
-        <div className="circle-clipper left">
-          <div className="circle" />
-        </div>
-        <div className="gap-patch">
-          <div className="circle" />
-        </div>
-        <div className="circle-clipper right">
-          <div className="circle" />
-        </div>
+const Preloader = props => (
+  <div
+    className={`preloader-wrapper ${props.size} ${props.classNames} active`}
+  >
+    <div className="spinner-layer">
+      <div className="circle-clipper left">
+        <div className="circle" />
+      </div>
+      <div className="gap-patch">
+        <div className="circle" />
+      </div>
+      <div className="circle-clipper right">
+        <div className="circle" />
       </div>
     </div>
-  );
-}
+  </div>
+);
 
 Preloader.propTypes = {
   size: PropTypes.string,
-  className: PropTypes.string
+  classNames: PropTypes.string
 };
 
 Preloader.defaultProps = {
   size: 'big',
-  className: ''
+  classNames: ''
 };
 
 export default Preloader;

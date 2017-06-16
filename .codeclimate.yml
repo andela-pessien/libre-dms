@@ -10,5 +10,6 @@ ratings:
   - "client/**/*.js"
 exclude_paths:
 - client/tests
+- client/e2e
 - server/tests
 - scripts

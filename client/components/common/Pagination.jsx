@@ -22,7 +22,7 @@ class Pagination extends Component {
    * @returns {undefined}
    */
   componentDidMount() {
-    this.setUpPagination(this.props);
+    this.setUpPagination();
   }
 
   /**
@@ -39,7 +39,7 @@ class Pagination extends Component {
    * @returns {undefined}
    */
   componentDidUpdate() {
-    this.setUpPagination(this.props);
+    this.setUpPagination();
   }
 
   /**
@@ -49,7 +49,7 @@ class Pagination extends Component {
   setPages({ metadata }) {
     this.pages = Array.from(Array(metadata.pages).keys());
     if (metadata.pages > 5) {
-      if (metadata.currentPage < 3) {
+      if (metadata.currentPage <= 3) {
         this.pages = this.pages.slice(0, 5);
       } else if (metadata.currentPage > metadata.pages - 3) {
         this.pages = this.pages.slice(metadata.pages - 5);
@@ -63,23 +63,18 @@ class Pagination extends Component {
    * Sets up the active elements for pagination
    * @returns {undefined}
    */
-  setUpPagination({ metadata }) {
-    $(`.${this.props.className} > .pagination > #page-left`)
-      .removeClass('disabled');
-    $(`.${this.props.className} > .pagination > #page-right`)
-      .removeClass('disabled');
-    if (metadata.currentPage === 1) {
-      $(`.${this.props.className} > .pagination > #page-left`)
-        .addClass('disabled');
+  setUpPagination() {
+    const { currentPage, pages } = this.props.metadata;
+    $('#page-left').removeClass('disabled');
+    $('#page-right').removeClass('disabled');
+    if (currentPage === 1) {
+      $('#page-left').addClass('disabled');
     }
-    if (metadata.currentPage === metadata.pages) {
-      $(`.${this.props.className} > .pagination > #page-right`)
-        .addClass('disabled');
+    if (currentPage === pages) {
+      $('#page-right').addClass('disabled');
     }
-    $(`.${this.props.className} > .pagination > li`)
-      .removeClass('active');
-    $(`.${this.props.className} > .pagination > [name='${metadata.currentPage}']`)
-      .addClass('active');
+    $('.pagination > li').removeClass('active');
+    $(`.pagination > [name='${currentPage}']`).addClass('active');
   }
 
   /**
@@ -87,27 +82,28 @@ class Pagination extends Component {
    * @returns {String} JSX markup for the Pagination component
    */
   render() {
-    return (this.props.metadata.total > 0) && (<ul className="pagination">
-      <li id="page-left" onClick={this.props.onLeftClick} role="button">
-        <a className="no-padding">
-          <i className="material-icons">chevron_left</i>
-        </a>
-      </li>
-      {this.pages.map(page =>
-        <li key={page + 1} name={page + 1} onClick={this.props.onPageClick} role="button">
-          <a name={page + 1} onClick={this.props.onPageClick} role="button">{page + 1}</a>
-        </li>)}
-      <li id="page-right" onClick={this.props.onRightClick} role="button">
-        <a className="no-padding">
-          <i className="material-icons">chevron_right</i>
-        </a>
-      </li>
-    </ul>);
+    return (this.props.metadata.total > 0) && (
+      <ul className="pagination">
+        <li id="page-left" onClick={this.props.onLeftClick} role="button">
+          <a className="no-padding">
+            <i className="material-icons">chevron_left</i>
+          </a>
+        </li>
+        {this.pages.map(page =>
+          <li key={page + 1} name={page + 1} onClick={this.props.onPageClick} role="button">
+            <a name={page + 1} onClick={this.props.onPageClick} role="button">{page + 1}</a>
+          </li>)}
+        <li id="page-right" onClick={this.props.onRightClick} role="button">
+          <a className="no-padding">
+            <i className="material-icons">chevron_right</i>
+          </a>
+        </li>
+      </ul>
+    );
   }
 }
 
 Pagination.propTypes = {
-  className: PropTypes.string.isRequired,
   metadata: PropTypes.shape({
     total: PropTypes.number.isRequired,
     pages: PropTypes.number.isRequired,

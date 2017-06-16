@@ -492,7 +492,6 @@ class Dashboard extends Component {
                         />
                         {this.props.users[this.props.ownId].documents.metadata &&
                           <Pagination
-                            className="own-feed"
                             metadata={this.props.users[this.props.ownId]
                               .documents.metadata}
                             onLeftClick={this.onOwnLeftClick}
@@ -500,7 +499,8 @@ class Dashboard extends Component {
                             onPageClick={this.onOwnPageClick}
                           />}
                       </div>
-                      : <Preloader className="middle" />}
+                      : (!this.props.users[this.props.ownId].error &&
+                        <Preloader classNames="middle" />)}
                   </div>}
               {this.state.showAllFeed &&
                 <div className="card-content side-view">
@@ -514,23 +514,20 @@ class Dashboard extends Component {
                       />
                     </div>
                   </div>
-                  {(!$.isEmptyObject(this.documents))
-                    ? <div className="public-feed">
-                      <DocumentFeed
-                        documents={this.documents}
-                        documentClickAction={this.onDocumentSelect}
-                        profileClickAction={this.onProfileSelect}
-                      />
-                      {this.documents.metadata &&
-                        <Pagination
-                          className="public-feed"
-                          metadata={this.documents.metadata}
-                          onLeftClick={this.onPublicLeftClick}
-                          onRightClick={this.onPublicRightClick}
-                          onPageClick={this.onPublicPageClick}
-                        />}
-                    </div>
-                    : <Preloader className="middle" />}
+                  <div className="public-feed">
+                    <DocumentFeed
+                      documents={this.documents}
+                      documentClickAction={this.onDocumentSelect}
+                      profileClickAction={this.onProfileSelect}
+                    />
+                    {this.documents.metadata &&
+                      <Pagination
+                        metadata={this.documents.metadata}
+                        onLeftClick={this.onPublicLeftClick}
+                        onRightClick={this.onPublicRightClick}
+                        onPageClick={this.onPublicPageClick}
+                      />}
+                  </div>
                 </div>}
               {this.state.showPeopleFeed &&
                 <div className="card-content side-view">
@@ -544,22 +541,19 @@ class Dashboard extends Component {
                       />
                     </div>
                   </div>
-                  {(!$.isEmptyObject(this.users))
-                    ? <div className="people-feed">
-                      <UserFeed
-                        users={this.users}
-                        profileClickAction={this.onProfileSelect}
-                      />
-                      {this.users.metadata &&
-                        <Pagination
-                          className="people-feed"
-                          metadata={this.users.metadata}
-                          onLeftClick={this.onPeopleLeftClick}
-                          onRightClick={this.onPeopleRightClick}
-                          onPageClick={this.onPeoplePageClick}
-                        />}
-                    </div>
-                    : <Preloader className="middle" />}
+                  <div className="people-feed">
+                    <UserFeed
+                      users={this.users}
+                      profileClickAction={this.onProfileSelect}
+                    />
+                    {this.users.metadata &&
+                      <Pagination
+                        metadata={this.users.metadata}
+                        onLeftClick={this.onPeopleLeftClick}
+                        onRightClick={this.onPeopleRightClick}
+                        onPageClick={this.onPeoplePageClick}
+                      />}
+                  </div>
                 </div>}
               {this.state.showSettingsFeed &&
                 <div className="card-content side-view">
