@@ -45,6 +45,3 @@ dist
 
 # MacOS file system essentials
 .DS_Store
-
-scripts
-server/controllers
