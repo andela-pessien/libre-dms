@@ -57,12 +57,13 @@ html,
 #app,
 body,
 .app-wrapper {
-  @media #{$large-and-up} {
-    min-height: 560px;
-  }
+  // @media #{$large-and-up} {
+    
+  // }
 
   box-sizing: border-box;
   height: 100%;
+  min-height: 720px;
 }
 
 body {

@@ -7,6 +7,7 @@ import Preloader from '../common/Preloader';
 import Pagination from '../common/Pagination';
 import ProfileView from '../user/ProfileView';
 import DocumentView from '../document/DocumentView';
+import SideMenu from './SideMenu';
 import SecurityPanel from './SecurityPanel';
 import {
   getUser,
@@ -46,10 +47,6 @@ class Dashboard extends Component {
     };
     this.documents = this.props.allDocuments;
     this.users = this.props.allUsers;
-    this.onOwnDocumentsClick = this.onOwnDocumentsClick.bind(this);
-    this.onPublicButtonClick = this.onPublicButtonClick.bind(this);
-    this.onPeopleButtonClick = this.onPeopleButtonClick.bind(this);
-    this.onSettingsButtonClick = this.onSettingsButtonClick.bind(this);
     this.onDocumentSelect = this.onDocumentSelect.bind(this);
     this.onProfileSelect = this.onProfileSelect.bind(this);
     this.onSettingsSelect = this.onSettingsSelect.bind(this);
@@ -64,6 +61,7 @@ class Dashboard extends Component {
     this.onPeopleLeftClick = this.onPeopleLeftClick.bind(this);
     this.onPeopleRightClick = this.onPeopleRightClick.bind(this);
     this.onPeoplePageClick = this.onPeoplePageClick.bind(this);
+    this.changeFeedView = this.changeFeedView.bind(this);
     this.unmountView = this.unmountView.bind(this);
   }
 
@@ -97,77 +95,6 @@ class Dashboard extends Component {
     } else {
       this.users = allUsers;
     }
-  }
-
-  /**
-   * Click event handler for selecting own documents option from menu
-   * @param {Object} event The click event
-   * @returns {undefined}
-   */
-  onOwnDocumentsClick(event) {
-    event.preventDefault();
-    $('.fixed-side-menu-item').removeClass('active');
-    $('#own-documents-button').addClass('active');
-    this.setState({
-      showOwnFeed: true,
-      showAllFeed: false,
-      showPeopleFeed: false,
-      showSettingsFeed: false
-    });
-    this.props.getUserDocuments(this.props.ownId);
-  }
-
-  /**
-   * Click event handler for selecting all documents option from menu
-   * @param {Object} event The click event
-   * @returns {undefined}
-   */
-  onPublicButtonClick(event) {
-    event.preventDefault();
-    $('.fixed-side-menu-item').removeClass('active');
-    $('#public-button').addClass('active');
-    this.setState({
-      showOwnFeed: false,
-      showAllFeed: true,
-      showPeopleFeed: false,
-      showSettingsFeed: false
-    });
-    this.props.getAllDocuments();
-  }
-
-  /**
-   * Click event handler for selecting other users option from menu
-   * @param {Object} event The click event
-   * @returns {undefined}
-   */
-  onPeopleButtonClick(event) {
-    event.preventDefault();
-    $('.fixed-side-menu-item').removeClass('active');
-    $('#people-button').addClass('active');
-    this.setState({
-      showOwnFeed: false,
-      showAllFeed: false,
-      showPeopleFeed: true,
-      showSettingsFeed: false
-    });
-    this.props.getAllUsers();
-  }
-
-  /**
-   * Click event handler for selecting settings option from menu
-   * @param {Object} event The click event
-   * @returns {undefined}
-   */
-  onSettingsButtonClick(event) {
-    event.preventDefault();
-    $('.fixed-side-menu-item').removeClass('active');
-    $('#settings-button').addClass('active');
-    this.setState({
-      showOwnFeed: false,
-      showAllFeed: false,
-      showPeopleFeed: false,
-      showSettingsFeed: true
-    });
   }
 
   /**
@@ -407,6 +334,22 @@ class Dashboard extends Component {
   }
 
   /**
+   * Switches the feed view.
+   * @param {String} selectedView The view to change to
+   * @returns {undefined}
+   */
+  changeFeedView(selectedView) {
+    this.setState({
+      showOwnFeed: false,
+      showAllFeed: false,
+      showPeopleFeed: false,
+      showSettingsFeed: false
+    }, () => {
+      this.setState({ [selectedView]: true });
+    });
+  }
+
+  /**
    * Unmounts and closes main view
    * @returns {undefined}
    */
@@ -427,56 +370,13 @@ class Dashboard extends Component {
     return (
       <div className="dashboard-wrapper">
         <div className="row">
-          <div className="fixed-side-menu">
-            <div
-              id="own-documents-button"
-              className="fixed-side-menu-item active"
-              onClick={this.onOwnDocumentsClick}
-              role="menuitem"
-            >
-              <i
-                className="material-icons tooltipped"
-                data-position="bottom"
-                data-tooltip="My documents"
-              >insert_drive_file</i>
-            </div>
-            <div
-              id="public-button"
-              className="fixed-side-menu-item"
-              onClick={this.onPublicButtonClick}
-              role="menuitem"
-            >
-              <i
-                className="material-icons tooltipped"
-                data-position="bottom"
-                data-tooltip="All documents"
-              >public</i>
-            </div>
-            <div
-              id="people-button"
-              className="fixed-side-menu-item"
-              onClick={this.onPeopleButtonClick}
-              role="menuitem"
-            >
-              <i
-                className="material-icons tooltipped"
-                data-position="bottom"
-                data-tooltip="Other People"
-              >people</i>
-            </div>
-            <div
-              id="settings-button"
-              className="fixed-side-menu-item"
-              onClick={this.onSettingsButtonClick}
-              role="menuitem"
-            >
-              <i
-                className="material-icons tooltipped"
-                data-position="bottom"
-                data-tooltip="Settings"
-              >settings</i>
-            </div>
-          </div>
+          <SideMenu
+            ownId={this.props.ownId}
+            changeFeedView={this.changeFeedView}
+            getUserDocuments={this.props.getUserDocuments}
+            getAllDocuments={this.props.getAllDocuments}
+            getAllUsers={this.props.getAllUsers}
+          />
           <div className="col l3">
             <div className="card dashboard-panel side-panel">
               {this.state.showOwnFeed &&

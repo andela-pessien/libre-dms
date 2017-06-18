@@ -49,6 +49,7 @@
         "customValidators": ["nextProps"],
         "skipShapeProps": true
       }
-    ]
+    ],
+    "jsx-a11y/no-static-element-interactions": 0
   }
 }
