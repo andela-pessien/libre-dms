@@ -32,7 +32,6 @@ class Dashboard extends Component {
   constructor(props) {
     super(props);
     this.props.getUser(this.props.ownId);
-    this.props.getUserDocuments(this.props.ownId);
     this.state = {
       showOwnFeed: true,
       showAllFeed: false,
@@ -47,22 +46,15 @@ class Dashboard extends Component {
     };
     this.documents = this.props.allDocuments;
     this.users = this.props.allUsers;
+    this.loadOwnDocuments = this.props.getUserDocuments.bind(null, this.props.ownId);
     this.onDocumentSelect = this.onDocumentSelect.bind(this);
     this.onProfileSelect = this.onProfileSelect.bind(this);
     this.onSettingsSelect = this.onSettingsSelect.bind(this);
     this.onDocumentSearchChange = this.onDocumentSearchChange.bind(this);
     this.onUserSearchChange = this.onUserSearchChange.bind(this);
-    this.onOwnLeftClick = this.onOwnLeftClick.bind(this);
-    this.onOwnRightClick = this.onOwnRightClick.bind(this);
-    this.onOwnPageClick = this.onOwnPageClick.bind(this);
-    this.onPublicLeftClick = this.onPublicLeftClick.bind(this);
-    this.onPublicRightClick = this.onPublicRightClick.bind(this);
-    this.onPublicPageClick = this.onPublicPageClick.bind(this);
-    this.onPeopleLeftClick = this.onPeopleLeftClick.bind(this);
-    this.onPeopleRightClick = this.onPeopleRightClick.bind(this);
-    this.onPeoplePageClick = this.onPeoplePageClick.bind(this);
     this.changeFeedView = this.changeFeedView.bind(this);
     this.unmountView = this.unmountView.bind(this);
+    this.loadOwnDocuments();
   }
 
   /**
@@ -175,165 +167,6 @@ class Dashboard extends Component {
   }
 
   /**
-   * Click event handler for pagination
-   * @param {Object} event The click event
-   * @returns {undefined}
-   */
-  onOwnLeftClick() {
-    event.preventDefault();
-    const { pageSize, currentPage } =
-      this.props.users[this.props.ownId].documents.metadata;
-    this.props.getUserDocuments(
-      this.props.ownId,
-      pageSize,
-      (currentPage - 2) * pageSize);
-  }
-
-  /**
-   * Click event handler for pagination
-   * @param {Object} event The click event
-   * @returns {undefined}
-   */
-  onOwnPageClick(event) {
-    event.preventDefault();
-    const { pageSize } =
-      this.props.users[this.props.ownId].documents.metadata;
-    this.props.getUserDocuments(
-      this.props.ownId,
-      pageSize,
-      (event.target.name - 1) * pageSize);
-  }
-
-  /**
-   * Click event handler for pagination
-   * @param {Object} event The click event
-   * @returns {undefined}
-   */
-  onOwnRightClick(event) {
-    event.preventDefault();
-    const { pageSize, currentPage } =
-      this.props.users[this.props.ownId].documents.metadata;
-    this.props.getUserDocuments(
-      this.props.ownId,
-      pageSize,
-      currentPage * pageSize);
-  }
-
-  /**
-   * Click event handler for pagination
-   * @param {Object} event The click event
-   * @returns {undefined}
-   */
-  onPublicLeftClick(event) {
-    event.preventDefault();
-    const { pageSize, currentPage } = this.documents.metadata;
-    if (this.state.documentKeywords.replace(/\s+/g, '') !== '') {
-      this.props.searchDocuments(
-        this.state.documentKeywords,
-        pageSize,
-        (currentPage - 2) * pageSize
-      );
-    } else {
-      this.props.getAllDocuments(pageSize, (currentPage - 2) * pageSize);
-    }
-  }
-
-  /**
-   * Click event handler for pagination
-   * @param {Object} event The click event
-   * @returns {undefined}
-   */
-  onPublicPageClick(event) {
-    event.preventDefault();
-    const { pageSize } = this.documents.metadata;
-    if (this.state.documentKeywords.replace(/\s+/g, '') !== '') {
-      this.props.searchDocuments(
-        this.state.documentKeywords,
-        pageSize,
-        (event.target.name - 1) * pageSize
-      );
-    } else {
-      this.props.getAllDocuments(pageSize, (event.target.name - 1) * pageSize);
-    }
-  }
-
-  /**
-   * Click event handler for pagination
-   * @param {Object} event The click event
-   * @returns {undefined}
-   */
-  onPublicRightClick(event) {
-    event.preventDefault();
-    const { pageSize, currentPage } = this.documents.metadata;
-    if (this.state.documentKeywords.replace(/\s+/g, '') !== '') {
-      this.props.searchDocuments(
-        this.state.documentKeywords,
-        pageSize,
-        currentPage * pageSize
-      );
-    } else {
-      this.props.getAllDocuments(pageSize, currentPage * pageSize);
-    }
-  }
-
-  /**
-   * Click event handler for pagination
-   * @param {Object} event The click event
-   * @returns {undefined}
-   */
-  onPeopleLeftClick(event) {
-    event.preventDefault();
-    const { pageSize, currentPage } = this.users.metadata;
-    if (this.state.userKeywords.replace(/\s+/g, '') !== '') {
-      this.props.searchUsers(
-        this.state.userKeywords,
-        pageSize,
-        (currentPage - 2) * pageSize
-      );
-    } else {
-      this.props.getAllUsers(pageSize, (currentPage - 2) * pageSize);
-    }
-  }
-
-  /**
-   * Click event handler for pagination
-   * @param {Object} event The click event
-   * @returns {undefined}
-   */
-  onPeoplePageClick(event) {
-    event.preventDefault();
-    const { pageSize } = this.users.metadata;
-    if (this.state.userKeywords.replace(/\s+/g, '') !== '') {
-      this.props.searchUsers(
-        this.state.userKeywords,
-        pageSize,
-        (event.target.name - 1) * pageSize
-      );
-    } else {
-      this.props.getAllUsers(pageSize, (event.target.name - 1) * pageSize);
-    }
-  }
-
-  /**
-   * Click event handler for pagination
-   * @param {Object} event The click event
-   * @returns {undefined}
-   */
-  onPeopleRightClick(event) {
-    event.preventDefault();
-    const { pageSize, currentPage } = this.users.metadata;
-    if (this.state.userKeywords.replace(/\s+/g, '') !== '') {
-      this.props.searchUsers(
-        this.state.userKeywords,
-        pageSize,
-        currentPage * pageSize
-      );
-    } else {
-      this.props.getAllUsers(pageSize, currentPage * pageSize);
-    }
-  }
-
-  /**
    * Switches the feed view.
    * @param {String} selectedView The view to change to
    * @returns {undefined}
@@ -394,9 +227,7 @@ class Dashboard extends Component {
                           <Pagination
                             metadata={this.props.users[this.props.ownId]
                               .documents.metadata}
-                            onLeftClick={this.onOwnLeftClick}
-                            onRightClick={this.onOwnRightClick}
-                            onPageClick={this.onOwnPageClick}
+                            loadList={this.loadOwnDocuments}
                           />}
                       </div>
                       : (!this.props.users[this.props.ownId].error &&
@@ -423,9 +254,14 @@ class Dashboard extends Component {
                     {this.documents.metadata &&
                       <Pagination
                         metadata={this.documents.metadata}
-                        onLeftClick={this.onPublicLeftClick}
-                        onRightClick={this.onPublicRightClick}
-                        onPageClick={this.onPublicPageClick}
+                        loadList={
+                          this.state.documentKeywords
+                            ? this.props.searchDocuments.bind(
+                                null,
+                                this.state.documentKeywords
+                              )
+                            : this.props.getAllDocuments
+                          }
                       />}
                   </div>
                 </div>}
@@ -449,9 +285,14 @@ class Dashboard extends Component {
                     {this.users.metadata &&
                       <Pagination
                         metadata={this.users.metadata}
-                        onLeftClick={this.onPeopleLeftClick}
-                        onRightClick={this.onPeopleRightClick}
-                        onPageClick={this.onPeoplePageClick}
+                        loadList={
+                          this.state.userKeywords
+                            ? this.props.searchUsers.bind(
+                                null,
+                                this.state.userKeywords
+                              )
+                            : this.props.getAllUsers
+                          }
                       />}
                   </div>
                 </div>}

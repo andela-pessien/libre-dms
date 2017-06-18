@@ -5,8 +5,6 @@ import Pagination from '../../../components/common/Pagination';
 
 const checkPagination = (pagination) => {
   const { currentPage, pages } = pagination.props().metadata;
-  const date = new Date();
-  while ((new Date()) - date <= 1000) { /* Wait */ }
   // Should show all pages if there are less than 5 pages
   if (pages <= 5) {
     for (let i = 1; i <= pages; i += 1) {
@@ -65,9 +63,7 @@ describe('Pagination component', () => {
       currentPage: 1,
       pageSize: 10
     },
-    onLeftClick: sinon.spy(() => {}),
-    onPageClick: sinon.spy(() => {}),
-    onRightClick: sinon.spy(() => {})
+    loadList: sinon.spy(() => {})
   };
 
   beforeEach(() => {
@@ -157,7 +153,7 @@ describe('Pagination component', () => {
     expect(pagination.find('li').length).toBe(0);
   });
 
-  it('calls the onLeftClick prop when left button is clicked', () => {
+  it('calls the onLeftClick handler when left button is clicked', () => {
     pagination.setProps({
       metadata: {
         total: 80,
@@ -168,18 +164,28 @@ describe('Pagination component', () => {
     });
     pagination.instance().forceUpdate();
     pagination.find('#page-left').simulate('click');
-    expect(pagination.props().onLeftClick.calledOnce).toBe(true);
+    expect(pagination.props().loadList.callCount).toBe(1);
+    expect(pagination.props().loadList.getCall(0).args[0]).toEqual(10);
+    expect(pagination.props().loadList.getCall(0).args[1]).toEqual(30);
   });
 
-  it('calls the onPageClick prop when a page button is clicked', () => {
+  it('calls the onPageClick handler when a page button is clicked', () => {
     pagination.find('.pagination > li')
       .filterWhere(item => (item.prop('name') === 3))
-      .simulate('click');
-    expect(pagination.props().onPageClick.calledOnce).toBe(true);
+      .simulate('click', {
+        target: {
+          name: 3
+        }
+      });
+    expect(pagination.props().loadList.callCount).toBe(2);
+    expect(pagination.props().loadList.getCall(1).args[0]).toEqual(10);
+    expect(pagination.props().loadList.getCall(1).args[1]).toEqual(20);
   });
 
-  it('calls the onRightClick prop when right button is clicked', () => {
+  it('calls the onRightClick handler when right button is clicked', () => {
     pagination.find('#page-right').simulate('click');
-    expect(pagination.props().onRightClick.calledOnce).toBe(true);
+    expect(pagination.props().loadList.callCount).toBe(3);
+    expect(pagination.props().loadList.getCall(2).args[0]).toEqual(10);
+    expect(pagination.props().loadList.getCall(2).args[1]).toEqual(10);
   });
 });

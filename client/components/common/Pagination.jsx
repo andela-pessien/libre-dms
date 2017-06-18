@@ -14,6 +14,9 @@ class Pagination extends Component {
     super(props);
     this.setPages = this.setPages.bind(this);
     this.setUpPagination = this.setUpPagination.bind(this);
+    this.onLeftClick = this.onLeftClick.bind(this);
+    this.onPageClick = this.onPageClick.bind(this);
+    this.onRightClick = this.onRightClick.bind(this);
     this.setPages(this.props);
   }
 
@@ -40,6 +43,45 @@ class Pagination extends Component {
    */
   componentDidUpdate() {
     this.setUpPagination();
+  }
+
+  /**
+   * Click event handler for loading page to the left of current page.
+   * @param {Object} event The click event
+   * @returns {undefined}
+   */
+  onLeftClick(event) {
+    event.preventDefault();
+    const { pageSize, currentPage } = this.props.metadata;
+    this.props.loadList(
+      pageSize,
+      (currentPage - 2) * pageSize);
+  }
+
+  /**
+   * Click event handler for loading a selected page
+   * @param {Object} event The click event
+   * @returns {undefined}
+   */
+  onPageClick(event) {
+    event.preventDefault();
+    const { pageSize } = this.props.metadata;
+    this.props.loadList(
+      pageSize,
+      (event.target.name - 1) * pageSize);
+  }
+
+  /**
+   * Click event handler for loading page to the right of current page.
+   * @param {Object} event The click event
+   * @returns {undefined}
+   */
+  onRightClick(event) {
+    event.preventDefault();
+    const { pageSize, currentPage } = this.props.metadata;
+    this.props.loadList(
+      pageSize,
+      currentPage * pageSize);
   }
 
   /**
@@ -84,16 +126,16 @@ class Pagination extends Component {
   render() {
     return (this.props.metadata.total > 0) && (
       <ul className="pagination">
-        <li id="page-left" onClick={this.props.onLeftClick} role="button">
+        <li id="page-left" onClick={this.onLeftClick} role="button">
           <a className="no-padding">
             <i className="material-icons">chevron_left</i>
           </a>
         </li>
         {this.pages.map(page =>
-          <li key={page + 1} name={page + 1} onClick={this.props.onPageClick} role="button">
-            <a name={page + 1} onClick={this.props.onPageClick} role="button">{page + 1}</a>
+          <li key={page + 1} name={page + 1} onClick={this.onPageClick} role="button">
+            <a name={page + 1} onClick={this.onPageClick} role="button">{page + 1}</a>
           </li>)}
-        <li id="page-right" onClick={this.props.onRightClick} role="button">
+        <li id="page-right" onClick={this.onRightClick} role="button">
           <a className="no-padding">
             <i className="material-icons">chevron_right</i>
           </a>
@@ -110,9 +152,7 @@ Pagination.propTypes = {
     currentPage: PropTypes.number.isRequired,
     pageSize: PropTypes.number.isRequired,
   }).isRequired,
-  onLeftClick: PropTypes.func.isRequired,
-  onPageClick: PropTypes.func.isRequired,
-  onRightClick: PropTypes.func.isRequired
+  loadList: PropTypes.func.isRequired
 };
 
 export default Pagination;
