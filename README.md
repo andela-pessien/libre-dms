@@ -2,7 +2,7 @@
 
 # LibreDMS
 A free and open-source document management system implemented in Javascript.
-Check it out on [Heroku](https://libre-dms-staging.herokuapp.com))
+Check it out on [Heroku](https://libre-dms.herokuapp.com)
 
 ### Features
   LibreDMS is used to track, manage and store documents.
@@ -26,12 +26,11 @@ Check it out on [Heroku](https://libre-dms-staging.herokuapp.com))
 ### How can you get started?
   - Clone the repo with the link Github provides.
   - Change directory to `libre-dms` and run `npm install` to install the app.
-  - Make sure you have MongoDB installed and an instance of mongod running.
+  - Make sure you have Postgres installed and running.
   - Create a .env file in the root of the folder following the format in the provided
   sample.env file.
   - Run `npm start` to launch the app.
-  - You can now use Fouille by visiting http://localhost:port (where `port` is the PORT environment variable in your .env file).
-  3000 with).
+  - You can now use LibreDMS by visiting http://localhost:port (where `port` is the PORT environment variable in your .env file).
   - To launch the app in a development-optimized environment, run `npm run start:dev`. Visit http://localhost:port (where `port` is the WEBPORT environment variable). API is available at http://localhost:port (where `port` is the APIPORT environment variable).
   - Testing:
     - Server testing: `npm test`
@@ -41,7 +40,7 @@ Check it out on [Heroku](https://libre-dms-staging.herokuapp.com))
     - End-to-end testing: Run `npm run start:dev` in another terminal and run tests with `npm run test:e2e`
 
 ### Documentation
-API documentation can be found [here](https://andela-pessien.github.io/libredms-apidocs)
+API documentation can be found [here](https://libre-dms-docs.herokuapp.com)
 
 ### Limitations
   LibreDMS' current limitations (aka features in development) include:
