@@ -22,7 +22,6 @@ describe('AuthPanel component', () => {
   });
 
   it('should have the right layout', () => {
-    expect(authPanel.find('.l5').length).toBe(1);
     expect(authPanel.find('.auth-panel').length).toBe(1);
   });
 

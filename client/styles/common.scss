@@ -57,13 +57,9 @@ html,
 #app,
 body,
 .app-wrapper {
-  // @media #{$large-and-up} {
-    
-  // }
-
   box-sizing: border-box;
   height: 100%;
-  min-height: 720px;
+  min-height: 562px;
 }
 
 body {
@@ -93,7 +89,7 @@ body {
 
   .main-wrapper {
     box-sizing: border-box;
-    height: 90%;
+    height: calc(100% - 80px);
     width: 100%;
   }
 
@@ -139,6 +135,7 @@ body {
   height: 100%;
 }
 
+.row,
 .col {
   height: 100%;
 }
@@ -156,11 +153,18 @@ body {
 }
 
 .auth-panel {
-  margin: 25% 10%;
+  margin: 10% auto;
+  max-width: 576px;
   width: 80%;
 
   .card-content {
     height: 100%;
+  }
+}
+
+.l5 {
+  .auth-panel {
+    margin: 25% auto;
   }
 }
 
@@ -198,10 +202,6 @@ body {
 
 .single-page-wrapper {
   height: 100%;
-
-  .row {
-    height: 100%;
-  }
 }
 
 .fixed-side-menu {

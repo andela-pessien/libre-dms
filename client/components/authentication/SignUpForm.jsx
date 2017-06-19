@@ -98,7 +98,7 @@ class SignUpForm extends Component {
             name="name"
             type="text"
           />
-          <label htmlFor="signup-name" className="form-label">Name</label>
+          <label htmlFor="signup-name" className="form-label">Name (first and last only)</label>
         </div>
         <div className="input-field form-field left-align">
           <input
