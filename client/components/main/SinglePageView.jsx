@@ -21,10 +21,10 @@ import {
 } from '../../actions/documentActions';
 
 /**
- * Dashboard component for application
+ * Component that renders application in a single page
  * @author Princess-Jewel Essien
  */
-class Dashboard extends Component {
+class SinglePageView extends Component {
   /**
    * @param {Object} props The props for the component
    * @constructor
@@ -58,7 +58,7 @@ class Dashboard extends Component {
   }
 
   /**
-   * Runs when the Dashboard component has mounted
+   * Runs when the SinglePageView component has mounted
    * Initialize Materialize tooltip plugin
    * @returns {undefined}
    */
@@ -67,7 +67,7 @@ class Dashboard extends Component {
   }
 
   /**
-   * Runs when the Dashboard component will receive new props
+   * Runs when the SinglePageView component will receive new props
    * @param {Object} nextProps The props to be received
    * @returns {undefined}
    */
@@ -196,22 +196,22 @@ class Dashboard extends Component {
   }
 
   /**
-   * Renders the Dashboard component
-   * @returns {String} JSX markup for the Dashboard component
+   * Renders the SinglePageView component
+   * @returns {String} JSX markup for the SinglePageView component
    */
   render() {
     return (
-      <div className="dashboard-wrapper">
+      <div className="single-page-wrapper">
         <div className="row">
           <SideMenu
             ownId={this.props.ownId}
             changeFeedView={this.changeFeedView}
-            getUserDocuments={this.props.getUserDocuments}
+            getOwnDocuments={this.loadOwnDocuments}
             getAllDocuments={this.props.getAllDocuments}
             getAllUsers={this.props.getAllUsers}
           />
           <div className="col l3">
-            <div className="card dashboard-panel side-panel">
+            <div className="card side-panel">
               {this.state.showOwnFeed &&
                 <div className="card-content side-view">
                   <span className="card-title">My Documents</span>
@@ -323,7 +323,7 @@ class Dashboard extends Component {
           </div>
           <div className="col l8">
             {this.state.showMainView &&
-              <div className="card dashboard-panel main-panel">
+              <div className="card main-panel">
                 {(this.state.showDocumentId) &&
                   <div className="main-view">
                     <DocumentView id={this.state.showDocumentId} close={this.unmountView} />
@@ -371,7 +371,7 @@ const mapDispatchToProps = dispatch => ({
     dispatch(searchUsers(query, limit, offset))
 });
 
-Dashboard.propTypes = {
+SinglePageView.propTypes = {
   ownId: PropTypes.string.isRequired,
   users: PropTypes.object.isRequired,
   allUsers: PropTypes.object,
@@ -386,11 +386,11 @@ Dashboard.propTypes = {
   searchDocuments: PropTypes.func.isRequired
 };
 
-Dashboard.defaultProps = {
+SinglePageView.defaultProps = {
   allUsers: {},
   allDocuments: {},
   userSearch: {},
   documentSearch: {}
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Dashboard);
+export default connect(mapStateToProps, mapDispatchToProps)(SinglePageView);

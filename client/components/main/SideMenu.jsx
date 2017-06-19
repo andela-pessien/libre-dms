@@ -29,7 +29,7 @@ class SideMenu extends Component {
     $('.fixed-side-menu-item').removeClass('active');
     $('#own-documents-button').addClass('active');
     this.props.changeFeedView('showOwnFeed');
-    this.props.getUserDocuments(this.props.ownId);
+    this.props.getOwnDocuments();
   }
 
   /**
@@ -131,9 +131,8 @@ class SideMenu extends Component {
 }
 
 SideMenu.propTypes = {
-  ownId: PropTypes.string.isRequired,
   changeFeedView: PropTypes.func.isRequired,
-  getUserDocuments: PropTypes.func.isRequired,
+  getOwnDocuments: PropTypes.func.isRequired,
   getAllDocuments: PropTypes.func.isRequired,
   getAllUsers: PropTypes.func.isRequired
 };

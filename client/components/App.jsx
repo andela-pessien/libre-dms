@@ -3,7 +3,7 @@ import { Switch, Route } from 'react-router-dom';
 import Navbar from './common/Navbar';
 import requireAuth from '../utils/requireAuth';
 import AuthPage from './authentication/AuthPage';
-import Dashboard from './dashboard/Dashboard';
+import SinglePageView from './main/SinglePageView';
 
 /**
  * Main wrapping component for application.
@@ -52,7 +52,7 @@ class App extends Component {
             <Route
               exact
               path="/"
-              component={requireAuth(Dashboard, AuthPage, true)}
+              component={requireAuth(SinglePageView, AuthPage, true)}
             />
           </Switch>
         </div>
