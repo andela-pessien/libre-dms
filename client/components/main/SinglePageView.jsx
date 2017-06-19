@@ -33,14 +33,6 @@ class SinglePageView extends Component {
     super(props);
     this.props.getUser(this.props.ownId);
     this.state = {
-      showOwnFeed: true,
-      showAllFeed: false,
-      showPeopleFeed: false,
-      showSettingsFeed: false,
-      showMainView: false,
-      showDocumentId: 'new',
-      showProfileId: '',
-      showSettings: false,
       documentKeywords: '',
       userKeywords: ''
     };
@@ -52,7 +44,6 @@ class SinglePageView extends Component {
     this.onSettingsSelect = this.onSettingsSelect.bind(this);
     this.onDocumentSearchChange = this.onDocumentSearchChange.bind(this);
     this.onUserSearchChange = this.onUserSearchChange.bind(this);
-    this.changeFeedView = this.changeFeedView.bind(this);
     this.unmountView = this.unmountView.bind(this);
     this.loadOwnDocuments();
   }
@@ -128,12 +119,8 @@ class SinglePageView extends Component {
    */
   onDocumentSelect(event) {
     event.preventDefault();
-    this.setState({
-      showMainView: true,
-      showDocumentId: event.target.name || 'new',
-      showProfileId: '',
-      showSettings: false
-    });
+    const documentId = event.target.name || 'new';
+    this.props.changeView('showDocumentId', documentId);
   }
 
   /**
@@ -143,12 +130,8 @@ class SinglePageView extends Component {
    */
   onProfileSelect(event) {
     event.preventDefault();
-    this.setState({
-      showMainView: true,
-      showProfileId: event.target.name || this.props.ownId,
-      showDocumentId: '',
-      showSettings: false
-    });
+    const profileId = event.target.name || this.props.ownId;
+    this.props.changeView('showProfileId', profileId);
   }
 
   /**
@@ -158,28 +141,7 @@ class SinglePageView extends Component {
    */
   onSettingsSelect(event) {
     event.preventDefault();
-    this.setState({
-      showMainView: true,
-      showSettings: true,
-      showProfileId: '',
-      showDocumentId: ''
-    });
-  }
-
-  /**
-   * Switches the feed view.
-   * @param {String} selectedView The view to change to
-   * @returns {undefined}
-   */
-  changeFeedView(selectedView) {
-    this.setState({
-      showOwnFeed: false,
-      showAllFeed: false,
-      showPeopleFeed: false,
-      showSettingsFeed: false
-    }, () => {
-      this.setState({ [selectedView]: true });
-    });
+    this.props.changeView('showSettings', true);
   }
 
   /**
@@ -187,12 +149,7 @@ class SinglePageView extends Component {
    * @returns {undefined}
    */
   unmountView() {
-    this.setState({
-      showDocumentId: '',
-      showProfileId: '',
-      showSettings: false,
-      showMainView: false
-    });
+    this.props.changeView();
   }
 
   /**
@@ -205,14 +162,14 @@ class SinglePageView extends Component {
         <div className="row">
           <SideMenu
             ownId={this.props.ownId}
-            changeFeedView={this.changeFeedView}
+            changeFeedView={this.props.changeFeedView}
             getOwnDocuments={this.loadOwnDocuments}
             getAllDocuments={this.props.getAllDocuments}
             getAllUsers={this.props.getAllUsers}
           />
           <div className="col l3">
             <div className="card side-panel">
-              {this.state.showOwnFeed &&
+              {this.props.showOwnFeed &&
                 <div className="card-content side-view">
                   <span className="card-title">My Documents</span>
                   {(this.props.users[this.props.ownId] &&
@@ -233,7 +190,7 @@ class SinglePageView extends Component {
                       : (!this.props.users[this.props.ownId].error &&
                         <Preloader classNames="middle" />)}
                   </div>}
-              {this.state.showAllFeed &&
+              {this.props.showAllFeed &&
                 <div className="card-content side-view">
                   <span className="card-title">All Documents</span>
                   <div className="card search indigo darken-4 z-depth-4">
@@ -265,7 +222,7 @@ class SinglePageView extends Component {
                       />}
                   </div>
                 </div>}
-              {this.state.showPeopleFeed &&
+              {this.props.showPeopleFeed &&
                 <div className="card-content side-view">
                   <span className="card-title">Other People</span>
                   <div className="card search indigo darken-4 z-depth-4">
@@ -296,7 +253,7 @@ class SinglePageView extends Component {
                       />}
                   </div>
                 </div>}
-              {this.state.showSettingsFeed &&
+              {this.props.showSettingsFeed &&
                 <div className="card-content side-view">
                   <span className="card-title">Settings</span>
                   <ul>
@@ -322,17 +279,17 @@ class SinglePageView extends Component {
             </div>
           </div>
           <div className="col l8">
-            {this.state.showMainView &&
+            {(this.props.showDocumentId || this.props.showProfileId || this.props.showSettings) &&
               <div className="card main-panel">
-                {(this.state.showDocumentId) &&
+                {(this.props.showDocumentId) &&
                   <div className="main-view">
-                    <DocumentView id={this.state.showDocumentId} close={this.unmountView} />
+                    <DocumentView id={this.props.showDocumentId} close={this.unmountView} />
                   </div>}
-                {(this.state.showProfileId) &&
+                {(this.props.showProfileId) &&
                   <div className="main-view">
-                    <ProfileView id={this.state.showProfileId} close={this.unmountView} />
+                    <ProfileView id={this.props.showProfileId} close={this.unmountView} />
                   </div>}
-                {(this.state.showSettings) &&
+                {(this.props.showSettings) &&
                   <div className="main-view">
                     <SecurityPanel />
                   </div>}
@@ -383,7 +340,16 @@ SinglePageView.propTypes = {
   getAllUsers: PropTypes.func.isRequired,
   getAllDocuments: PropTypes.func.isRequired,
   searchUsers: PropTypes.func.isRequired,
-  searchDocuments: PropTypes.func.isRequired
+  searchDocuments: PropTypes.func.isRequired,
+  showOwnFeed: PropTypes.bool.isRequired,
+  showAllFeed: PropTypes.bool.isRequired,
+  showPeopleFeed: PropTypes.bool.isRequired,
+  showSettingsFeed: PropTypes.bool.isRequired,
+  showDocumentId: PropTypes.string.isRequired,
+  showProfileId: PropTypes.string.isRequired,
+  showSettings: PropTypes.bool.isRequired,
+  changeFeedView: PropTypes.func.isRequired,
+  changeView: PropTypes.func.isRequired
 };
 
 SinglePageView.defaultProps = {

@@ -8,23 +8,25 @@ import { Desktop, Small, Mobile } from '../../utils/responsive';
  * @returns {undefined}
  */
 const AuthPage = () => (
-  <div className="auth-page-wrapper">
-    <Desktop className="row">
-      <div className="col l7 hide-on-med-and-down">
-        <div className="logo-image">
-          <img src={logo} alt="logo" />
+  <div className="main-wrapper">
+    <div className="auth-page-wrapper">
+      <Desktop className="row">
+        <div className="col l7 hide-on-med-and-down">
+          <div className="logo-image">
+            <img src={logo} alt="logo" />
+          </div>
         </div>
-      </div>
-      <div className="col l5">
+        <div className="col l5">
+          <AuthPanel />
+        </div>
+      </Desktop>
+      <Small>
         <AuthPanel />
-      </div>
-    </Desktop>
-    <Small>
-      <AuthPanel />
-    </Small>
-    <Mobile>
-      <AuthPanel />
-    </Mobile>
+      </Small>
+      <Mobile>
+        <AuthPanel />
+      </Mobile>
+    </div>
   </div>
 );
 
