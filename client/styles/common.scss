@@ -57,12 +57,9 @@ html,
 #app,
 body,
 .app-wrapper {
-  @media #{$large-and-up} {
-    min-height: 560px;
-  }
-
   box-sizing: border-box;
   height: 100%;
+  min-height: 562px;
 }
 
 body {
@@ -92,7 +89,7 @@ body {
 
   .main-wrapper {
     box-sizing: border-box;
-    height: 90%;
+    height: calc(100% - 80px);
     width: 100%;
   }
 
@@ -138,6 +135,7 @@ body {
   height: 100%;
 }
 
+.row,
 .col {
   height: 100%;
 }
@@ -150,16 +148,24 @@ body {
   width: 100%;
 
   img {
-    height: 70%;
+    max-height: 70%;
+    max-width: 80%;
   }
 }
 
 .auth-panel {
-  margin: 25% 10%;
+  margin: 10% auto;
+  max-width: 576px;
   width: 80%;
 
   .card-content {
     height: 100%;
+  }
+}
+
+.l5 {
+  .auth-panel {
+    margin: 25% auto;
   }
 }
 
@@ -195,11 +201,11 @@ body {
   }
 }
 
-.dashboard-wrapper {
+.mobile-view-wrapper {
   height: 100%;
 
-  .row {
-    height: 100%;
+  .side-panel {
+    z-index: 500;
   }
 }
 
@@ -310,6 +316,38 @@ body {
 .ql-toolbar.ql-snow {
   border-bottom: 1px solid $indigo-darken-4;
   border-top: 1px solid $indigo-darken-4;
+
+  .ql-stroke {
+    stroke: $indigo-darken-4;
+  }
+
+  .ql-fill {
+    fill: $indigo-darken-4;
+  }
+
+  .ql-picker {
+    color: $indigo-darken-4;
+  }
+}
+
+.ql-bubble {
+  position: relative;
+
+  .ql-tooltip {
+    background-color: $indigo-darken-4;
+    border-radius: 5px;
+    margin-left: 10px !important;
+    max-width: 70%;
+  }
+
+  .ql-tooltip-arrow {
+    left: calc(50% - 10px);
+  }
+
+  .ql-picker-options {
+    background-color: $indigo-darken-4;
+    border: 1px solid $white-100;
+  }
 }
 
 .menu-bar {
@@ -362,28 +400,14 @@ body {
   }
 
   .status-container {
-    float: left;
-    left: 40%;
-    position: relative;
+    left: 50%;
+    position: absolute;
   }
 
   .status-span {
-    float: left;
     left: -50%;
     position: relative;
   }
-}
-
-.ql-stroke {
-  stroke: $indigo-darken-4 !important;
-}
-
-.ql-fill {
-  fill: $indigo-darken-4 !important;
-}
-
-.ql-picker {
-  color: $indigo-darken-4 !important;
 }
 
 input.title-editor {
@@ -476,9 +500,12 @@ input.title-editor {
 }
 
 .pagination {
-  // margin-left: -5%;
-  // margin-right: 56px;
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   margin: 5px 56px 0 -5%;
+  max-width: 80%;
 
   li {
     &.disabled {
@@ -536,8 +563,28 @@ table {
 
   form {
     .input-field {
-      min-width: 300px;
-      width: 50%;
+      max-width: 600px;
+      min-width: 70%;
+    }
+  }
+}
+
+.side-nav {
+  .divider {
+    margin: 0 0 8px;
+  }
+
+  .mobile-greeting {
+    background: $indigo-darken-4;
+    color: $white-100;
+    padding: 50px;
+  }
+
+  li {
+    a {
+      i.material-icons {
+        color: $indigo-darken-4;
+      }
     }
   }
 }

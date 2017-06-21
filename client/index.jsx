@@ -11,6 +11,7 @@ import 'materialize-css/dist/js/materialize';
 /** QuillJS Styles **/
 import 'quill/dist/quill.core.css';
 import 'quill/dist/quill.snow.css';
+import 'quill/dist/quill.bubble.css';
 /** Favicon **/
 import './images/favicon.ico';
 /** Fonts **/

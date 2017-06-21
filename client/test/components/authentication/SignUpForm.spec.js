@@ -40,6 +40,11 @@ describe('SignUpForm component', () => {
 
   beforeEach(() => {
     signUpForm = mount(<SignUpForm signUp={signUpSpy} />);
+    global.Materialize.toast = sinon.spy(() => {});
+  });
+
+  afterEach(() => {
+    global.Materialize.toast = () => {};
   });
 
   it('should update state via onChange method', () => {
@@ -79,6 +84,9 @@ describe('SignUpForm component', () => {
 
     signUpForm.find('.submit-signup').simulate('submit');
     expect(signUpForm.instance().onSubmit.calledOnce).toEqual(true);
+    expect(global.Materialize.toast.calledOnce).toBe(true);
+    expect(global.Materialize.toast.getCall(0).args[0])
+      .toEqual('No field should be left blank');
   });
 
   it('should display error if email is invalid', () => {
@@ -92,6 +100,9 @@ describe('SignUpForm component', () => {
 
     signUpForm.find('.submit-signup').simulate('submit');
     expect(signUpForm.instance().onSubmit.calledOnce).toEqual(true);
+    expect(global.Materialize.toast.calledOnce).toBe(true);
+    expect(global.Materialize.toast.getCall(0).args[0])
+      .toEqual('Please provide a valid email');
   });
 
   it('should display error if name is invalid', () => {
@@ -105,6 +116,9 @@ describe('SignUpForm component', () => {
 
     signUpForm.find('.submit-signup').simulate('submit');
     expect(signUpForm.instance().onSubmit.calledOnce).toEqual(true);
+    expect(global.Materialize.toast.calledOnce).toBe(true);
+    expect(global.Materialize.toast.getCall(0).args[0])
+      .toEqual('Please provide a valid first and last name');
   });
 
   it('should display error if password is too short', () => {
@@ -119,6 +133,9 @@ describe('SignUpForm component', () => {
 
     signUpForm.find('.submit-signup').simulate('submit');
     expect(signUpForm.instance().onSubmit.calledOnce).toEqual(true);
+    expect(global.Materialize.toast.calledOnce).toBe(true);
+    expect(global.Materialize.toast.getCall(0).args[0])
+      .toEqual('Please choose a longer password');
   });
 
   it('should display error if password is unconfirmed', () => {
@@ -133,17 +150,24 @@ describe('SignUpForm component', () => {
 
     signUpForm.find('.submit-signup').simulate('submit');
     expect(signUpForm.instance().onSubmit.calledOnce).toEqual(true);
+    expect(global.Materialize.toast.calledOnce).toBe(true);
+    expect(global.Materialize.toast.getCall(0).args[0])
+      .toEqual("Passwords don't match!");
   });
 
   it('should display error if there was an error signing up', () => {
     sinon.spy(signUpForm.instance(), 'componentWillReceiveProps');
     signUpForm.setProps({ error: { message: 'Connection failed' } });
     expect(signUpForm.instance().componentWillReceiveProps.calledOnce).toEqual(true);
+    expect(global.Materialize.toast.calledOnce).toBe(true);
+    expect(global.Materialize.toast.getCall(0).args[0])
+      .toEqual('Connection failed');
   });
 
   it('should not display error if there was no error signing up', () => {
     sinon.spy(signUpForm.instance(), 'componentWillReceiveProps');
     signUpForm.setProps({ error: null });
     expect(signUpForm.instance().componentWillReceiveProps.calledOnce).toEqual(true);
+    expect(global.Materialize.toast.callCount).toBe(0);
   });
 });

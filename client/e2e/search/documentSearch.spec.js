@@ -2,7 +2,7 @@ import config from '../config';
 import { getValidUser } from '../../../scripts/data-generator';
 
 export default {
-  'User should be able to search for users': (browser) => {
+  'User should be able to search for documents': (browser) => {
     const user = getValidUser();
     browser
       .url(config.url)

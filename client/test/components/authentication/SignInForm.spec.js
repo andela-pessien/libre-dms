@@ -38,6 +38,11 @@ describe('SignInForm component', () => {
 
   beforeEach(() => {
     signInForm = mount(<SignInForm signIn={signInSpy} />);
+    global.Materialize.toast = sinon.spy(() => {});
+  });
+
+  afterEach(() => {
+    global.Materialize.toast = () => {};
   });
 
   it('should update state via onChange method', () => {
@@ -69,7 +74,10 @@ describe('SignInForm component', () => {
     signInForm.instance().onChange({ target: { value: user.password, name: 'password' } });
 
     signInForm.find('.submit-signin').simulate('submit');
-    expect(signInForm.instance().onSubmit.calledOnce).toEqual(true);
+    expect(signInForm.instance().onSubmit.calledOnce).toBe(true);
+    expect(global.Materialize.toast.calledOnce).toBe(true);
+    expect(global.Materialize.toast.getCall(0).args[0])
+      .toEqual('No field should be left blank');
   });
 
   it('should display error if email is invalid', () => {
@@ -81,17 +89,24 @@ describe('SignInForm component', () => {
 
     signInForm.find('.submit-signin').simulate('submit');
     expect(signInForm.instance().onSubmit.calledOnce).toEqual(true);
+    expect(global.Materialize.toast.calledOnce).toBe(true);
+    expect(global.Materialize.toast.getCall(0).args[0])
+      .toEqual('Please provide a valid email');
   });
 
   it('should display error if there was an error signing up', () => {
     sinon.spy(signInForm.instance(), 'componentWillReceiveProps');
     signInForm.setProps({ error: { message: 'Connection failed' } });
     expect(signInForm.instance().componentWillReceiveProps.calledOnce).toEqual(true);
+    expect(global.Materialize.toast.calledOnce).toBe(true);
+    expect(global.Materialize.toast.getCall(0).args[0])
+      .toEqual('Connection failed');
   });
 
   it('should not display error if there was no error signing up', () => {
     sinon.spy(signInForm.instance(), 'componentWillReceiveProps');
     signInForm.setProps({ error: null });
     expect(signInForm.instance().componentWillReceiveProps.calledOnce).toEqual(true);
+    expect(global.Materialize.toast.callCount).toBe(0);
   });
 });

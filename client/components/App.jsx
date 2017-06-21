@@ -1,15 +1,24 @@
 import React, { Component } from 'react';
-import { Switch, Route } from 'react-router-dom';
+// import { Switch, Route } from 'react-router-dom';
 import Navbar from './common/Navbar';
 import requireAuth from '../utils/requireAuth';
 import AuthPage from './authentication/AuthPage';
-import Dashboard from './dashboard/Dashboard';
+import Main from './main/Main';
 
 /**
  * Main wrapping component for application.
  * @author Princess-Jewel Essien
  */
 class App extends Component {
+  /**
+   * @param {Object} props The props for the component
+   * @constructor
+   */
+  constructor(props) {
+    super(props);
+    this.MainView = requireAuth(Main, AuthPage, true);
+  }
+
   /**
    * Runs when the App component has mounted.
    * @returns {void}
@@ -47,15 +56,7 @@ class App extends Component {
     return (
       <div className="app-wrapper">
         <Navbar className="app-navbar" />
-        <div className="main-wrapper">
-          <Switch>
-            <Route
-              exact
-              path="/"
-              component={requireAuth(Dashboard, AuthPage, true)}
-            />
-          </Switch>
-        </div>
+        <this.MainView />
         <div className="app-background" />
       </div>
     );

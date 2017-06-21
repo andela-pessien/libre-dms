@@ -409,7 +409,7 @@ class UserDetails extends Component {
                       disabled
                     >
                       {roles.slice(1).map((role, index) =>
-                        <option value={index + 2}>{role}</option>)}
+                        <option key={role} value={index + 2}>{role}</option>)}
                     </select>
                   }
                 </td>

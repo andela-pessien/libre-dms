@@ -15,6 +15,7 @@ describe('AuthPage component', () => {
 
   it('should have the right layout', () => {
     expect(authPage.find('.auth-page-wrapper').length).toBe(1);
+    expect(authPage.find('.row').length).toBe(1);
     expect(authPage.find('.l7').length).toBe(1);
   });
 

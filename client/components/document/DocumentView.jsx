@@ -60,9 +60,9 @@ class DocumentView extends Component {
   render() {
     return (
       <div className="view-wrapper">
-        {(this.state.id === 'new') && <DocumentEditor />}
+        {(this.state.id === 'new') && <DocumentEditor isMobile={this.props.isMobile} />}
         {(this.state.id !== 'new' && this.props.container.document) &&
-          <DocumentEditor id={this.state.id} />}
+          <DocumentEditor id={this.state.id} isMobile={this.props.isMobile} />}
         {(this.state.id !== 'new' &&
         !this.props.container.document &&
         !this.props.container.error) &&
@@ -95,11 +95,13 @@ DocumentView.propTypes = {
     })
   }),
   documents: PropTypes.object.isRequired,
-  getDocument: PropTypes.func.isRequired
+  getDocument: PropTypes.func.isRequired,
+  isMobile: PropTypes.bool
 };
 
 DocumentView.defaultProps = {
-  container: {}
+  container: {},
+  isMobile: false
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(DocumentView);

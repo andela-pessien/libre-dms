@@ -49,6 +49,12 @@
         "customValidators": ["nextProps"],
         "skipShapeProps": true
       }
-    ]
+    ],
+    "jsx-a11y/no-static-element-interactions": 0,
+    "react/jsx-no-bind": [1, {
+      "ignoreRefs": false,
+      "allowArrowFunctions": false,
+      "allowBind": true
+    }]
   }
 }

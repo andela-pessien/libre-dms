@@ -22,25 +22,23 @@ class AuthPanel extends Component {
    */
   render() {
     return (
-      <div className="col l5">
-        <div className="card auth-panel white">
-          <div className="card-tabs">
-            <ul className="tabs tabs-fixed-width">
-              <li className="tab">
-                <a className="signup-tab active" href="#signup">Sign Up</a>
-              </li>
-              <li className="tab">
-                <a className="signin-tab" href="#signin">Sign In</a>
-              </li>
-            </ul>
+      <div className="card auth-panel white">
+        <div className="card-tabs">
+          <ul className="tabs tabs-fixed-width">
+            <li className="tab">
+              <a className="signup-tab active" href="#signup">Sign Up</a>
+            </li>
+            <li className="tab">
+              <a className="signin-tab" href="#signin">Sign In</a>
+            </li>
+          </ul>
+        </div>
+        <div className="card-content">
+          <div id="signup">
+            <SignUpForm />
           </div>
-          <div className="card-content">
-            <div id="signup">
-              <SignUpForm />
-            </div>
-            <div id="signin">
-              <SignInForm />
-            </div>
+          <div id="signin">
+            <SignInForm />
           </div>
         </div>
       </div>
