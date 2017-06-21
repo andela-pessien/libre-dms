@@ -105,13 +105,14 @@ EditorMenuBar.propTypes = {
   full: PropTypes.bool,
   status: PropTypes.string.isRequired,
   onDeleteClick: PropTypes.func.isRequired,
-  updateAttribute: PropTypes.func.isRequired,
+  updateAttribute: PropTypes.func,
   ownId: PropTypes.string.isRequired,
   users: PropTypes.object.isRequired
 };
 
 EditorMenuBar.defaultProps = {
-  full: false
+  full: false,
+  updateAttribute: () => {}
 };
 
 export default connect(mapStateToProps)(EditorMenuBar);

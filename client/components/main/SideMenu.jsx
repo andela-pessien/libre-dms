@@ -20,6 +20,15 @@ class SideMenu extends Component {
   }
 
   /**
+   * Runs when the SideMenu component has mounted
+   * Initialize Materialize tooltip plugin
+   * @returns {undefined}
+   */
+  componentDidMount() {
+    $('.tooltipped').tooltip({ delay: 50 });
+  }
+
+  /**
    * Click event handler for selecting own documents option from menu
    * @param {Object} event The click event
    * @returns {undefined}

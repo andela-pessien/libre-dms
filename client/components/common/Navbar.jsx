@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import requireAuth from '../../utils/requireAuth';
+import { Desktop, Small, Mobile } from '../../utils/responsive';
 import AccountMenu from './AccountMenu';
+import MobileMenuButton from './MobileMenuButton'
 
 /**
  * Navbar component
@@ -13,7 +15,8 @@ class Navbar extends Component {
    */
   constructor(props) {
     super(props);
-    this.requireAuth = requireAuth(AccountMenu);
+    this.AccountMenu = requireAuth(AccountMenu);
+    this.MobileMenuButton = requireAuth(MobileMenuButton);
   }
 
   /**
@@ -24,8 +27,16 @@ class Navbar extends Component {
     return (
       <nav className="app-navbar">
         <div className="nav-wrapper">
+          <Small>
+            <this.MobileMenuButton />
+          </Small>
+          <Mobile>
+            <this.MobileMenuButton />
+          </Mobile>
           <a className="brand-logo" href="/">LibreDMS</a>
-          <this.requireAuth />
+          <Desktop>
+            <this.AccountMenu />
+          </Desktop>
         </div>
       </nav>
     );

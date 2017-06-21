@@ -125,22 +125,24 @@ class Pagination extends Component {
    */
   render() {
     return (this.props.metadata.total > 0) && (
-      <ul className="pagination">
-        <li id="page-left" onClick={this.onLeftClick} role="button">
-          <a className="no-padding">
-            <i className="material-icons">chevron_left</i>
-          </a>
-        </li>
-        {this.pages.map(page =>
-          <li key={page + 1} name={page + 1} onClick={this.onPageClick} role="button">
-            <a name={page + 1} onClick={this.onPageClick} role="button">{page + 1}</a>
-          </li>)}
-        <li id="page-right" onClick={this.onRightClick} role="button">
-          <a className="no-padding">
-            <i className="material-icons">chevron_right</i>
-          </a>
-        </li>
-      </ul>
+      <div>
+        <ul className="pagination">
+          <li id="page-left" onClick={this.onLeftClick} role="button">
+            <a className="no-padding">
+              <i className="material-icons">chevron_left</i>
+            </a>
+          </li>
+          {this.pages.map(page =>
+            <li key={page + 1} name={page + 1} onClick={this.onPageClick} role="button">
+              <a name={page + 1} onClick={this.onPageClick} role="button">{page + 1}</a>
+            </li>)}
+          <li id="page-right" onClick={this.onRightClick} role="button">
+            <a className="no-padding">
+              <i className="material-icons">chevron_right</i>
+            </a>
+          </li>
+        </ul>
+      </div>
     );
   }
 }

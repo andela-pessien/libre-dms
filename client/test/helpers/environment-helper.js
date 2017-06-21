@@ -21,6 +21,8 @@ Object.keys(document.defaultView).forEach((property) => {
 $.prototype.dropdown = () => {};
 $.prototype.modal = () => {};
 $.prototype.tabs = () => {};
+$.prototype.tooltip = () => {};
+$.prototype.sideNav = () => {};
 global.$ = $;
 global.jQuery = $;
 global.window.$ = $;

@@ -11,25 +11,31 @@ import {
 } from '../../actions/documentActions';
 
 const Delta = Quill.import('delta');
-const modules = {
-  toolbar: [
-    ['bold', 'italic', 'underline', 'strike'],
-    ['blockquote', 'code-block'],
-    [{ list: 'ordered' }, { list: 'bullet' }],
-    [{ script: 'sub' }, { script: 'super' }],
-    [{ indent: '-1' }, { indent: '+1' }],
-    [{ direction: 'rtl' }],
-    [{ size: ['small', false, 'large', 'huge'] }],
-    [{ header: [1, 2, 3, 4, 5, 6, false] }],
-    [{ color: [] }, { background: [] }],
-    [{ font: [] }],
-    [{ align: [] }],
-    ['clean']
-  ]
-};
+const fullToolbar = [
+  ['bold', 'italic', 'underline', 'strike'],
+  ['blockquote', 'code-block'],
+  [{ list: 'ordered' }, { list: 'bullet' }],
+  [{ script: 'sub' }, { script: 'super' }],
+  [{ indent: '-1' }, { indent: '+1' }],
+  [{ size: ['small', false, 'large', 'huge'] }],
+  [{ header: [1, 2, 3, 4, 5, 6, false] }],
+  [{ color: [] }, { background: [] }],
+  [{ font: [] }],
+  [{ align: [] }],
+  ['clean']
+];
+const mobileToolbar = [
+  ['bold', 'italic', 'underline', 'strike'],
+  [{ list: 'ordered' }, { list: 'bullet' }],
+  [{ indent: '-1' }, { indent: '+1' }],
+  [{ align: [] }],
+  ['clean'],
+  [{ size: ['small', false, 'large', 'huge'] }],
+  [{ header: [1, 2, 3, 4, 5, 6, false] }],
+  [{ font: [] }],
+];
 const titlePlaceholder = 'Untitled Document';
 const contentPlaceholder = 'Put down your ideas';
-const theme = 'snow';
 
 /**
  * Component that wraps a Quill instance for document editing.
@@ -42,6 +48,7 @@ class DocumentEditor extends Component {
    */
   constructor(props) {
     super(props);
+    this.modules = {};
     this.setupComponent = this.setupComponent.bind(this);
     this.setupEditor = this.setupEditor.bind(this);
     this.onTitleChange = this.onTitleChange.bind(this);
@@ -145,7 +152,7 @@ class DocumentEditor extends Component {
   setupComponent(props) {
     this.id = props.id;
     this.container = props.documents[this.id];
-    this.modules = { ...modules };
+    this.modules.toolbar = this.props.isMobile ? [...mobileToolbar] : [...fullToolbar];
     this.readOnly = false;
     const state = {
       attributes: {
@@ -183,7 +190,7 @@ class DocumentEditor extends Component {
     this.contentEditor = new Quill('.content-editor', {
       modules: this.modules,
       placeholder: contentPlaceholder,
-      theme,
+      theme: this.props.isMobile ? 'bubble' : 'snow',
       readOnly: this.readOnly
     });
     if (this.container && this.container.document) {
@@ -321,13 +328,15 @@ DocumentEditor.propTypes = {
   newDocument: PropTypes.object,
   createDocument: PropTypes.func.isRequired,
   updateDocument: PropTypes.func.isRequired,
-  deleteDocument: PropTypes.func.isRequired
+  deleteDocument: PropTypes.func.isRequired,
+  isMobile: PropTypes.bool
 };
 
 DocumentEditor.defaultProps = {
   id: '',
   documents: {},
-  newDocument: {}
+  newDocument: {},
+  isMobile: false
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(DocumentEditor);
