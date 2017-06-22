@@ -43,8 +43,8 @@ class DocumentView extends Component {
   componentWillReceiveProps(nextProps) {
     const { id, documents } = nextProps;
     if (
-    (id === this.state.id && !documents[id]) ||
-    (id === 'new' && !documents[documents.new.id])) {
+    (id !== 'new' && id === this.state.id && !documents[id]) ||
+    (id === 'new' && documents.new && documents.new.id && !documents[documents.new.id])) {
       this.props.close();
     }
     if (id && id !== this.state.id && id !== 'new') {

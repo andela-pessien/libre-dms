@@ -106,6 +106,15 @@ export function createDocument(newDocument) {
 }
 
 /**
+ * Clears the 'new' object from the store
+ * Useful when creating new documents in succession
+ * @returns {Object} The action to be dispatched
+ */
+export function clearNewDocumentStore() {
+  return { type: document.CLEAR_NEW };
+}
+
+/**
  * Requests the API to update a document
  * @param {String} id The ID of the document to be updated
  * @param {Object} patch The attributes to be updated

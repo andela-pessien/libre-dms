@@ -47,7 +47,17 @@ class Main extends Component {
     this.changeFeedView = this.changeFeedView.bind(this);
     this.onDocumentSearchChange = this.onDocumentSearchChange.bind(this);
     this.onUserSearchChange = this.onUserSearchChange.bind(this);
+    this.refreshFeeds = this.refreshFeeds.bind(this);
     this.loadOwnDocuments();
+  }
+
+  /**
+   * Runs when the Main component has mounted
+   * Starts automatic feed refreshing
+   * @returns {undefined}
+   */
+  componentDidMount() {
+    this.refreshInterval = setInterval(this.refreshFeeds, 5000);
   }
 
   /**
@@ -79,6 +89,15 @@ class Main extends Component {
         users: allUsers
       });
     }
+  }
+
+  /**
+   * Runs when the Main component is to be unmounted from the DOM
+   * Stops the background autorefresh process
+   * @returns {undefined}
+   */
+  componentWillUnmount() {
+    clearInterval(this.refreshInterval);
   }
 
   /**
@@ -152,6 +171,57 @@ class Main extends Component {
   }
 
   /**
+   * Refreshes document and user feeds
+   * Maintains current pagination state
+   * @returns {undefined}
+   */
+  refreshFeeds() {
+    if (
+    this.props.self &&
+    this.props.self.documents &&
+    this.props.self.documents.metadata) {
+      const { currentPage, pageSize } = this.props.self.documents.metadata;
+      this.loadOwnDocuments(pageSize, (currentPage - 1) * pageSize);
+    } else {
+      this.loadOwnDocuments();
+    }
+    if (this.state.documents && this.state.documents.metadata) {
+      const { currentPage, pageSize } = this.state.documents.metadata;
+      if (this.state.documentKeywords.replace(/\s+/g, '')) {
+        this.props.searchDocuments(
+          this.state.documentKeywords,
+          pageSize,
+          (currentPage - 1) * pageSize);
+      } else {
+        this.props.getAllDocuments(
+          pageSize,
+          (currentPage - 1) * pageSize);
+      }
+    } else if (this.state.documentKeywords.replace(/\s+/g, '')) {
+      this.props.searchDocuments(this.state.documentKeywords);
+    } else {
+      this.props.getAllDocuments();
+    }
+    if (this.state.users && this.state.users.metadata) {
+      const { currentPage, pageSize } = this.state.users.metadata;
+      if (this.state.userKeywords.replace(/\s+/g, '')) {
+        this.props.searchUsers(
+          this.state.userKeywords,
+          pageSize,
+          (currentPage - 1) * pageSize);
+      } else {
+        this.props.getAllUsers(
+          pageSize,
+          (currentPage - 1) * pageSize);
+      }
+    } else if (this.state.userKeywords.replace(/\s+/g, '')) {
+      this.props.searchUsers(this.state.userKeywords);
+    } else {
+      this.props.getAllUsers();
+    }
+  }
+
+  /**
    * Renders the main app optimized for different screen sizes
    * @returns {String} The JSX markup for the component
    */
@@ -218,6 +288,7 @@ const mapDispatchToProps = dispatch => ({
 
 Main.propTypes = {
   ownId: PropTypes.string.isRequired,
+  self: PropTypes.object.isRequired,
   allUsers: PropTypes.object,
   allDocuments: PropTypes.object,
   userSearch: PropTypes.object,

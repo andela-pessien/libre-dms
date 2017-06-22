@@ -86,7 +86,7 @@ export default {
       .setValue('#signin-email', process.env.SADMIN_EMAIL)
       .setValue('#signin-password', process.env.SADMIN_PASSWORD)
       .click('.submit-signin')
-      .waitForElementVisible('.single-page-wrapper', config.waitFor)
+      .waitForElementVisible('.main-wrapper', config.waitFor)
       .end();
   }
 };
