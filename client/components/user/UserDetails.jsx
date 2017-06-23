@@ -58,6 +58,22 @@ const onRoleEditClick = () => {
 };
 
 /**
+ * Click event handler for deleting self
+ * @returns {undefined}
+ */
+const onDeleteSelfClick = () => {
+  $('#confirm-delete-self').modal('open');
+};
+
+/**
+ * Click event handler for deleting other users
+ * @returns {undefined}
+ */
+const onDeleteUserClick = () => {
+  $('#confirm-delete-user').modal('open');
+};
+
+/**
  * Method that sets read only element visibility
  * @returns {undefined}
  */
@@ -292,7 +308,7 @@ class UserDetails extends Component {
               <li>
                 <a
                   className="btn-floating indigo darken-4 z-depth-3"
-                  onClick={() => { $('#confirm-delete-self').modal('open'); }}
+                  onClick={onDeleteSelfClick}
                   role="button"
                 >
                   <i className="material-icons">delete</i>
@@ -330,7 +346,7 @@ class UserDetails extends Component {
                 <li>
                   <a
                     className="btn-floating indigo darken-4 z-depth-3"
-                    onClick={() => { $('#confirm-delete-user').modal('open'); }}
+                    onClick={onDeleteUserClick}
                     role="button"
                   >
                     <i className="material-icons">delete</i>
@@ -425,13 +441,11 @@ class UserDetails extends Component {
           id="confirm-delete-user"
           message="Are you sure you want to delete this user's account?"
           onYesClick={this.deleteUser}
-          onNoClick={() => {}}
         />
         <ConfirmDialog
           id="confirm-delete-self"
           message="Are you sure you want to delete your account?"
           onYesClick={this.deleteSelf}
-          onNoClick={() => {}}
         />
         <ConfirmDialog
           id="confirm-change-role"

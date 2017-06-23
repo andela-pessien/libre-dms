@@ -7,7 +7,8 @@ import EditorMenuBar from './EditorMenuBar';
 import {
   createDocument,
   updateDocument,
-  deleteDocument
+  deleteDocument,
+  clearNewDocumentStore
 } from '../../actions/documentActions';
 
 const Delta = Quill.import('delta');
@@ -92,17 +93,19 @@ class DocumentEditor extends Component {
     } else if (newDocument && newDocument.id && !this.id) {
       this.id = newDocument.id;
       this.container = documents[this.id];
+      this.props.clearNewDocumentStore();
       this.setState({ status: 'All changes saved to cloud' });
     } else if (newDocument && newDocument.error && !this.id) {
       this.setState({ status: newDocument.error.message });
+      this.props.clearNewDocumentStore();
     }
   }
 
   /**
-   * Runs when the DocumentEditor component will update
+   * Runs when the DocumentEditor component has updated
    * @returns {undefined}
    */
-  componentWillUpdate() {
+  componentDidUpdate() {
     if (this.props.id && this.props.id !== this.id) {
       this.setupComponent(this.props);
       this.setupEditor();
@@ -120,25 +123,25 @@ class DocumentEditor extends Component {
 
   /**
    * Event listener/handler for changes to the document's title.
-   * @param {Object} e The input change event
+   * @param {Object} event The input change event
    * @returns {undefined}
    */
-  onTitleChange(e) {
+  onTitleChange(event) {
     this.setState({
       attributes: {
         ...this.state.attributes,
-        title: e.target.value
+        title: event.target.value
       }
     });
   }
 
   /**
    * Event listener/handler for clicking on the delete menu option.
-   * @param {Object} e The click event
+   * @param {Object} event The click event
    * @returns {undefined}
    */
-  onDeleteClick(e) {
-    e.preventDefault();
+  onDeleteClick(event) {
+    event.preventDefault();
     if (this.id) {
       this.props.deleteDocument(this.id);
     }
@@ -318,7 +321,8 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
   createDocument: newDocument => dispatch(createDocument(newDocument)),
   updateDocument: (id, patch) => dispatch(updateDocument(id, patch)),
-  deleteDocument: id => dispatch(deleteDocument(id))
+  deleteDocument: id => dispatch(deleteDocument(id)),
+  clearNewDocumentStore: () => dispatch(clearNewDocumentStore())
 });
 
 DocumentEditor.propTypes = {
@@ -329,6 +333,7 @@ DocumentEditor.propTypes = {
   createDocument: PropTypes.func.isRequired,
   updateDocument: PropTypes.func.isRequired,
   deleteDocument: PropTypes.func.isRequired,
+  clearNewDocumentStore: PropTypes.func.isRequired,
   isMobile: PropTypes.bool
 };
 

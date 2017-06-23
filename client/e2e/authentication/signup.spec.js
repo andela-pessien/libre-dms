@@ -82,7 +82,7 @@ export default {
       .setValue('#signup-password', user.password)
       .setValue('#signup-confirm-password', user.password)
       .click('.submit-signup')
-      .waitForElementVisible('.single-page-wrapper', config.waitFor)
+      .waitForElementVisible('.main-wrapper', config.waitFor)
       .end();
   }
 };

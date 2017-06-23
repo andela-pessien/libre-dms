@@ -26,7 +26,7 @@ export default {
       });
     })
     .catch(() => res.status(400).json({
-      message: 'Invalid resource identifier'
+      message: `Invalid ${Model.name.toLowerCase()} ID`
     }));
   },
 

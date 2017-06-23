@@ -282,6 +282,29 @@ describe('Documents API:', () => {
           done();
         });
     });
+  });
+
+  describe('GET /api/users/:id/documents', () => {
+    let deletedUser;
+
+    beforeAll((done) => {
+      app
+        .post('/api/users')
+        .send(getValidUser())
+        .expect(201)
+        .end((err, res) => {
+          if (err) throw err;
+          deletedUser = res.body;
+          app
+            .delete(`/api/users/${deletedUser.id}`)
+            .set('x-access-token', superAdminToken)
+            .expect(200)
+            .end((err) => {
+              if (err) throw err;
+              done();
+            });
+        });
+    });
 
     it("should retrieve all of a user's documents on superadministrator request", (done) => {
       app
@@ -337,6 +360,59 @@ describe('Documents API:', () => {
           if (res.body.list[0].access !== 'public' || res.body.list.length !== 1) {
             throw new Error('Retrieved a document this user does not have access to');
           }
+          done();
+        });
+    });
+
+    it('should return error if the user has been deleted and requester is not the superadministrator', (done) => {
+      app
+        .get(`/api/users/${deletedUser.id}/documents`)
+        .set('x-access-token', regularUserToken)
+        .expect('Content-Type', /json/)
+        .expect(404)
+        .end((err, res) => {
+          if (err) throw err;
+          expect(res.body.message).toEqual('This user has been deleted');
+          done();
+        });
+    });
+
+    it('should permit superadministrator to retrieve documents of deleted users', (done) => {
+      app
+        .get(`/api/users/${deletedUser.id}/documents`)
+        .set('x-access-token', superAdminToken)
+        .expect('Content-Type', /json/)
+        .expect(200)
+        .end((err, res) => {
+          if (err) throw err;
+          expect(Array.isArray(res.body.list)).toBe(true);
+          expect(res.body.list.length).toBe(0);
+          done();
+        });
+    });
+
+    it('should return error if the user does not exist', (done) => {
+      app
+        .get(`/api/users/${getValidId()}/documents`)
+        .set('x-access-token', superAdminToken)
+        .expect('Content-Type', /json/)
+        .expect(404)
+        .end((err, res) => {
+          if (err) throw err;
+          expect(res.body.message).toEqual('User not found');
+          done();
+        });
+    });
+
+    it('should return error if the user ID is invalid', (done) => {
+      app
+        .get('/api/users/ID/documents')
+        .set('x-access-token', superAdminToken)
+        .expect('Content-Type', /json/)
+        .expect(400)
+        .end((err, res) => {
+          if (err) throw err;
+          expect(res.body.message).toEqual('Invalid user ID');
           done();
         });
     });

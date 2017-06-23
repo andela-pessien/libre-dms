@@ -23,12 +23,12 @@ class DocumentView extends Component {
   }
 
   /**
-   * Runs when the DocumentView component is about to mount.
+   * Runs when the DocumentView component has been mounted on the DOM
    * Dispatches an action to get the document that corresponds to the passed ID
    * prop.
    * @returns {undefined}
    */
-  componentWillMount() {
+  componentDidMount() {
     if (this.state.id !== 'new') {
       this.props.getDocument(this.state.id);
     }
@@ -42,9 +42,10 @@ class DocumentView extends Component {
    */
   componentWillReceiveProps(nextProps) {
     const { id, documents } = nextProps;
+    const currentContainer = this.props.documents[this.state.id];
     if (
-    (id === this.state.id && !documents[id]) ||
-    (id === 'new' && !documents[documents.new.id])) {
+    (id !== 'new' && id === this.state.id && currentContainer && !documents[id]) ||
+    (id === 'new' && documents.new && documents.new.id && !documents[documents.new.id])) {
       this.props.close();
     }
     if (id && id !== this.state.id && id !== 'new') {

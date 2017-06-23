@@ -8,7 +8,7 @@ import { isValidEmail } from '../../utils/validate';
  * Signin form component
  * @author Princess-Jewel Essien
  */
-class SignInForm extends Component {
+export class SignInFormComponent extends Component {
   /**
    * Constructor for the signin form component
    * Sets form state
@@ -114,16 +114,15 @@ const mapDispatchToProps = dispatch => ({
   signIn: userData => dispatch(signIn(userData))
 });
 
-SignInForm.propTypes = {
+SignInFormComponent.propTypes = {
   error: PropTypes.shape({
     message: PropTypes.string
   }),
   signIn: PropTypes.func.isRequired
 };
 
-SignInForm.defaultProps = {
+SignInFormComponent.defaultProps = {
   error: {}
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(SignInForm);
-export { SignInForm };
+export default connect(mapStateToProps, mapDispatchToProps)(SignInFormComponent);

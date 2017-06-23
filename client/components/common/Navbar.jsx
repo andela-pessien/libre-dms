@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import requireAuth from '../../utils/requireAuth';
 import { Desktop, Small, Mobile } from '../../utils/responsive';
 import AccountMenu from './AccountMenu';
-import MobileMenuButton from './MobileMenuButton'
+import MobileMenuButton from './MobileMenuButton';
 
 /**
  * Navbar component

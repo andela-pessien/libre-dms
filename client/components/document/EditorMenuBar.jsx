@@ -5,6 +5,15 @@ import ConfirmDialog from '../common/ConfirmDialog';
 import { isSuperAdmin } from '../../utils/roles';
 
 /**
+ * Event listener/handler for deleting a document
+ * Opens a confirm dialog
+ * @returns {undefined}
+ */
+const onDeleteClick = () => {
+  $('#confirm-document-delete').modal('open');
+};
+
+/**
  * Menu bar component for the DocumentEditor
  * @param {Object} props The props for the EditorMenuBar component
  * @returns {String} The HTML markup for the EditorMenuBar component
@@ -21,11 +30,11 @@ class EditorMenuBar extends Component {
 
   /**
    * Event listener/handler for changing document access
-   * @param {Object} e The click event
+   * @param {Object} event The click event
    * @returns {undefined}
    */
-  onAccessClick(e) {
-    this.props.updateAttribute('access', e.target.name);
+  onAccessClick(event) {
+    this.props.updateAttribute('access', event.target.name);
   }
 
   /**
@@ -38,7 +47,7 @@ class EditorMenuBar extends Component {
         {(this.props.full || isSuperAdmin(this.props.users[this.props.ownId].user)) &&
           <a
             className="btn right delete-button menu-button"
-            onClick={() => { $('#confirm-document-delete').modal('open'); }}
+            onClick={onDeleteClick}
             role="menuitem"
           >
             <i className="material-icons large">delete</i>
@@ -88,7 +97,6 @@ class EditorMenuBar extends Component {
           id="confirm-document-delete"
           message="Are you sure you want to delete this document?"
           onYesClick={this.props.onDeleteClick}
-          onNoClick={() => {}}
         />
       </div>
     );

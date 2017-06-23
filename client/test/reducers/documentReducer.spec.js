@@ -196,6 +196,26 @@ describe('Document reducer', () => {
     });
   });
 
+  it('should handle CLEAR_NEW_DOCUMENT', () => {
+    const state = {
+      all: {
+        list: [],
+        metadata: {}
+      },
+      new: {
+        id: getValidId()
+      }
+    };
+    expect(documentReducer(state, {
+      type: document.CLEAR_NEW
+    })).toEqual({
+      all: {
+        list: [],
+        metadata: {}
+      }
+    });
+  });
+
   it('should handle DOCUMENT_CREATE_FAILURE', () => {
     expect(documentReducer({}, {
       type: document.CREATE_FAILURE,

@@ -235,6 +235,13 @@ describe('Document action creators', () => {
       });
   });
 
+  it('should dispatch CLEAR_NEW_DOCUMENT on request', () => {
+    const store = mockStore();
+
+    store.dispatch(actions.clearNewDocumentStore());
+    expect(store.getActions()).toEqual([{ type: document.CLEAR_NEW }]);
+  });
+
   it('should dispatch DOCUMENT_CREATE_FAILURE on failed document creation', () => {
     moxios.stubRequest('/api/documents', {
       status: 500,

@@ -68,6 +68,13 @@ export default function documentReducer(state = {}, action = {}) {
           document: action.document
         }
       };
+    case document.CLEAR_NEW:
+      return Object.keys(state).reduce((result, key) => {
+        if (key !== 'new') {
+          result[key] = state[key];
+        }
+        return result;
+      }, {});
     case document.CREATE_FAILURE:
       return {
         ...state,

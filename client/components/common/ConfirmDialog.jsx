@@ -46,8 +46,13 @@ class ConfirmDialog extends Component {
 ConfirmDialog.propTypes = {
   id: PropTypes.string.isRequired,
   message: PropTypes.string.isRequired,
-  onYesClick: PropTypes.func.isRequired,
-  onNoClick: PropTypes.func.isRequired
+  onYesClick: PropTypes.func,
+  onNoClick: PropTypes.func
+};
+
+ConfirmDialog.defaultProps = {
+  onYesClick: () => {},
+  onNoClick: () => {}
 };
 
 export default ConfirmDialog;

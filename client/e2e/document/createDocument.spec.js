@@ -19,6 +19,11 @@ export default {
       .setValue('.title-editor', document.title)
       .waitForElementVisible('.status-span', config.waitFor)
       .waitForText('.status-span', 'All changes saved to cloud', config.waitFor)
+      .pause(config.waitFor)
+      .assert.containsText('.feed > ul > div > li > h5 > a', document.title)
+      .click('.feed > ul > div > li > h5 > a')
+      .pause(1000)
+      .assert.valueContains('.title-editor', document.title)
       .end();
   },
 
@@ -40,6 +45,12 @@ export default {
         $('.ql-editor > p').html(doc.content);
       }, [document])
       .waitForElementVisible('.status-span', config.waitFor)
+      .pause(config.waitFor)
+      .assert.containsText('.feed > ul > div > li > h5 > a',
+        document.content.substr(0, 20).replace(/\s+/g, ' '))
+      .click('.main-close')
+      .click('.feed > ul > div > li > h5 > a')
+      .waitForElementVisible('.ql-editor', config.waitFor)
       .assert.valueContains('.title-editor',
         document.content.substr(0, 20).replace(/\s+/g, ' '))
       .end();

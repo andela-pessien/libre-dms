@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-filename-extension */
 import React from 'react';
 import { mount } from 'enzyme';
 import sinon from 'sinon';
@@ -8,8 +9,6 @@ describe('ConfirmDialog component', () => {
   const props = {
     id: 'test-confirm',
     message: 'Are you sure you want to run this test?',
-    onYesClick: sinon.spy(() => {}),
-    onNoClick: sinon.spy(() => {})
   };
 
   beforeEach(() => {
@@ -34,10 +33,14 @@ describe('ConfirmDialog component', () => {
 
   it('calls the onYesClick prop on clicking "Yes" button', () => {
     confirmDialog.find('.yes-btn').simulate('click');
+    confirmDialog.setProps({ onYesClick: sinon.spy(() => {}) });
+    confirmDialog.find('.yes-btn').simulate('click');
     expect(confirmDialog.props().onYesClick.calledOnce).toBe(true);
   });
 
   it('calls the onNoClick prop on clicking "No" button', () => {
+    confirmDialog.find('.no-btn').simulate('click');
+    confirmDialog.setProps({ onNoClick: sinon.spy(() => {}) });
     confirmDialog.find('.no-btn').simulate('click');
     expect(confirmDialog.props().onNoClick.calledOnce).toBe(true);
   });

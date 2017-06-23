@@ -1,4 +1,5 @@
 import React from 'react';
+/* eslint-disable react/jsx-filename-extension */
 import { shallow } from 'enzyme';
 import Navbar from '../../../components/common/Navbar';
 

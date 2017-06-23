@@ -19,18 +19,15 @@ export default {
       .setValue('.title-editor', document.title)
       .waitForElementVisible('.status-span', config.waitFor)
       .waitForText('.status-span', 'All changes saved to cloud', config.waitFor)
-      .click('#own-documents-button')
-      .waitForElementVisible('.own-feed > .feed > ul', config.waitFor)
-      .pause(500)
+      .pause(config.waitFor)
+      .assert.containsText('.feed > ul > div > li > h5 > a', document.title)
       .click('.delete-button')
       .waitForElementVisible('#confirm-document-delete', config.waitFor)
       .waitForElementVisible('.yes-btn', config.waitFor)
       .pause(500)
       .click('.yes-btn')
-      .pause(2000)
-      .click('#own-documents-button')
-      .waitForElementVisible('.own-feed > .feed > h5', config.waitFor)
-      .waitForText('.own-feed > .feed > h5', 'No documents to display', config.waitFor)
+      .waitForElementVisible('.own-feed > .feed > h5', 2 * config.waitFor)
+      .assert.containsText('.own-feed > .feed > h5', 'No documents to display')
       .end();
   },
 
@@ -57,10 +54,7 @@ export default {
           .waitForElementVisible('.yes-btn', config.waitFor)
           .pause(500)
           .click('.yes-btn')
-          .pause(2000)
-          .click('#public-button')
-          .waitForElementVisible('.public-feed > .feed > ul', config.waitFor)
-          .pause(2000)
+          .pause(2 * config.waitFor)
           .assert.containsText('.truncate', value)
           .end();
       });

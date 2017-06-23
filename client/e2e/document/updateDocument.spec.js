@@ -35,6 +35,12 @@ export default {
         $('.ql-editor > p').html(doc.content);
       }, [document])
       .waitForText('.status-span', 'All changes saved to cloud', config.waitFor)
+      .click('.main-close')
+      .pause(1000)
+      .click('.truncate')
+      .waitForElementVisible('.ql-editor', config.waitFor)
+      .assert.valueContains('.title-editor', document.title)
+      .assert.containsText('.ql-editor > p', document.content.substr(0, 100))
       .end();
   }
 };

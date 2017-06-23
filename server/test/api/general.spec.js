@@ -28,7 +28,7 @@ describe('API:', () => {
       .expect('Content-Type', /text/)
       .expect(200)
       .end((err, res) => {
-        expect(res.text).toEqual('Found. Redirecting to https://andela-pessien.github.io/libredms-apidocs');
+        expect(res.text).toEqual('Found. Redirecting to https://libre-dms-docs.herokuapp.com');
         done();
       });
   });
@@ -54,7 +54,7 @@ describe('API:', () => {
       .expect(400)
       .end((err, res) => {
         if (err) throw err;
-        expect(res.body.message).toEqual('Invalid resource identifier');
+        expect(res.body.message).toEqual('Invalid user ID');
         app
           .get(`/api/documents/${Math.floor(Math.random() * 100)}`)
           .set('x-access-token', superAdminToken)
@@ -62,7 +62,7 @@ describe('API:', () => {
           .expect(400)
           .end((err, res) => {
             if (err) throw err;
-            expect(res.body.message).toEqual('Invalid resource identifier');
+            expect(res.body.message).toEqual('Invalid document ID');
             done();
           });
       });
