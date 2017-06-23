@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-filename-extension */
 import React from 'react';
 import { shallow } from 'enzyme';
 import AuthPage from '../../../components/authentication/AuthPage';

@@ -11,12 +11,12 @@ import { getUser } from '../../actions/userActions';
  */
 class ProfileView extends Component {
   /**
-   * Runs when the ProfileView component is about to mount.
+   * Runs when the ProfileView component has been mounted on the DOM
    * Dispatches an action to get the user that corresponds to the passed ID
    * prop.
    * @returns {undefined}
    */
-  componentWillMount() {
+  componentDidMount() {
     this.props.getUser(this.props.id);
   }
 

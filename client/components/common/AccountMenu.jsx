@@ -7,7 +7,7 @@ import { signOut } from '../../actions/authActions';
  * Account Menu component
  * @author Princess-Jewel Essien
  */
-class AccountMenu extends Component {
+export class AccountMenuComponent extends Component {
   /**
    * @param {Object} props The props for the component
    * @constructor
@@ -74,10 +74,9 @@ const mapDispatchToProps = dispatch => ({
   signOut: () => dispatch(signOut())
 });
 
-AccountMenu.propTypes = {
+AccountMenuComponent.propTypes = {
   user: PropTypes.object.isRequired,
   signOut: PropTypes.func.isRequired
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(AccountMenu);
-export { AccountMenu };
+export default connect(mapStateToProps, mapDispatchToProps)(AccountMenuComponent);

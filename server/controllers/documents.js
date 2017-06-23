@@ -1,5 +1,6 @@
 import {
   formatDoc,
+  isSuperAdmin,
   isAdminOrHigher,
   isOwner,
   dbErrorHandler,
@@ -88,42 +89,57 @@ export default {
    */
   listByUser(req, res) {
     const dbQuery = { userId: req.params.id };
-    if (!isAdminOrHigher(req) && !isOwner(req)) {
-      dbQuery.$or = [
-        { access: 'public' },
-        {
-          userRole: {
-            $gte: req.decoded.roleId
-          },
-          access: 'role'
-        }
-      ];
-    }
-    Document.findAndCountAll({
-      attributes: [
-        'id',
-        'title',
-        'type',
-        'access',
-        'createdAt',
-        'updatedAt'
-      ],
-      where: dbQuery,
-      order: [['updatedAt', 'DESC']],
-      limit: req.listOptions.limit,
-      offset: req.listOptions.offset
+    User.find({ where: { id: req.params.id }, paranoid: false })
+    .then((user) => {
+      if (!user) {
+        return res.status(404).json({
+          message: 'User not found'
+        });
+      } else if (user.deletedAt && !isSuperAdmin(req)) {
+        return res.status(404).json({
+          message: 'This user has been deleted'
+        });
+      }
+      if (!isAdminOrHigher(req) && !isOwner(req)) {
+        dbQuery.$or = [
+          { access: 'public' },
+          {
+            userRole: {
+              $gte: req.decoded.roleId
+            },
+            access: 'role'
+          }
+        ];
+      }
+      Document.findAndCountAll({
+        attributes: [
+          'id',
+          'title',
+          'type',
+          'access',
+          'createdAt',
+          'updatedAt'
+        ],
+        where: dbQuery,
+        order: [['updatedAt', 'DESC']],
+        limit: req.listOptions.limit,
+        offset: req.listOptions.offset
+      })
+      .then((documents) => {
+        res.status(200).json({
+          list: documents.rows,
+          metadata: getMetadata(
+            documents,
+            req.listOptions.limit,
+            req.listOptions.offset
+          )
+        });
+      })
+      .catch(err => (dbErrorHandler(err, res)));
     })
-    .then((documents) => {
-      res.status(200).json({
-        list: documents.rows,
-        metadata: getMetadata(
-          documents,
-          req.listOptions.limit,
-          req.listOptions.offset
-        )
-      });
-    })
-    .catch(err => (dbErrorHandler(err, res)));
+    .catch(() => res.status(400).json({
+      message: 'Invalid user ID'
+    }));
   },
 
   /**

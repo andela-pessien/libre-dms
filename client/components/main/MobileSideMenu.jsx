@@ -7,7 +7,7 @@ import { signOut } from '../../actions/authActions';
  * Side Menu for small and mobile devices
  * @author Princess-Jewel Essien
  */
-class MobileSideMenu extends Component {
+export class MobileSideMenuComponent extends Component {
   /**
    * @param {Object} props The props for the component
    * @constructor
@@ -124,7 +124,7 @@ const mapDispatchToProps = dispatch => ({
   signOut: () => dispatch(signOut())
 });
 
-MobileSideMenu.propTypes = {
+MobileSideMenuComponent.propTypes = {
   user: PropTypes.shape({
     name: PropTypes.string.isRequired
   }).isRequired,
@@ -135,5 +135,4 @@ MobileSideMenu.propTypes = {
   signOut: PropTypes.func.isRequired
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(MobileSideMenu);
-export { MobileSideMenu };
+export default connect(mapStateToProps, mapDispatchToProps)(MobileSideMenuComponent);

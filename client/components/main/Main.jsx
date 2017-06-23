@@ -20,14 +20,13 @@ import {
  * Renders as a mobile-optimized or single-page view for large screens
  * @author Princess-Jewel Essien
  */
-class Main extends Component {
+export class MainComponent extends Component {
   /**
    * @param {Object} props The props for the component
    * @constructor
    */
   constructor(props) {
     super(props);
-    this.props.getUser(this.props.ownId);
     this.state = {
       showFeeds: true,
       showOwnFeed: true,
@@ -48,7 +47,6 @@ class Main extends Component {
     this.onDocumentSearchChange = this.onDocumentSearchChange.bind(this);
     this.onUserSearchChange = this.onUserSearchChange.bind(this);
     this.refreshFeeds = this.refreshFeeds.bind(this);
-    this.loadOwnDocuments();
   }
 
   /**
@@ -57,6 +55,8 @@ class Main extends Component {
    * @returns {undefined}
    */
   componentDidMount() {
+    this.props.getUser(this.props.ownId);
+    this.loadOwnDocuments();
     this.refreshInterval = setInterval(this.refreshFeeds, 5000);
   }
 
@@ -286,7 +286,7 @@ const mapDispatchToProps = dispatch => ({
     dispatch(searchUsers(query, limit, offset))
 });
 
-Main.propTypes = {
+MainComponent.propTypes = {
   ownId: PropTypes.string.isRequired,
   self: PropTypes.object.isRequired,
   allUsers: PropTypes.object,
@@ -301,12 +301,11 @@ Main.propTypes = {
   searchDocuments: PropTypes.func.isRequired,
 };
 
-Main.defaultProps = {
+MainComponent.defaultProps = {
   allUsers: {},
   allDocuments: {},
   userSearch: {},
   documentSearch: {}
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Main);
-export { Main };
+export default connect(mapStateToProps, mapDispatchToProps)(MainComponent);

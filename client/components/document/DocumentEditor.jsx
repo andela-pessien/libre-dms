@@ -102,11 +102,10 @@ class DocumentEditor extends Component {
   }
 
   /**
-   * Runs when the DocumentEditor component will update
+   * Runs when the DocumentEditor component has updated
    * @returns {undefined}
    */
-  componentWillUpdate() {
-    console.log(this.props);
+  componentDidUpdate() {
     if (this.props.id && this.props.id !== this.id) {
       this.setupComponent(this.props);
       this.setupEditor();
@@ -124,25 +123,25 @@ class DocumentEditor extends Component {
 
   /**
    * Event listener/handler for changes to the document's title.
-   * @param {Object} e The input change event
+   * @param {Object} event The input change event
    * @returns {undefined}
    */
-  onTitleChange(e) {
+  onTitleChange(event) {
     this.setState({
       attributes: {
         ...this.state.attributes,
-        title: e.target.value
+        title: event.target.value
       }
     });
   }
 
   /**
    * Event listener/handler for clicking on the delete menu option.
-   * @param {Object} e The click event
+   * @param {Object} event The click event
    * @returns {undefined}
    */
-  onDeleteClick(e) {
-    e.preventDefault();
+  onDeleteClick(event) {
+    event.preventDefault();
     if (this.id) {
       this.props.deleteDocument(this.id);
     }

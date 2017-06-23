@@ -8,7 +8,7 @@ import { isValidEmail, isValidName } from '../../utils/validate';
  * Signup form component
  * @author Princess-Jewel Essien
  */
-class SignUpForm extends Component {
+export class SignUpFormComponent extends Component {
   /**
    * Constructor for the signup form component
    * Sets form state
@@ -149,16 +149,15 @@ const mapDispatchToProps = dispatch => ({
   signUp: userData => dispatch(signUp(userData))
 });
 
-SignUpForm.propTypes = {
+SignUpFormComponent.propTypes = {
   error: PropTypes.shape({
     message: PropTypes.string
   }),
   signUp: PropTypes.func.isRequired
 };
 
-SignUpForm.defaultProps = {
+SignUpFormComponent.defaultProps = {
   error: {}
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(SignUpForm);
-export { SignUpForm };
+export default connect(mapStateToProps, mapDispatchToProps)(SignUpFormComponent);

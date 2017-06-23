@@ -1,11 +1,11 @@
+/* eslint-disable react/jsx-filename-extension */
 import React from 'react';
 import { mount } from 'enzyme';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import sinon from 'sinon';
-import { AccountMenu } from '../../../components/common/AccountMenu';
-import AccountMenuComp from '../../../components/common/AccountMenu';
+import AccountMenu, { AccountMenuComponent } from '../../../components/common/AccountMenu';
 import { getValidUser } from '../../../../scripts/data-generator';
 
 const mockStore = configureMockStore([thunk]);
@@ -25,7 +25,7 @@ describe('AccountMenu component', () => {
   };
 
   beforeEach(() => {
-    accountMenu = mount(<Provider store={store}><AccountMenuComp {...props} /></Provider>);
+    accountMenu = mount(<Provider store={store}><AccountMenu {...props} /></Provider>);
   });
 
   it('renders without crashing', () => {
@@ -59,7 +59,7 @@ describe('AccountMenu component', () => {
       user,
       signOut: sinon.spy(() => {})
     };
-    accountMenu = mount(<AccountMenu {...shallowProps} />);
+    accountMenu = mount(<AccountMenuComponent {...shallowProps} />);
     accountMenu.find('.signout').simulate('click');
     expect(accountMenu.props().signOut.callCount).toBe(1);
   });

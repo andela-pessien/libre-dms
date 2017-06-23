@@ -103,7 +103,7 @@ export default {
       return res.status(200).json(formatUser(user));
     })
     .catch(() => res.status(400).json({
-      message: 'Invalid resource identifier'
+      message: 'Invalid user ID'
     }));
   },
 

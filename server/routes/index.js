@@ -20,7 +20,7 @@ const routes = (app) => {
    * Serves documentation.
    */
   app.get('/api', (req, res) => {
-    res.redirect('https://andela-pessien.github.io/libredms-apidocs');
+    res.redirect('https://libre-dms-docs.herokuapp.com');
   });
 
   /**

@@ -1,7 +1,8 @@
+/* eslint-disable react/jsx-filename-extension */
 import React from 'react';
 import { shallow, mount } from 'enzyme';
 import sinon from 'sinon';
-import { SignInForm } from '../../../components/authentication/SignInForm';
+import { SignInFormComponent } from '../../../components/authentication/SignInForm';
 import { getValidUser } from '../../../../scripts/data-generator';
 
 describe('SignInForm component', () => {
@@ -9,7 +10,7 @@ describe('SignInForm component', () => {
   const signInSpy = sinon.spy(() => new Promise(() => {}));
 
   beforeEach(() => {
-    signInForm = shallow(<SignInForm signIn={signInSpy} />);
+    signInForm = shallow(<SignInFormComponent signIn={signInSpy} />);
   });
 
   it('renders without crashing', () => {
@@ -37,7 +38,7 @@ describe('SignInForm component', () => {
   const signInSpy = sinon.spy(() => {});
 
   beforeEach(() => {
-    signInForm = mount(<SignInForm signIn={signInSpy} />);
+    signInForm = mount(<SignInFormComponent signIn={signInSpy} />);
     global.Materialize.toast = sinon.spy(() => {});
   });
 
