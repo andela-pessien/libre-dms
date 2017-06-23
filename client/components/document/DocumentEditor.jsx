@@ -106,6 +106,7 @@ class DocumentEditor extends Component {
    * @returns {undefined}
    */
   componentWillUpdate() {
+    console.log(this.props);
     if (this.props.id && this.props.id !== this.id) {
       this.setupComponent(this.props);
       this.setupEditor();
