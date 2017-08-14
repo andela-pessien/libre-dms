@@ -78,7 +78,7 @@
     "morgan": "1.8.1",
     "node-sass": "4.5.2",
     "npm-run-all": "4.0.2",
-    "pg": "6.1.5",
+    "pg": "6.1.6",
     "pg-hstore": "2.3.2",
     "prop-types": "15.5.4",
     "quill": "1.2.4",
