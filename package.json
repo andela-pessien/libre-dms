@@ -92,7 +92,7 @@
     "redux": "3.6.0",
     "redux-devtools": "3.4.0",
     "redux-thunk": "2.2.0",
-    "request": "2.81.0",
+    "request": "2.84.0",
     "rimraf": "2.6.1",
     "sass-loader": "6.0.3",
     "sequelize": "3.30.4",
