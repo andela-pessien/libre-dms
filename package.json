@@ -28,7 +28,9 @@
     "test:client:report": "jest && codecov -t efb004e7-7502-486e-83f4-e8fe05510673",
     "test:cover": "cross-env NODE_ENV=test nyc node -r dotenv/config $(npm bin)/jasmine --config=jasmine.json",
     "test:e2e": "nightwatch",
-    "test:report": "npm run test:cover && nyc report --reporter=text-lcov | coveralls"
+    "test:report": "npm run test:cover && nyc report --reporter=text-lcov | coveralls",
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
   },
   "repository": {
     "type": "git",
@@ -100,7 +102,8 @@
     "style-loader": "0.16.1",
     "underscore": "1.8.3",
     "uuid": "3.0.1",
-    "webpack": "2.4.1"
+    "webpack": "2.4.1",
+    "snyk": "^1.192.4"
   },
   "devDependencies": {
     "babel-plugin-istanbul": "4.1.4",
@@ -206,5 +209,6 @@
     },
     "sourceMap": false,
     "instrument": false
-  }
+  },
+  "snyk": true
 }
