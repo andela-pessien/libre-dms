@@ -104,7 +104,7 @@
   },
   "devDependencies": {
     "babel-plugin-istanbul": "4.1.4",
-    "codecov": "2.2.0",
+    "codecov": "3.7.1",
     "coveralls": "2.13.1",
     "enzyme": "2.8.2",
     "eslint": "3.19.0",
