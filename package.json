@@ -95,7 +95,7 @@
     "request": "2.81.0",
     "rimraf": "2.6.1",
     "sass-loader": "6.0.3",
-    "sequelize": "3.30.4",
+    "sequelize": "6.3.5",
     "sequelize-noupdate-attributes": "1.0.0",
     "style-loader": "0.16.1",
     "underscore": "1.8.3",
