@@ -64,7 +64,7 @@
     "expect": "1.20.2",
     "expose-loader": "0.7.3",
     "express": "4.15.2",
-    "express-http-proxy": "1.0.3",
+    "express-http-proxy": "1.0.5",
     "extract-text-webpack-plugin": "2.1.0",
     "faker": "4.1.0",
     "file-loader": "0.11.1",
@@ -94,13 +94,13 @@
     "redux-thunk": "2.2.0",
     "request": "2.81.0",
     "rimraf": "2.6.1",
-    "sass-loader": "6.0.3",
+    "sass-loader": "6.0.7",
     "sequelize": "3.30.4",
     "sequelize-noupdate-attributes": "1.0.0",
     "style-loader": "0.16.1",
     "underscore": "1.8.3",
     "uuid": "3.0.1",
-    "webpack": "2.4.1"
+    "webpack": "4.0.0"
   },
   "devDependencies": {
     "babel-plugin-istanbul": "4.1.4",
