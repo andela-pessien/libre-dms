@@ -46,7 +46,7 @@
   },
   "homepage": "https://github.com/andela-pessien/libre-dms#readme",
   "dependencies": {
-    "axios": "0.16.1",
+    "axios": "1.6.4",
     "babel-cli": "6.24.1",
     "babel-loader": "7.0.0",
     "babel-polyfill": "6.23.0",
